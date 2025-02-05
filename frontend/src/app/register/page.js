@@ -96,7 +96,7 @@ const Register = () => {
               style={{ color: theme.palette.dark.hex }}
               className="hover:underline"
             >
-              Inicia sesión
+              Inicia sesiónn
             </a>
           </p>
         </div>
