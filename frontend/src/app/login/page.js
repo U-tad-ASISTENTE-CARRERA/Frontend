@@ -1,12 +1,39 @@
-// pages/login.js
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { theme } from "../constants/theme";
 import "@fontsource/montserrat"; // Importa la fuente aquí
 import "../globals.css";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const validateForm = (e) => {
+    e.preventDefault();
+    setError("");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (
+      !emailRegex.test(email) ||
+      (!email.endsWith("live.u-tad.com") && !email.endsWith("u-tad.com"))
+    ) {
+      setError("El correo debe terminar en live.u-tad.com o u-tad.com");
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
+    if (!passwordRegex.test(password)) {
+      setError(
+        "La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial."
+      );
+      return;
+    }
+
+    console.log("Formulario enviado");
+  };
+
   return (
     <>
       <div
@@ -23,12 +50,14 @@ const Login = () => {
           >
             Iniciar Sesión
           </h2>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={validateForm}>
             <div>
               <input
                 type="email"
                 id="email"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="block w-full mt-1 p-3 border border-gray-300 "
                 placeholder="tuemail@live.u-tad.com"
                 style={{
@@ -44,6 +73,8 @@ const Login = () => {
                 type="password"
                 id="password"
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="block w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
                 placeholder="Contraseña"
                 style={{
@@ -52,6 +83,9 @@ const Login = () => {
                 }}
               />
             </div>
+            {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
             <button
               type="submit"
               className="w-full px-4 py-2 text-white rounded-md transition duration-200"
