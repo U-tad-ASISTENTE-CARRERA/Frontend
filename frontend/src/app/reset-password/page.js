@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { theme } from "../constants/theme";
-import "@fontsource/montserrat"; // Importa la fuente aquí
+import "@fontsource/montserrat";
 import "../globals.css";
 
-const Login = () => {
+const Reset = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [seedWord, setSeedWord] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const validateForm = async (e) => {
     e.preventDefault();
@@ -24,7 +26,7 @@ const Login = () => {
     }
 
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
-    if (!passwordRegex.test(password)) {
+    if (!passwordRegex.test(newPassword)) {
       setError(
         "La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial."
       );
@@ -32,20 +34,22 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
+      const response = await fetch("http://localhost:3000/updatePassword", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, newPassword, seedWord }),
       });
 
       if (!response.ok) {
-        throw new Error("Error en el inicio de sesión");
+        throw new Error("Error al restaurar la contraseña");
       }
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
+      setSuccess(true);
       console.log(data);
     } catch (error) {
       setError(error.message);
@@ -66,17 +70,17 @@ const Login = () => {
               fontFamily: "Montserrat",
             }}
           >
-            Iniciar Sesión
+            Restablecer Contraseña
           </h2>
           <form className="space-y-6" onSubmit={validateForm}>
             <div>
               <input
-                type="email"
+                type="text"
                 id="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300 "
+                className="block w-full mt-1 p-3 border border-gray-300"
                 placeholder="tuemail@live.u-tad.com"
                 style={{
                   borderColor: theme.palette.light.hex,
@@ -89,20 +93,44 @@ const Login = () => {
             <div>
               <input
                 type="password"
-                id="password"
+                id="newPassword"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
-                placeholder="Contraseña"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="block w-full mt-1 p-3 border border-gray-300"
+                placeholder="Nueva contraseña"
                 style={{
                   borderColor: theme.palette.light.hex,
+                  color: theme.palette.text.hex,
+                  fontFamily: "Montserrat, sans-serif",
+                  borderRadius: theme.buttonRadios.m,
+                }}
+              />
+            </div>
+            <div>
+              <input
+                type="text"
+                id="seed"
+                required
+                value={seedWord}
+                onChange={(e) => setSeedWord(e.target.value)}
+                className="block w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
+                placeholder="Palabra clave"
+                style={{
+                  borderColor: theme.palette.light.hex,
+                  color: theme.palette.text.hex,
+                  fontFamily: "Montserrat, sans-serif",
                   borderRadius: theme.buttonRadios.m,
                 }}
               />
             </div>
             {error && (
               <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
+            {success && (
+              <p className="text-green-500 text-sm text-center">
+                La contraseña ha sido restablecida
+              </p>
             )}
             <button
               type="submit"
@@ -120,22 +148,9 @@ const Login = () => {
                   theme.palette.primary.hex)
               }
             >
-              Iniciar Sesión
+              Restablecer
             </button>
           </form>
-          <p
-            className="text-sm text-center mt-8"
-            style={{ color: theme.palette.dark.hex }}
-          >
-            Olvidaste tu contraseña?{" "}
-            <a
-              href="/reset-password"
-              style={{ color: theme.palette.complementary.hex }}
-              className="hover:underline"
-            >
-              Recupérala
-            </a>
-          </p>
           <p
             className="text-sm text-center mt-8"
             style={{ color: theme.palette.text.hex }}
@@ -143,7 +158,9 @@ const Login = () => {
             ¿No tienes una cuenta?{" "}
             <a
               href="/register"
-              style={{ color: theme.palette.dark.hex }}
+              style={{
+                color: theme.palette.dark.hex,
+              }}
               className="hover:underline"
             >
               Regístrate
@@ -155,4 +172,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Reset;

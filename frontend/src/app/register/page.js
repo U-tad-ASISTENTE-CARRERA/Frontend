@@ -2,20 +2,19 @@
 
 import React, { useState } from "react";
 import { theme } from "../constants/theme";
-import "@fontsource/montserrat"; // Importa la fuente aquí
+import "@fontsource/montserrat";
 import "../globals.css";
 
 const Register = () => {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // Estado para manejar errores
+  const [seedWord, setSeedWord] = useState("");
+  const [error, setError] = useState("");
 
-  const validateForm = (e) => {
+  const validateForm = async (e) => {
     e.preventDefault();
-    setError(""); // Reiniciar el error al inicio de la validación
+    setError("");
 
-    // Validar el correo electrónico
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (
       !emailRegex.test(email) ||
@@ -25,7 +24,6 @@ const Register = () => {
       return;
     }
 
-    // Validar la contraseña
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
     if (!passwordRegex.test(password)) {
       setError(
@@ -34,9 +32,24 @@ const Register = () => {
       return;
     }
 
-    // Aquí puedes manejar el envío del formulario si las validaciones son correctas
-    alert("Registro completado correctamente");
-    console.log("Formulario de registro enviado");
+    try {
+      const response = await fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, seedWord }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error en el registro");
+      }
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   return (
@@ -56,23 +69,6 @@ const Register = () => {
             Regístrate
           </h2>
           <form className="space-y-6" onSubmit={validateForm}>
-            <div>
-              <input
-                type="text"
-                id="username"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300"
-                placeholder="Nombre de usuario"
-                style={{
-                  borderColor: theme.palette.light.hex,
-                  color: theme.palette.text.hex,
-                  fontFamily: "Montserrat, sans-serif",
-                  borderRadius: theme.buttonRadios.m,
-                }}
-              />
-            </div>
             <div>
               <input
                 type="email"
@@ -101,6 +97,25 @@ const Register = () => {
                 placeholder="Contraseña"
                 style={{
                   borderColor: theme.palette.light.hex,
+                  color: theme.palette.text.hex,
+                  fontFamily: "Montserrat, sans-serif",
+                  borderRadius: theme.buttonRadios.m,
+                }}
+              />
+            </div>
+            <div>
+              <input
+                type="text"
+                id="seed"
+                required
+                value={seedWord}
+                onChange={(e) => setSeedWord(e.target.value)}
+                className="block w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
+                placeholder="Palabra clave"
+                style={{
+                  borderColor: theme.palette.light.hex,
+                  color: theme.palette.text.hex,
+                  fontFamily: "Montserrat, sans-serif",
                   borderRadius: theme.buttonRadios.m,
                 }}
               />
