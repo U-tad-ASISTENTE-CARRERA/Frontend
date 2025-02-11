@@ -56,3 +56,64 @@ export const theme = {
     bold: "700",
   },
 };
+
+export const styles = {
+  dropdown: {
+    display: 'block',
+    position: 'absolute',
+    top: '50px',
+    right: 0,
+    backgroundColor: 'white',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    borderRadius: '5px',
+    overflow: 'hidden'
+  },
+  submenu: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  dropdownButton: {
+    width: '150px',
+    padding: '10px',
+    border: 'none',
+    background: 'none',
+    cursor: 'pointer',
+    textAlign: 'left'
+  },
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    background: 'rgba(0, 0, 0, 0.5)',
+    backdropFilter: 'blur(5px)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10
+  },
+  modal: {
+    background: 'white',
+    padding: '20px',
+    borderRadius: '10px',
+    textAlign: 'center',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
+  },
+  modalButton: {
+    margin: '10px',
+    padding: '10px 20px',
+    fontSize: '16px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer'
+  },
+  confirm: {
+    backgroundColor: '#28a745',
+    color: 'white'
+  },
+  cancel: {
+    backgroundColor: '#6c757d',
+    color: 'white'
+  }
+};

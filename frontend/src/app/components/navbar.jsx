@@ -1,7 +1,46 @@
+'use client'
+
 import Link from "next/link";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import React, { useState, useEffect} from "react";
+import { styles } from '../constants/theme';
 
 export default function Navbar() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    useEffect(() => {
+        //Comprobamos si existe un token
+        const IsToken = localStorage.getItem('token')
+
+        if (IsToken) {
+            //preguntar como sacar la información del usuario
+            fetch("http://localhost:3000/login", {
+                body: JSON.stringify()
+            }).then(response => response.json())
+            .then(data => setIsLoggedIn(data.loggedIn))
+            .catch(error => console.error('Error:', error));
+        }
+    })
+
+
+    const handleLogOut = async(e) => {
+        const response = await fetch("http://localhost:3000/logout", {
+            method: "POST",
+            headers: {
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify()
+        })
+
+        if (!response.ok){
+            throw new Error("Error al cerrar sesión")
+        } else {
+            sessionStorage.removeItem('token')
+            window.location.href = '/'
+        }
+    }
 
     return(
         <nav className= "bg-blue-600 p-4 flex items-center justify-between rounded-lg shadow-lg m-4">
@@ -33,9 +72,33 @@ export default function Navbar() {
                 </li>
 
                 <li className="md:ml-auto">
-                    <Link href="/login" className="hover:text-gray-300 transition-colors duration-200 text-nowrap">
+                    <div className="hover:text-gray-300 transition-colors duration-200 text-nowrap" onMouseEnter={() => setIsDropdownOpen(true)} onMouseLeave={() => setIsDropdownOpen(false)}>
                         <i className="bi bi-person-fill text-4xl"></i>
-                    </Link>
+
+                        {isDropdownOpen && (
+                            <div style={styles.dropdown}>
+                                {isLoggedIn ? (
+                                    <div style={styles.submenu}>
+                                        <button style={styles.dropdownButton} onClick={() => window.location.href = '/profile'}>Mi Perfil</button>
+                                        <button style={styles.dropdownButton} onClick={() => setIsModalOpen(true)}>LogOut</button>
+                                    </div>
+                                ) : (
+                                    <button style={styles.dropdownButton} onClick={() => window.location.href = '/login'}>LogIn</button>
+                                )}
+                            </div>
+                        )}
+
+                        {isModalOpen && (
+                            <div style={styles.overlay}>
+                                <div style={styles.modal}>
+                                    <h2>¿Estás seguro de que quieres cerrar sesión?</h2>
+                                    <button style={{...style.modalButton, ...style.confirm}} onClick={handleLogOut}>Salir</button>
+                                    <button style={{...style.modalButton, ...style.cancel}} onClick={() => setIsModalOpen(false)}>Cancelar</button>
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
                 </li>
             </ul>   
 		</nav>
