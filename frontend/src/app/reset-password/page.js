@@ -49,6 +49,7 @@ const Reset = () => {
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       setSuccess(true);
       console.log(data);
     } catch (error) {

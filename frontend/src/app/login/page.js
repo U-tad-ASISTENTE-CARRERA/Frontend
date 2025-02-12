@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { theme } from "../constants/theme";
+import { useRouter } from "next/navigation";
 import "@fontsource/montserrat"; // Importa la fuente aquí
 import "../globals.css";
 
@@ -9,6 +10,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const validateForm = async (e) => {
     e.preventDefault();
@@ -46,7 +48,9 @@ const Login = () => {
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       console.log(data);
+      router.push(`/profile/${data.user.id}`);
     } catch (error) {
       setError(error.message);
     }
@@ -96,6 +100,7 @@ const Login = () => {
                 className="block w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
                 placeholder="Contraseña"
                 style={{
+                  color: theme.palette.text.hex,
                   borderColor: theme.palette.light.hex,
                   borderRadius: theme.buttonRadios.m,
                 }}
