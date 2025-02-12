@@ -30,6 +30,7 @@ const Profile = ({ params }) => {
         }
         const data = await response.json();
         setLanguages(data.metadata.languages);
+        setSpecialization(data.metadata.specialization);
       } catch (error) {
         setError(error.message);
       }
@@ -234,7 +235,7 @@ const Profile = ({ params }) => {
             Especialización
           </h3>
           <p style={{ color: theme.palette.light.hex }}>
-            {user.specialization ? user.specialization : "Sin especialización"}
+            {specialization ? specialization : "Sin especialización"}
           </p>
         </div>
       </div>
