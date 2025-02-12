@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { theme } from "../../constants/theme";
+import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
-import "../../globals.css";
+import "../../../globals.css";
+import { setRequestMeta } from "next/dist/server/request-meta";
 
 const Profile = ({ params }) => {
   const { id } = React.use(params);
@@ -13,7 +14,7 @@ const Profile = ({ params }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  /*useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("http://localhost:3000/metadata", {
@@ -28,15 +29,14 @@ const Profile = ({ params }) => {
           throw new Error("Error en obteniendo los metadatos");
         }
         const data = await response.json();
-        setUser(data.metadata);
-        console.log(data);
+        setLanguages(data.metadata.languages);
       } catch (error) {
         setError(error.message);
       }
     };
 
     fetchData();
-  }, []);*/
+  }, []);
 
   const handleLanguageChange = (index, event) => {
     const newLanguages = [...languages];
@@ -55,8 +55,7 @@ const Profile = ({ params }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      console.log(languages);
-      console.log(specialization);
+      console.log(user);
       const response = await fetch("http://localhost:3000/metadata", {
         method: "PATCH",
         headers: {
@@ -75,6 +74,8 @@ const Profile = ({ params }) => {
       const data = await response.json();
       console.log(data);
       setSuccess(true);
+      setError("");
+      window.location.reload();
     } catch (error) {
       setError(error.message);
     }
@@ -233,7 +234,7 @@ const Profile = ({ params }) => {
             Especialización
           </h3>
           <p style={{ color: theme.palette.light.hex }}>
-            {specialization || "No especificada"}
+            {user.specialization ? user.specialization : "Sin especialización"}
           </p>
         </div>
       </div>

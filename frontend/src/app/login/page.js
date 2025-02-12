@@ -50,7 +50,11 @@ const Login = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       console.log(data);
-      router.push(`/profile/${data.user.id}`);
+      if (data.user.role == "STUDENT") {
+        router.push(`/profile/student/${data.user.id}`);
+      } else if (data.user.role == "TEACHER") {
+        router.push(`/profile/teacher/${data.user.id}`);
+      }
     } catch (error) {
       setError(error.message);
     }
