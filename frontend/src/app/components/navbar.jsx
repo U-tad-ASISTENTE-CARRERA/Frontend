@@ -12,24 +12,13 @@ export default function Navbar() {
 
   useEffect(() => {
     const IsToken = localStorage.getItem("token");
-  });
 
-  const handleLogOut = async (e) => {
-    const response = await fetch("http://localhost:3000/logout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(),
-    });
-
-    if (!response.ok) {
-      throw new Error("Error al cerrar sesión");
-    } else {
-      sessionStorage.removeItem("token");
-      window.location.href = "/";
+    if (IsToken){
+      setIsLoggedIn(true)
+    } else{
+      setIsLoggedIn(false)
     }
-  };
+  });
 
   return (
     <nav className="bg-blue-600 p-4 flex items-center justify-between rounded-lg shadow-lg m-4">
@@ -101,7 +90,7 @@ export default function Navbar() {
                     </button>
                     <button
                       style={styles.dropdownButton}
-                      onClick={() => setIsModalOpen(true)}
+                      onClick={() => (window.location.href = "/logout")}
                     >
                       LogOut
                     </button>
@@ -122,13 +111,13 @@ export default function Navbar() {
                 <div style={styles.modal}>
                   <h2>¿Estás seguro de que quieres cerrar sesión?</h2>
                   <button
-                    style={{ ...style.modalButton, ...style.confirm }}
-                    onClick={handleLogOut}
+                    style={{ ...styles.modalButton, ...styles.confirm }}
+                    onClick={() => (window.location.href = "/")}
                   >
                     Salir
                   </button>
                   <button
-                    style={{ ...style.modalButton, ...style.cancel }}
+                    style={{ ...styles.modalButton, ...styles.cancel }}
                     onClick={() => setIsModalOpen(false)}
                   >
                     Cancelar
