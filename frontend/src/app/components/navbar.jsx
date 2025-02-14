@@ -20,7 +20,7 @@ export default function Navbar() {
     } else{
       setIsLoggedIn(false)
     }
-  });
+  }, []);
 
   const handleTypeUser = async(e) => {
       const response = await fetch("http://localhost:3000/",{
