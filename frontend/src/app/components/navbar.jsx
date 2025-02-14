@@ -4,11 +4,13 @@ import Link from "next/link";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import React, { useState, useEffect } from "react";
 import { styles } from "../constants/theme";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const router = useRouter()
 
   useEffect(() => {
     const IsToken = localStorage.getItem("token");
@@ -19,6 +21,24 @@ export default function Navbar() {
       setIsLoggedIn(false)
     }
   });
+
+  const handleTypeUser = async(e) => {
+      const response = await fetch("http://localhost:3000/",{
+        method: "GET",
+        headers:{
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+      })
+
+      if(!response.ok){
+        throw new error("Error al captar al usuario")
+      }
+
+      const data = await response.json()
+      
+      router.push(`/profile/${data.user.role.toLowerCase()}/${data.user.id}`)
+  }
 
   return (
     <nav className="bg-blue-600 p-4 flex items-center justify-between rounded-lg shadow-lg m-4">
@@ -84,7 +104,7 @@ export default function Navbar() {
                   <div style={styles.submenu}>
                     <button
                       style={styles.dropdownButton}
-                      onClick={() => (window.location.href = "/profile")}
+                      onClick={() => (handleTypeUser())}
                     >
                       Mi Perfil
                     </button>
