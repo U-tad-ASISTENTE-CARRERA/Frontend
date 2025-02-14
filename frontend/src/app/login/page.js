@@ -42,8 +42,22 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        throw new Error("Error en el inicio de sesión");
+       if (!response.ok) {
+        if (data?.errors && Array.isArray(data.errors)) {
+          setError(data.errors[0]);
+          return;
+        }
+
+        const errorMessages = {
+          USER_NOT_FOUND: "Usuario no encontrado",
+          INVALID_SEED_WORD:
+            "La palabra clave introducida no es la correcta",
+          INTERNAL_SERVER_ERROR:
+            "Error interno del servidor. Inténtalo más tarde.",
+        };
+
+        setError(errorMessages[data?.error] || "Error en el registro");
+        return;
       }
 
       const data = await response.json();

@@ -78,7 +78,8 @@ export const styles = {
     border: 'none',
     background: 'none',
     cursor: 'pointer',
-    textAlign: 'left'
+    textAlign: 'left',
+    color: 'black',
   },
   overlay: {
     position: 'fixed',

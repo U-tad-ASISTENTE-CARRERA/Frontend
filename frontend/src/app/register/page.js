@@ -34,8 +34,6 @@ const Register = () => {
     }
 
     try {
-      console.log("Enviando solicitud a backend...");
-
       const response = await fetch("http://localhost:3000/register", {
         method: "POST",
         headers: {
@@ -163,6 +161,19 @@ const Register = () => {
               Regístrate
             </button>
           </form>
+          <p
+            className="text-sm text-center mt-8"
+            style={{ color: theme.palette.text.hex }}
+          >
+          ¿Ya tienes una cuenta?{" "}
+          <a
+            href="/login"
+            style={{ color: theme.palette.dark.hex }}
+            className="hover:underline"
+          >
+            Acceder
+            </a>
+          </p>
         </div>
       </div>
     </>
