@@ -18,7 +18,6 @@ const Reset = () => {
     e.preventDefault();
     setError("");
 
-    // Comprobar que el email es de la universidad
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (
       !emailRegex.test(email) ||
@@ -28,7 +27,6 @@ const Reset = () => {
       return;
     }
 
-    // Comprobar que la contraseña cumple los requisitos
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
     if (!passwordRegex.test(newPassword)) {
       setError(
@@ -47,8 +45,6 @@ const Reset = () => {
         body: JSON.stringify({ email, newPassword, seedWord }),
       });
 
-      // TODO: Recuperar los mensajes de error del backend
-
       if (!response.ok) {
         throw new Error("Error al restaurar la contraseña");
       }
@@ -58,7 +54,7 @@ const Reset = () => {
       localStorage.setItem("user", JSON.stringify(data.user));
       setSuccess(true);
       console.log(data);
-      router.push("/login"); // Redirigir al login
+      router.push("/login");
     } catch (error) {
       setError(error.message);
     }

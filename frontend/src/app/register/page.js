@@ -6,30 +6,36 @@ import { theme } from "../constants/theme";
 import "@fontsource/montserrat";
 import "../globals.css";
 
-// Componente de registro
 const Register = () => {
-  // Definición de estados para email, contraseña, palabra clave y error
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [seedWord, setSeedWord] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
 
-  // Función para validar el formulario
   const validateForm = async (e) => {
     e.preventDefault();
     setError("");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (
+      !emailRegex.test(email) ||
+      (!email.endsWith("live.u-tad.com") && !email.endsWith("u-tad.com"))
+    ) {
+      setError("El correo debe terminar en live.u-tad.com o u-tad.com");
+      return;
+    }
 
-    // Expresión regular para validar la contraseña
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
     if (!passwordRegex.test(password)) {
-      setError("La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial.");
+      setError(
+        "La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial."
+      );
       return;
     }
 
     try {
       console.log("Enviando solicitud a backend...");
-      // Envío de datos al backend
+
       const response = await fetch("http://localhost:3000/register", {
         method: "POST",
         headers: {
@@ -38,37 +44,34 @@ const Register = () => {
         body: JSON.stringify({ email, password, seedWord }),
       });
 
-      console.log("Respuesta del backend recibida", response);
-      let data;
-      try {
-        data = await response.json();
-      } catch (error) {
-        console.error("Error al parsear JSON:", error);
-        data = null;
-      }
+      const data = await response.json();
+      console.log(data);
+      localStorage.setItem("token", data.token);
 
       if (!response.ok) {
-        // Verificar si la respuesta contiene un array de errores
         if (data?.errors && Array.isArray(data.errors)) {
           setError(data.errors[0]);
           return;
         }
 
-        // Mensajes de error personalizados
         const errorMessages = {
-          "USER_ALREADY_EXISTS": "Ya existe un usuario registrado con ese correo",
-          "INVALID_EMAIL": "El correo debe terminar en live.u-tad.com o u-tad.com",
-          "INTERNAL_SERVER_ERROR": "Error interno del servidor. Inténtalo más tarde.",
+          USER_ALREADY_EXISTS: "Ya existe un usuario registrado con ese correo",
+          INVALID_EMAIL:
+            "El correo debe terminar en live.u-tad.com o u-tad.com",
+          INTERNAL_SERVER_ERROR:
+            "Error interno del servidor. Inténtalo más tarde.",
         };
 
         setError(errorMessages[data?.error] || "Error en el registro");
         return;
       }
 
-      // Redirigir al perfil del usuario según su rol
-      if (data?.user?.id && data?.user?.role) {
-        const profilePath = data.user.role === "TEACHER" ? "teacher" : "student";
-        router.push(`/profile/${profilePath}/${data.user.id}`);
+      if (data?.user?.id && data?.user?.role && localStorage.getItem("token")) {
+        if (data.user.role == "STUDENT") {
+          router.push(`/profile/student/${data.user.id}`);
+        } else if (data.user.role == "TEACHER") {
+          router.push(`/profile/teacher/${data.user.id}`);
+        }
       }
     } catch (error) {
       console.error("Error en la conexión con el backend:", error);

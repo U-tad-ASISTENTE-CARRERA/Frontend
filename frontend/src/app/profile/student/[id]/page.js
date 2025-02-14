@@ -9,7 +9,7 @@ import { setRequestMeta } from "next/dist/server/request-meta";
 const Profile = ({ params }) => {
   const { id } = React.use(params);
   const [user, setUser] = useState({});
-  const [languages, setLanguages] = useState([{ language: "", level: "" }]);
+  const [languages, setLanguages] = useState([]);
   const [specialization, setSpecialization] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -29,8 +29,13 @@ const Profile = ({ params }) => {
           throw new Error("Error en obteniendo los metadatos");
         }
         const data = await response.json();
-        setLanguages(data.metadata.languages);
-        setSpecialization(data.metadata.specialization);
+        console.log(data);
+        data.metadata.languages
+          ? setLanguages(data.metadata.languages)
+          : setLanguages([]);
+        data.metadata.specialization
+          ? setSpecialization(data.metadata.specialization)
+          : setSpecialization("Sin especialización");
       } catch (error) {
         setError(error.message);
       }
@@ -46,7 +51,7 @@ const Profile = ({ params }) => {
   };
 
   const addLanguage = () => {
-    setLanguages([...languages, { language: "", level: "" }]);
+    setLanguages([...languages, { language: "", level: "low" }]);
   };
 
   const handleSpecializationChange = (event) => {
