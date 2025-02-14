@@ -5,6 +5,7 @@ import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
 import "../../../globals.css";
 import { setRequestMeta } from "next/dist/server/request-meta";
+import { useRouter } from "next/navigation";
 
 const Profile = ({ params }) => {
   const { id } = React.use(params);
@@ -13,6 +14,7 @@ const Profile = ({ params }) => {
   const [specialization, setSpecialization] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -242,6 +244,14 @@ const Profile = ({ params }) => {
           <p style={{ color: theme.palette.light.hex }}>
             {specialization ? specialization : "Sin especialización"}
           </p>
+        </div>
+        <div className="flex items-center justify-evenly min-h-screen">
+          <button
+            className="btn btn-primary"
+            onClick={() => router.push(`/profile/student/${id}/teacher`)}
+          >
+            Elegir profe
+          </button>
         </div>
       </div>
     </>

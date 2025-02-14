@@ -47,6 +47,7 @@ const Register = () => {
       const data = await response.json();
       console.log(data);
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       if (!response.ok) {
         if (data?.errors && Array.isArray(data.errors)) {
