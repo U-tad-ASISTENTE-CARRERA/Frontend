@@ -11,6 +11,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [seedWord, setSeedWord] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
   const validateForm = async (e) => {
@@ -48,19 +49,14 @@ const Register = () => {
       localStorage.setItem("user", JSON.stringify(data.user));
 
       if (!response.ok) {
-        if (data?.errors && Array.isArray(data.errors)) {
-          setError(data.errors[0]);
-          return;
-        }
-
         const errorMessages = {
           USER_ALREADY_EXISTS: "Ya existe un usuario registrado con ese correo",
           INVALID_EMAIL:
             "El correo debe terminar en live.u-tad.com o u-tad.com",
-          INTERNAL_SERVER_ERROR:
-            "Error interno del servidor. Inténtalo más tarde.",
+          INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
         };
 
+        setSuccess("");
         setError(errorMessages[data?.error] || "Error en el registro");
         return;
       }
@@ -72,6 +68,7 @@ const Register = () => {
           router.push(`/profile/teacher/${data.user.id}`);
         }
       }
+      setSuccess(true);
     } catch (error) {
       console.error("Error en la conexión con el backend:", error);
       setError("Ocurrió un error inesperado. Inténtalo de nuevo.");
@@ -149,6 +146,11 @@ const Register = () => {
             {error && (
               <p className="text-red-500 text-sm text-center">{error}</p>
             )}
+            {success && (
+              <p className="text-green-500 text-sm text-center">
+                Registro exitoso. Ahora puedes iniciar sesión.
+              </p>
+            )}
             <button
               type="submit"
               className="w-full px-4 py-2 text-white rounded-md transition duration-200"
@@ -165,13 +167,13 @@ const Register = () => {
             className="text-sm text-center mt-8"
             style={{ color: theme.palette.text.hex }}
           >
-          ¿Ya tienes una cuenta?{" "}
-          <a
-            href="/login"
-            style={{ color: theme.palette.dark.hex }}
-            className="hover:underline"
-          >
-            Acceder
+            ¿Ya tienes una cuenta?{" "}
+            <a
+              href="/login"
+              style={{ color: theme.palette.dark.hex }}
+              className="hover:underline"
+            >
+              Acceder
             </a>
           </p>
         </div>

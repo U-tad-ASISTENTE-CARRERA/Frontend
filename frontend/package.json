@@ -12,6 +12,7 @@
     "@fontsource/montserrat": "^5.1.1",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
+    "moment": "^2.30.1",
     "next": "15.1.6",
     "nodemon": "^3.1.9",
     "react": "^19.0.0",

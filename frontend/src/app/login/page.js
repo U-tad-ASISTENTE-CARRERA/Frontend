@@ -42,25 +42,18 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
 
-       if (!response.ok) {
-        if (data?.errors && Array.isArray(data.errors)) {
-          setError(data.errors[0]);
-          return;
-        }
-
+      const data = await response.json();
+      console.log(data);
+      if (!response.ok) {
         const errorMessages = {
-          USER_NOT_FOUND: "Usuario no encontrado",
-          INVALID_SEED_WORD:
-            "La palabra clave introducida no es la correcta",
-          INTERNAL_SERVER_ERROR:
-            "Error interno del servidor. Inténtalo más tarde.",
+          INVALID_CREDENTIALS: "Usuario no encontrado",
+          INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
         };
 
-        setError(errorMessages[data?.error] || "Error en el registro");
+        setError(errorMessages[data?.error] || "Error al acceder");
         return;
       }
 
-      const data = await response.json();
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       console.log(data);
@@ -70,7 +63,8 @@ const Login = () => {
         router.push(`/profile/teacher/${data.user.id}`);
       }
     } catch (error) {
-      setError(error.message);
+      setError("Ha ocurrido un error inesperado");
+      console.log(error);
     }
   };
 

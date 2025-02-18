@@ -46,7 +46,14 @@ const Reset = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Error al restaurar la contraseña");
+        const errorMessages = {
+          USER_NOT_FOUND: "Usuario no encontrado",
+          INVALID_SEED_WORD: "La palabra clave introducida no es la correcta",
+          INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
+        };
+
+        setError(errorMessages[data?.error] || "Error en el registro");
+        return;
       }
 
       const data = await response.json();
