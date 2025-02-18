@@ -23,13 +23,15 @@ export default function Navbar() {
   });
 
   const handleTypeUser = async(e) => {
-      const response = await fetch("http://localhost:3000/",{
+      const response =await fetch("http://localhost:3000/",{
         method: "GET",
         headers:{
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       })
+
+      console.log(response)
 
       if(!response.ok){
         throw new error("Error al captar al usuario")
@@ -42,7 +44,7 @@ export default function Navbar() {
 
   return (
     <nav className="bg-blue-600 p-4 flex items-center justify-between rounded-lg shadow-lg m-4">
-      <img src="/logo.png" title="Logo" className="h-10 w-10"></img>
+      <img src="/logo.png" title="Logo" className="h-10 w-10" onClick={() => (window.location.href = "/")}></img>
 
       <input type="checkbox" id="menu-toggle" className="hidden peer" />
 

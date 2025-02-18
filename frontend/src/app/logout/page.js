@@ -1,24 +1,32 @@
 "use client"
 
+import { useState } from "react";
 import { styles } from "../constants/theme";
 
 const LogOut = () => {
+    const [error, setError] = useState("");
 
     const handleLogOut = async(e) => {
-        const response = await fetch("http://localhost:3000/logout", {
-            method: "POST",
-            headers: {
-                "Content-Type":"application/json",
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
-            },
-            body: JSON.stringify()
-        })
+        setError("");
 
-        if (!response.ok){
-            throw new Error("Error al cerrar sesión")
-        } else {
-            localStorage.removeItem('token')
-            window.location.href = '/'
+        try{
+            const response = await fetch("http://localhost:3000/logout", {
+                method: "POST",
+                headers: {
+                    "Content-Type":"application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                }
+            })
+
+            if (!response.ok){
+                setError("Error al cerrar sesión")
+                return
+            } else {
+                localStorage.removeItem('token')
+                window.location.href = '/'
+            }
+        } catch (error){
+
         }
     }
 
