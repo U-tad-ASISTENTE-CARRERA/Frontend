@@ -1,296 +1,143 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { theme } from "../../../constants/theme";
-import moment from "moment";
 import "@fontsource/montserrat";
 import "../../../globals.css";
+import ProfileCompletionModal from "../../../components/ProfileCompletionModal";
 
-const Teacher = ({params}) => {
-    const { id } = React.use(params)
+const Teacher = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const params = useParams();
+    const id = params?.id;
 
-    const [firstName, setFirstName] = useState("")
-    const [lastName, setLastName] = useState("")
-    const [birthDate, setBirthDate] = useState("")
-    const [dni, setDni] = useState("")
-    const [specialization, setSpecialization] = useState("")
-
-    const [error, setError] = useState("")
-    const [loading, setLoading] = useState(true)
-    const [success, setSuccess] = useState(false)
-
-    const router = useRouter()
+    const [firstName, setFirstName] = useState(null);
+    const [lastName, setLastName] = useState(null);
+    const [birthDate, setBirthDate] = useState("SIN COMPLETAR");
+    const [dni, setDni] = useState("SIN COMPLETAR");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const [token, setToken] = useState(null);
 
     useEffect(() => {
-        const fetchData = async () => {
+        if (typeof window !== "undefined") {
+            let storedToken = localStorage.getItem("token");
 
-            setLoading(true)
-
-            try{
-                const response = await fetch("http://localhost:3000/metadata", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                })
-
-                if(!response.ok){
-                    throw new Error("Error al obtener metedatos del profesor")
+            if (!storedToken) {
+                const urlToken = searchParams.get("token");
+                if (urlToken) {
+                    localStorage.setItem("token", urlToken);
+                    storedToken = urlToken;
                 }
-
-                const data = await response.json()
-
-                setFirstName(data.metadata.firstName || "")
-                setLastName(data.metadata.lastName || "")
-                setBirthDate(data.metadata.birthDate ||"")
-                setDni(data.metadata.dni || "")
-                setSpecialization(data.metadata.specialization || "Sin especialización")
-
-            } catch (error){
-                setError(error.message)
-            } finally{
-                setLoading(false)
             }
+
+            setToken(storedToken);
         }
+    }, [searchParams]);
 
-        fetchData()
-    }, [id])
+    const fetchData = async () => {
+        if (!token || !id) return;
 
-    const dniRegex = (dni) => {
-        const dniPattern = /^\d{8}[A-Z]$/
-        return dniPattern.test(dni)
-    }
+        setLoading(true);
+        try {
+            const response = await fetch("http://localhost:3000/metadata", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-    const dateRegex = (dateString) => {
-        const datePattern = /^\d{4}-\d{2}-\d{2}$/
-        return (
-          datePattern.test(dateString) && !isNaN(new Date(dateString).getTime())
-        )
-    }
+            if (!response.ok) {
+                throw new Error("Error al obtener metadatos del profesor");
+            }
 
-    const handleSubmit = async (e) =>{
-        e.preventDefault()
+            const data = await response.json();
+            console.log("✅ Datos recibidos:", data);
 
-        if (!dniRegex(dni)) {
-            setError(
-              "El DNI debe tener el formato correcto (8 dígitos seguidos de una letra)."
-            )
-            return
+            setFirstName(data.metadata.firstName || null);
+            setLastName(data.metadata.lastName || null);
+            setBirthDate(data.metadata.birthDate || "SIN COMPLETAR");
+            setDni(data.metadata.dni || "SIN COMPLETAR");
+
+            if (!data.metadata.firstName || !data.metadata.lastName) {
+                setShowModal(true);
+            } else {
+                setShowModal(false);
+            }
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
-      
-        if (!dateRegex(birthDate)) {
-            setError(
-                "La fecha de nacimiento debe estar en el formato YYYY-MM-DD."
-            )
-            return
-        }
+    };
 
-        try{
+    useEffect(() => {
+        fetchData();
+    }, [token, id]);
+
+    const handleSave = async (newFirstName, newLastName) => {
+        try {
             const response = await fetch("http://localhost:3000/metadata", {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({firstName, lastName, birthDate, dni, specialization})
-            })
+                body: JSON.stringify({ firstName: newFirstName, lastName: newLastName }),
+            });
 
-            if (!response.ok){
-                throw new Error("Error al actualizar los metadatos del profesor")
+            if (!response.ok) {
+                throw new Error("Error al actualizar los datos");
             }
 
-            const data = await response.json()
-
-            console.log(data)
-
-            if(!response.ok){
-                const errorMessages = {
-                    NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido",
-                    INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
-                  }
-          
-                  setError(
-                    errorMessages[data?.error] || "Error al actualizar los metadatos"
-                  )
-                  return
-            }
-
-            setSuccess(true);
-            window.location.reload()
-        } catch (error){
-            console.error(error);
-            setError("Ha ocurrido un error inesperado");
+            setShowModal(false);
+            fetchData(); // 🔹 Volver a hacer `GET` para actualizar los datos en pantalla
+        } catch (error) {
+            setError("Error al guardar los cambios.");
         }
-    }
+    };
 
-    return(
+    return (
         <>
-        {loading ? (
-            <p>Cargando...</p>
-        ) : (
-            <div 
-                className="flex items-center justify-evenly min-h-screen"
-                style={{ backgroundColor: theme.palette.neutral.hex }}
-            >
-                <div className="w-full max-w-4xl ml-32 p-6 bg-white rounded-lg shadow-lg">
-                    <h2 
-                        className="text-xl font-bold text-center pb-4"
-                        style={{
-                            color: theme.palette.primary.hex,
-                            fontFamily: "Montserrat",
-                        }}
+            {/* Abrir modal para añadir el nombre y los apellidos si están vacíos */}
+            <ProfileCompletionModal isOpen={showModal} onSave={handleSave} token={token} />
+
+            {loading ? (
+                <p>Cargando...</p>
+            ) : (
+                <div className="flex flex-col items-start justify-start min-h-screen p-10">
+                    <h1 className="text-2xl font-bold mb-6" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
+                        Bienvenid@ {firstName || "Usuario"}
+                    </h1>
+
+                    <h2 className="text-xl font-semibold mb-4" style={{ color: theme.palette.dark.hex }}>Detalles del perfil</h2>
+                    <p style={{ color: theme.palette.text.hex }}><strong>Nombre:</strong> {firstName ?? "SIN COMPLETAR"}</p>
+                    <p style={{ color: theme.palette.text.hex }}><strong>Apellidos:</strong> {lastName ?? "SIN COMPLETAR"}</p>
+                    <p style={{ color: theme.palette.text.hex }}><strong>DNI:</strong> {dni || "SIN COMPLETAR"}</p>
+                    <p style={{ color: theme.palette.text.hex }}><strong>Fecha de nacimiento:</strong> {birthDate || "SIN COMPLETAR"}</p>
+
+                    <button
+                        onClick={() => router.push(`/profile/teacher/${id}/edit`)}
+                        className="mt-4 px-6 py-2 rounded-lg text-white"
+                        style={{ backgroundColor: theme.palette.primary.hex }}
                     >
-                        Mi panel : {id}
-                    </h2>
+                        Modificar
+                    </button>
 
-                    <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-3">
-                        {/* Sección de Información Personal */}
-                        <div className="m-8 space-y-3">
-                            <h2
-                                className="text-lg font-semibold mb-1"
-                                style={{ color: theme.palette.text.hex }}
-                            >
-                                Información Personal
-                            </h2>
+                    <h2 className="text-xl font-semibold mt-6" style={{ color: theme.palette.dark.hex }}>Alumnos tutelados</h2>
+                    {/* TODO: Añadir alumnos */}
 
-                            <input
-                                type="text"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                                placeholder="Nombre"
-                                className="block w-full mt-1 p-2 border border-gray-300"
-                                style={{
-                                    borderColor: theme.palette.light.hex,
-                                    color: theme.palette.text.hex,
-                                    fontFamily: "Montserrat, sans-serif",
-                                    borderRadius: theme.buttonRadios.m,
-                                }}
-                            />
-
-                            <input
-                                type="text"
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                                placeholder="Apellido"
-                                className="block w-full mt-1 p-2 border border-gray-300"
-                                style={{
-                                    borderColor: theme.palette.light.hex,
-                                    color: theme.palette.text.hex,
-                                    fontFamily: "Montserrat, sans-serif",
-                                    borderRadius: theme.buttonRadios.m,
-                                }}
-                            />
-
-                            <input
-                                type="date"
-                                value={moment(birthDate).format("YYYY-MM-DD")}
-                                onChange={(e) => setBirthDate(e.target.value)}
-                                className="block w-full mt-1 p-2 border border-gray-300"
-                                style={{
-                                    borderColor: theme.palette.light.hex,
-                                    color: theme.palette.text.hex,
-                                    fontFamily: "Montserrat, sans-serif",
-                                    borderRadius: theme.buttonRadios.m,
-                                }}
-                            />
-
-                            <input
-                                type="text"
-                                value={dni}
-                                onChange={(e) => setDni(e.target.value)}
-                                placeholder="DNI"
-                                className="block w-full mt-1 p-2 border border-gray-300"
-                                style={{
-                                    borderColor: theme.palette.light.hex,
-                                    color: theme.palette.text.hex,
-                                    fontFamily: "Montserrat, sans-serif",
-                                    borderRadius: theme.buttonRadios.m,
-                                }}
-                            />
-                        </div>
-
-                        {/* Sección de Especialización */}
-                        <div className="m-8 space-y-3">
-                            <h2
-                                className="text-lg font-semibold mb-1"
-                                style={{ color: theme.palette.text.hex }}
-                            >
-                                Especialización
-                            </h2>
-
-                            <input
-                                type="text"
-                                value={specialization}
-                                onChange={(e) => setSpecialization(e.target.value)}
-                                placeholder="Especialización"
-                                className="block w-full mt-1 p-2 border border-gray-300"
-                                style={{
-                                    borderColor: theme.palette.light.hex,
-                                    color: theme.palette.text.hex,
-                                    fontFamily: "Montserrat, sans-serif",
-                                    borderRadius: theme.buttonRadios.m,
-                                }}
-                            />
-                        </div>
-
-                        {/* Botón de Envío */}
-                        <div className="pt-8 pl-8 space-y-6">
-                            <button
-                                type="submit"
-                                className="w-full px-4 py-2 text-white rounded-md transition duration-200"
-                                style={{
-                                    backgroundColor: theme.palette.primary.hex,
-                                    borderRadius: theme.buttonRadios.m,
-                                    fontWeight: theme.fontWeight.bold,
-                                }}
-                            >
-                                Actualizar
-                            </button>
-                        
-                        {/* Mensajes de error y éxito */}
-                            {error && (
-                                <p className="text-red-500 text-sm text-center mt-2">
-                                    {error}
-                                </p>
-                            )}
-
-                            {success && (
-                                <p className="text-green-500 text-sm text-center mt-2">
-                                    Metadatos actualizados con éxito
-                                </p>
-                            )}
-                        </div>
-                    </form>
+                    {error && (
+                        <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+                    )}
                 </div>
-
-                <div className="w-full justify-end max-w-md p-8 bg-white rounded-lg shadow-lg mr-32">
-                    <h2
-                        className="text-2xl font-bold text-center pb-4 mb-6"
-                        style={{
-                            color: theme.palette.primary.hex,
-                            fontFamily: "Montserrat",
-                        }}
-                    >
-                        Información del Usuario
-                    </h2> 
-
-                    <h3
-                        className="text-xl font-semibold mb-2 mt-2"
-                        style={{ color: theme.palette.text.hex }}
-                    >
-                        Especialización
-                    </h3>
-
-                    <p style={{ color: theme.palette.light.hex }}>
-                        {specialization ? specialization : "Sin especialización"}
-                    </p>
-                </div>
-            </div>
-        )}
+            )}
         </>
-    )
-}
+    );
+};
 
 export default Teacher;
