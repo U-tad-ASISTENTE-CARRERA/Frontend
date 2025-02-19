@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { theme } from "../constants/theme";
+import { theme } from "../../constants/theme";
 import { useRouter } from "next/navigation";
 import "@fontsource/montserrat";
-import "../globals.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");

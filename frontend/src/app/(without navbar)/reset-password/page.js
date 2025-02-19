@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { theme } from "../constants/theme";
+import { theme } from "../../constants/theme";
 import "@fontsource/montserrat";
-import "../globals.css";
 
-const Register = () => {
+const Reset = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [seedWord, setSeedWord] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -17,6 +16,7 @@ const Register = () => {
   const validateForm = async (e) => {
     e.preventDefault();
     setError("");
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (
       !emailRegex.test(email) ||
@@ -27,7 +27,7 @@ const Register = () => {
     }
 
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
-    if (!passwordRegex.test(password)) {
+    if (!passwordRegex.test(newPassword)) {
       setError(
         "La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial."
       );
@@ -35,43 +35,34 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/register", {
-        method: "POST",
+      const response = await fetch("http://localhost:3000/updatePassword", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ email, password, seedWord }),
+        body: JSON.stringify({ email, newPassword, seedWord }),
       });
-
-      const data = await response.json();
-      console.log(data);
 
       if (!response.ok) {
         const errorMessages = {
-          USER_ALREADY_EXISTS: "Ya existe un usuario registrado con ese correo",
-          INVALID_EMAIL:
-            "El correo debe terminar en live.u-tad.com o u-tad.com",
+          USER_NOT_FOUND: "Usuario no encontrado",
+          INVALID_SEED_WORD: "La palabra clave introducida no es la correcta",
           INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
         };
 
-        setSuccess("");
         setError(errorMessages[data?.error] || "Error en el registro");
         return;
       }
 
-      if (data?.user?.id && data?.user?.role && localStorage.getItem("token")) {
-        if (data.user.role == "STUDENT") {
-          router.push(`/test/student/${data.user.id}`);
-        } else if (data.user.role == "TEACHER") {
-          router.push(`/test/teacher/${data.user.id}`);
-        }
-      }
+      const data = await response.json();
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       setSuccess(true);
+      console.log(data);
+      router.push("/login");
     } catch (error) {
-      console.error("Error en la conexión con el backend:", error);
-      setError("Ocurrió un error inesperado. Inténtalo de nuevo.");
+      setError(error.message);
     }
   };
 
@@ -89,12 +80,12 @@ const Register = () => {
               fontFamily: "Montserrat",
             }}
           >
-            Regístrate
+            Restablecer Contraseña
           </h2>
           <form className="space-y-6" onSubmit={validateForm}>
             <div>
               <input
-                type="email"
+                type="text"
                 id="email"
                 required
                 value={email}
@@ -112,12 +103,12 @@ const Register = () => {
             <div>
               <input
                 type="password"
-                id="password"
+                id="newPassword"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
-                placeholder="Contraseña"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="block w-full mt-1 p-3 border border-gray-300"
+                placeholder="Nueva contraseña"
                 style={{
                   borderColor: theme.palette.light.hex,
                   color: theme.palette.text.hex,
@@ -148,7 +139,7 @@ const Register = () => {
             )}
             {success && (
               <p className="text-green-500 text-sm text-center">
-                Registro exitoso. Ahora puedes iniciar sesión.
+                La contraseña ha sido restablecida
               </p>
             )}
             <button
@@ -159,21 +150,30 @@ const Register = () => {
                 borderRadius: theme.buttonRadios.m,
                 fontWeight: theme.fontWeight.bold,
               }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor = theme.palette.dark.hex)
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  theme.palette.primary.hex)
+              }
             >
-              Regístrate
+              Restablecer
             </button>
           </form>
           <p
             className="text-sm text-center mt-8"
             style={{ color: theme.palette.text.hex }}
           >
-            ¿Ya tienes una cuenta?{" "}
+            ¿No tienes una cuenta?{" "}
             <a
-              href="/login"
-              style={{ color: theme.palette.dark.hex }}
+              href="/register"
+              style={{
+                color: theme.palette.dark.hex,
+              }}
               className="hover:underline"
             >
-              Acceder
+              Regístrate
             </a>
           </p>
         </div>
@@ -182,4 +182,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Reset;

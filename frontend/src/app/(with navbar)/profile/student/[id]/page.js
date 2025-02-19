@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { theme } from "../../../constants/theme";
+import { theme } from "../../../../constants/theme";
 import "@fontsource/montserrat";
-import "../../../globals.css";
-import { useRouter } from "next/navigation";
 import moment from "moment";
+import ProfileCompletionModal from "../../../../components/ProfileCompletionModal";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 
 const Profile = ({ params }) => {
   const { id } = React.use(params);
@@ -13,6 +13,7 @@ const Profile = ({ params }) => {
   const [languages, setLanguages] = useState([]);
   const [specialization, setSpecialization] = useState("");
   const [firstName, setFirstName] = useState("");
+  const searchParams = useSearchParams();
   const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("2022-01-01");
   const [dni, setDni] = useState("");
@@ -25,45 +26,65 @@ const Profile = ({ params }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch("http://localhost:3000/metadata", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+    if (typeof window !== "undefined") {
+      let storedToken = localStorage.getItem("token");
 
-        if (!response.ok) {
-          throw new Error("Error en obteniendo los metadatos");
+      if (!storedToken) {
+        const urlToken = searchParams.get("token");
+        if (urlToken) {
+          localStorage.setItem("token", urlToken);
+          storedToken = urlToken;
         }
-        const data = await response.json();
-        setFirstName(data.metadata.firstName || "");
-        setLastName(data.metadata.lastName || "");
-        setBirthDate(data.metadata.birthDate || "");
-        setDni(data.metadata.dni || "");
-        setDegree(data.metadata.degree || "");
-        setLanguages(data.metadata.languages || []);
-        setSpecialization(
-          data.metadata.specialization || "Sin especialización"
-        );
-        setProgrammingLanguages(data.metadata.programmingLanguages || []);
-        setCertifications(data.metadata.certifications || []);
-        setWorkExperience(data.metadata.workExperience || []);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
       }
-    };
 
+      setToken(storedToken);
+    }
+  }, [searchParams]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3000/metadata", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error en obteniendo los metadatos");
+      }
+      const data = await response.json();
+      setFirstName(data.metadata.firstName || "");
+      setLastName(data.metadata.lastName || "");
+      setBirthDate(data.metadata.birthDate || "");
+      setDni(data.metadata.dni || "");
+      setDegree(data.metadata.degree || "");
+      setLanguages(data.metadata.languages || []);
+      setSpecialization(data.metadata.specialization || "Sin especialización");
+      setProgrammingLanguages(data.metadata.programmingLanguages || []);
+      setCertifications(data.metadata.certifications || []);
+      setWorkExperience(data.metadata.workExperience || []);
+
+      if (!data.metadata.firstName || !data.metadata.lastName) {
+        setShowModal(true);
+      } else {
+        setShowModal(false);
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
-  }, [id]);
+  }, [localStorage.getItem("token"), id]);
 
   const handleLanguageChange = (index, event) => {
     const { name, value } = event.target;
@@ -72,6 +93,31 @@ const Profile = ({ params }) => {
       newLanguages[index] = { ...newLanguages[index], [name]: value };
       return newLanguages;
     });
+  };
+
+  const handleSave = async (newFirstName, newLastName) => {
+    try {
+      const response = await fetch("http://localhost:3000/metadata", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          firstName: newFirstName,
+          lastName: newLastName,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al actualizar los datos");
+      }
+
+      setShowModal(false);
+      fetchData();
+    } catch (error) {
+      setError("Error al guardar los cambios.");
+    }
   };
 
   const getLangLevel = (level) => {
@@ -162,6 +208,12 @@ const Profile = ({ params }) => {
 
   return (
     <>
+      <ProfileCompletionModal
+        isOpen={showModal}
+        onSave={handleSave}
+        token={localStorage.getItem("token")}
+      />
+
       {loading ? (
         <p>Cargando...</p>
       ) : (
