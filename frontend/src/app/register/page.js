@@ -45,8 +45,6 @@ const Register = () => {
 
       const data = await response.json();
       console.log(data);
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
 
       if (!response.ok) {
         const errorMessages = {
@@ -63,11 +61,13 @@ const Register = () => {
 
       if (data?.user?.id && data?.user?.role && localStorage.getItem("token")) {
         if (data.user.role == "STUDENT") {
-          router.push(`/profile/student/${data.user.id}`);
+          router.push(`/test/student/${data.user.id}`);
         } else if (data.user.role == "TEACHER") {
-          router.push(`/profile/teacher/${data.user.id}`);
+          router.push(`/test/teacher/${data.user.id}`);
         }
       }
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       setSuccess(true);
     } catch (error) {
       console.error("Error en la conexión con el backend:", error);

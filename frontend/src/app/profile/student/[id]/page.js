@@ -139,9 +139,6 @@ const Profile = ({ params }) => {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Error al actualizar los metadatos");
-      }
       const data = await response.json();
       console.log(data);
       if (!response.ok) {
