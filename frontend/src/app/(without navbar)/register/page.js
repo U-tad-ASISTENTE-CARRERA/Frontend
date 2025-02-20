@@ -59,9 +59,12 @@ const Register = () => {
       }
 
       if (data?.user?.id && data?.user?.role && localStorage.getItem("token")) {
-        if (data.user.role == "STUDENT") {
+        if (data.user.role || localStorage.getItem("user").role == "STUDENT") {
           router.push(`/test/student/${data.user.id}`);
-        } else if (data.user.role == "TEACHER") {
+        } else if (
+          data.user.role ||
+          localStorage.getItem("user").role == "TEACHER"
+        ) {
           router.push(`/test/teacher/${data.user.id}`);
         }
       }

@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { theme } from "../../../../constants/theme";
 import "@fontsource/montserrat";
 import moment from "moment";
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
-const StudentTest = ({ params }) => {
-  const { id } = React.use(params);
+const StudentTest = () => {
   const [user, setUser] = useState({});
   const [languages, setLanguages] = useState([]);
   const [specialization, setSpecialization] = useState("");
@@ -19,6 +19,14 @@ const StudentTest = ({ params }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const params = useParams();
+  const id = params.id;
+
+  useEffect(() => {
+    if (JSON.parse(localStorage.getItem("user")).role == "TEACHER") {
+      router.push(`/test/teacher/${id}`);
+    }
+  }, []);
 
   const handleLanguageChange = (index, event) => {
     const { name, value } = event.target;
@@ -116,7 +124,7 @@ const StudentTest = ({ params }) => {
           ¡ Queremos saber más de tí !
         </h1>
         <div className="w-full max-w-4xl mt-10 p-6 bg-white rounded-lg shadow-xl transition-transform transform hover:-translate-y-2 hover:opacity-80 duration-300">
-          <form onSubmit={handleSubmit} className=" space-y-6 grid grid-cols-3">
+          <form onSubmit={handleSubmit} className=" space-y-6 grid grid-cols-2">
             {/* Sección de Información Personal */}
             <div className="m-8 space-y-3">
               <h2
@@ -247,29 +255,6 @@ const StudentTest = ({ params }) => {
                 Añadir idioma
               </button>
             </div>
-
-            {/* Sección de Especialización */}
-            <div className="m-8 space-y-3">
-              <h2
-                className="text-lg font-semibold mb-1"
-                style={{ color: theme.palette.text.hex }}
-              >
-                Especialización
-              </h2>
-              <input
-                type="text"
-                value={specialization}
-                onChange={(e) => setSpecialization(e.target.value)}
-                placeholder="Especialización"
-                className="block w-full mt-1 p-2 border border-gray-300"
-                style={{
-                  borderColor: theme.palette.light.hex,
-                  color: theme.palette.text.hex,
-                  fontFamily: "Montserrat, sans-serif",
-                  borderRadius: theme.buttonRadios.m,
-                }}
-              />
-            </div>
             <div className="pt-8 pl-8 space-y-6">
               <button
                 type="submit"
@@ -280,7 +265,7 @@ const StudentTest = ({ params }) => {
                   fontWeight: theme.fontWeight.bold,
                 }}
               >
-                Actualizar
+                Enviar y comenzar test
               </button>
 
               {/* Mensajes de error y éxito */}

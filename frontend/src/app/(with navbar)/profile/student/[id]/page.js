@@ -5,7 +5,12 @@ import { theme } from "../../../../constants/theme";
 import "@fontsource/montserrat";
 import moment from "moment";
 import ProfileCompletionModal from "../../../../components/ProfileCompletionModal";
-import { useRouter, useSearchParams, useParams } from "next/navigation";
+import {
+  useRouter,
+  useSearchParams,
+  useParams,
+  redirect,
+} from "next/navigation";
 
 const Profile = ({ params }) => {
   const { id } = React.use(params);
@@ -26,23 +31,7 @@ const Profile = ({ params }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      let storedToken = localStorage.getItem("token");
-
-      if (!storedToken) {
-        const urlToken = searchParams.get("token");
-        if (urlToken) {
-          localStorage.setItem("token", urlToken);
-          storedToken = urlToken;
-        }
-      }
-
-      setToken(storedToken);
-    }
-  }, [searchParams]);
+  const router = useRouter();
 
   const fetchData = async () => {
     setLoading(true);
@@ -69,12 +58,6 @@ const Profile = ({ params }) => {
       setProgrammingLanguages(data.metadata.programmingLanguages || []);
       setCertifications(data.metadata.certifications || []);
       setWorkExperience(data.metadata.workExperience || []);
-
-      if (!data.metadata.firstName || !data.metadata.lastName) {
-        setShowModal(true);
-      } else {
-        setShowModal(false);
-      }
     } catch (error) {
       setError(error.message);
     } finally {
@@ -84,7 +67,7 @@ const Profile = ({ params }) => {
 
   useEffect(() => {
     fetchData();
-  }, [localStorage.getItem("token"), id]);
+  }, []);
 
   const handleLanguageChange = (index, event) => {
     const { name, value } = event.target;
@@ -93,31 +76,6 @@ const Profile = ({ params }) => {
       newLanguages[index] = { ...newLanguages[index], [name]: value };
       return newLanguages;
     });
-  };
-
-  const handleSave = async (newFirstName, newLastName) => {
-    try {
-      const response = await fetch("http://localhost:3000/metadata", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          firstName: newFirstName,
-          lastName: newLastName,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al actualizar los datos");
-      }
-
-      setShowModal(false);
-      fetchData();
-    } catch (error) {
-      setError("Error al guardar los cambios.");
-    }
   };
 
   const getLangLevel = (level) => {
@@ -206,22 +164,36 @@ const Profile = ({ params }) => {
     }
   };
 
+  const handleRedirect = () => {
+    router.push(`/test/student/${id}`);
+  };
+
   return (
     <>
-      <ProfileCompletionModal
-        isOpen={showModal}
-        onSave={handleSave}
-        token={localStorage.getItem("token")}
-      />
-
-      {loading ? (
-        <p>Cargando...</p>
+      {firstName == "" && lastName == "" ? (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center w-96">
+            <h3
+              className="text-xl font-semibold mb-4"
+              style={{ color: theme.palette.text.hex }}
+            >
+              Necesitamos que antes completes tus datos básicos
+            </h3>
+            <button
+              onClick={handleRedirect}
+              className="mt-4 px-6 py-2 rounded-lg text-white w-full"
+              style={{ backgroundColor: theme.palette.complementary.hex }}
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
       ) : (
         <div
           className="flex items-center justify-evenly min-h-screen"
           style={{ backgroundColor: theme.palette.neutral.hex }}
         >
-          <div className="w-full max-w-4xl ml-32 p-6 bg-white rounded-lg shadow-lg">
+          <div className="w-full max-w-4xl ml-32 m-20 p-6 bg-white rounded-lg shadow-lg">
             <h2
               className="text-xl font-bold text-center pb-4"
               style={{
@@ -452,7 +424,7 @@ const Profile = ({ params }) => {
                   className="text-lg font-semibold mb-1"
                   style={{ color: theme.palette.text.hex }}
                 >
-                  Experiencia Laboral
+                  Experiencia
                 </h2>
                 <input
                   type="text"

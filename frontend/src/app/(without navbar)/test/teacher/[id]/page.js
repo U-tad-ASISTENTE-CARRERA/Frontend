@@ -4,10 +4,9 @@ import React, { useState, useEffect } from "react";
 import { theme } from "../../../../constants/theme";
 import "@fontsource/montserrat";
 import moment from "moment";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
-const StudentTest = ({ params }) => {
-  const { id } = React.use(params);
+const StudentTest = () => {
   const [specialization, setSpecialization] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -16,6 +15,13 @@ const StudentTest = ({ params }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const params = useParams();
+
+  useEffect(() => {
+    if (JSON.parse(localStorage.getItem("user")).role == "STUDENT") {
+      router.push(`/test/student/${params.id}`);
+    }
+  }, []);
 
   const dniRegex = (dni) => {
     const dniPattern = /^\d{8}[A-Z]$/;
@@ -98,7 +104,7 @@ const StudentTest = ({ params }) => {
           ¡ Queremos saber más de tí !
         </h1>
         <div className="w-full max-w-4xl mt-10 p-6 bg-white rounded-lg shadow-xl transition-transform transform hover:-translate-y-2 hover:opacity-80 duration-300">
-          <form onSubmit={handleSubmit} className=" space-y-6 grid grid-cols-3">
+          <form onSubmit={handleSubmit} className=" space-y-6 grid grid-cols-2">
             {/* Sección de Información Personal */}
             <div className="m-8 space-y-3">
               <h2
@@ -192,7 +198,7 @@ const StudentTest = ({ params }) => {
                   fontWeight: theme.fontWeight.bold,
                 }}
               >
-                Actualizar
+                Enviar
               </button>
 
               {/* Mensajes de error y éxito */}
