@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, use } from "react";
-import { theme } from "../../../../constants/theme";
+import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
 import moment from "moment";
 import { useRouter } from "next/navigation";

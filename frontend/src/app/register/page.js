@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { theme } from "../../constants/theme";
+import { theme } from "../constants/theme";
 import "@fontsource/montserrat";
 
 const Register = () => {
@@ -59,11 +59,14 @@ const Register = () => {
       }
 
       if (data?.user?.id && data?.user?.role && localStorage.getItem("token")) {
-        if (data.user.role || localStorage.getItem("user").role == "STUDENT") {
+        if (
+          data.user.role ||
+          JSON.parse(localStorage.getItem("user")).role == "STUDENT"
+        ) {
           router.push(`/test/student/${data.user.id}`);
         } else if (
           data.user.role ||
-          localStorage.getItem("user").role == "TEACHER"
+          JSON.parse(localStorage.getItem("user")).role == "TEACHER"
         ) {
           router.push(`/test/teacher/${data.user.id}`);
         }

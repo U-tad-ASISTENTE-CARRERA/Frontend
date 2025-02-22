@@ -11,6 +11,7 @@ import {
   useParams,
   redirect,
 } from "next/navigation";
+import ErrorPopUp from "../../../components/ErrorPopUp";
 
 const Profile = ({ params }) => {
   const { id } = React.use(params);
@@ -164,30 +165,13 @@ const Profile = ({ params }) => {
     }
   };
 
-  const handleRedirect = () => {
-    router.push(`/test/student/${id}`);
-  };
-
   return (
     <>
       {firstName == "" && lastName == "" ? (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center w-96">
-            <h3
-              className="text-xl font-semibold mb-4"
-              style={{ color: theme.palette.text.hex }}
-            >
-              Necesitamos que antes completes tus datos básicos
-            </h3>
-            <button
-              onClick={handleRedirect}
-              className="mt-4 px-6 py-2 rounded-lg text-white w-full"
-              style={{ backgroundColor: theme.palette.complementary.hex }}
-            >
-              Aceptar
-            </button>
-          </div>
-        </div>
+        <ErrorPopUp
+          message={"Debes completar tus datos básicos"}
+          path={`/test/student/${id}`}
+        />
       ) : (
         <div
           className="flex items-center justify-evenly min-h-screen"
