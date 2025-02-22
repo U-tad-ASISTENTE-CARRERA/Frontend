@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { theme } from "../../../../constants/theme";
+import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
 import moment from "moment";
-import ProfileCompletionModal from "../../../../components/ProfileCompletionModal";
+import ProfileCompletionModal from "../../../components/ProfileCompletionModal";
 import {
   useRouter,
   useSearchParams,

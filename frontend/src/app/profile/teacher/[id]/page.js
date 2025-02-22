@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
-import { theme } from "../../../../constants/theme";
+import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
-import ProfileCompletionModal from "../../../../components/ProfileCompletionModal";
+import ProfileCompletionModal from "../../../components/ProfileCompletionModal";
 
 const Teacher = () => {
   const router = useRouter();
