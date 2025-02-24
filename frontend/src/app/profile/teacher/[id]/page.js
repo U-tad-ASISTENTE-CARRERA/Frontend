@@ -5,6 +5,7 @@ import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
 import ProfileCompletionModal from "../../../components/ProfileCompletionModal";
+import ErrorPopUp from "../../../components/ErrorPopUp";
 
 const Teacher = () => {
   const router = useRouter();
@@ -12,8 +13,8 @@ const Teacher = () => {
   const params = useParams();
   const id = params?.id;
 
-  const [firstName, setFirstName] = useState(null);
-  const [lastName, setLastName] = useState(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("SIN COMPLETAR");
   const [dni, setDni] = useState("SIN COMPLETAR");
   const [loading, setLoading] = useState(true);
@@ -76,8 +77,9 @@ const Teacher = () => {
 
   useEffect(() => {
     fetchData();
-  }, [token, id]);
+  }, []);
 
+  //Ya no es necesaria
   const handleSave = async (newFirstName, newLastName) => {
     try {
       const response = await fetch("http://localhost:3000/metadata", {
@@ -105,15 +107,11 @@ const Teacher = () => {
 
   return (
     <>
-      {/* Abrir modal para añadir el nombre y los apellidos si están vacíos */}
-      <ProfileCompletionModal
-        isOpen={showModal}
-        onSave={handleSave}
-        token={token}
-      />
-
-      {loading ? (
-        <p>Cargando...</p>
+      {firstName == "" && lastName == "" ? (
+        <ErrorPopUp
+          message={"Debes completar tus datos básicos"}
+          path={`/data_complete/student/${id}`}
+        />
       ) : (
         <div className="flex flex-col items-start justify-start min-h-screen p-10">
           <h1

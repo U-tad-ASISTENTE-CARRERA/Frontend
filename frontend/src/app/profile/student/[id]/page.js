@@ -170,7 +170,7 @@ const Profile = ({ params }) => {
       {firstName == "" && lastName == "" ? (
         <ErrorPopUp
           message={"Debes completar tus datos básicos"}
-          path={`/test/student/${id}`}
+          path={`/data_complete/student/${id}`}
         />
       ) : (
         <div
@@ -430,7 +430,7 @@ const Profile = ({ params }) => {
               </div>
 
               {/* Botón de Envío */}
-              <div className="pt-8 pl-8 space-y-6">
+              <div className="pt-8 pl-8 pb-8 space-y-6">
                 <button
                   type="submit"
                   className="w-full px-4 py-2 text-white rounded-md transition duration-200"

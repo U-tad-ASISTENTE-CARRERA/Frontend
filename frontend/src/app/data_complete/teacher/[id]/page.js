@@ -19,9 +19,9 @@ const StudentTest = () => {
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("user")).role == "STUDENT") {
-      router.push(`/test/student/${params.id}`);
+      router.push(`/data_complete/student/${params.id}`);
     }
-  }, []);
+  });
 
   const dniRegex = (dni) => {
     const dniPattern = /^\d{8}[A-Z]$/;
@@ -103,7 +103,7 @@ const StudentTest = () => {
         >
           ¡ Queremos saber más de tí !
         </h1>
-        <div className="w-full max-w-4xl mt-10 p-6 bg-white rounded-lg shadow-xl transition-transform transform hover:-translate-y-2 hover:opacity-80 duration-300">
+        <div className="w-full max-w-4xl m-10 p-6 bg-white rounded-lg shadow-xl transition-transform transform hover:-translate-y-2 hover:opacity-80 duration-300">
           <form onSubmit={handleSubmit} className=" space-y-6 grid grid-cols-2">
             {/* Sección de Información Personal */}
             <div className="m-8 space-y-3">
@@ -139,6 +139,9 @@ const StudentTest = () => {
                   borderRadius: theme.buttonRadios.m,
                 }}
               />
+              <label className="block text-sm font-medium text-gray-700">
+                Fecha de nacimiento
+              </label>
               <input
                 type="date"
                 value={moment(birthDate).format("YYYY-MM-DD")}
@@ -188,7 +191,7 @@ const StudentTest = () => {
                 }}
               />
             </div>
-            <div className="pt-8 pl-8 space-y-6">
+            <div className="pt-8 pl-8 pb-8 space-y-6">
               <button
                 type="submit"
                 className="w-full px-4 py-2 text-white rounded-md transition duration-200"

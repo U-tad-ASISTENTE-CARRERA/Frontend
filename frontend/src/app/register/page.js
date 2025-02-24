@@ -58,12 +58,20 @@ const Register = () => {
         return;
       }
 
-      if (data?.user?.id && data?.user?.role && localStorage.getItem("token")) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      if (
+        data?.user?.id &&
+        data?.user?.role &&
+        localStorage.getItem("token") &&
+        localStorage.getItem("user")
+      ) {
         if (
           data.user.role ||
           JSON.parse(localStorage.getItem("user")).role == "STUDENT"
         ) {
-          router.push(`/test/student/${data.user.id}`);
+          router.push(`/data_complete/student/${data.user.id}`);
         } else if (
           data.user.role ||
           JSON.parse(localStorage.getItem("user")).role == "TEACHER"
@@ -71,8 +79,6 @@ const Register = () => {
           router.push(`/test/teacher/${data.user.id}`);
         }
       }
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
       setSuccess(true);
     } catch (error) {
       console.error("Error en la conexión con el backend:", error);
@@ -104,7 +110,7 @@ const Register = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300"
+                className="block w-full mt-1 p-3 border border-gray-300 focus:ring focus:ring-blue-500"
                 placeholder="tuemail@live.u-tad.com"
                 style={{
                   borderColor: theme.palette.light.hex,
@@ -121,7 +127,7 @@ const Register = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
+                className="block w-full mt-1 p-3 border border-gray-300 focus:ring focus:ring-blue-500"
                 placeholder="Contraseña"
                 style={{
                   borderColor: theme.palette.light.hex,
@@ -138,7 +144,7 @@ const Register = () => {
                 required
                 value={seedWord}
                 onChange={(e) => setSeedWord(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
+                className="block w-full mt-1 p-3 border border-gray-300 focus:ring focus:ring-blue-500"
                 placeholder="Palabra clave"
                 style={{
                   borderColor: theme.palette.light.hex,

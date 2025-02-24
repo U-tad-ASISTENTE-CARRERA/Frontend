@@ -1,3 +1,4 @@
+/*
 // Modal para solicitar nombre y apellidos al profesor
 
 "use client";
@@ -80,4 +81,4 @@ const ProfileCompletionModal = ({ isOpen, onSave, token }) => {
     );
 };
 
-export default ProfileCompletionModal;
+export default ProfileCompletionModal;*/
