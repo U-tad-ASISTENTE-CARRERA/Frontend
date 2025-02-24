@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 const Home = (params) => {
   return (
-    <h1 className="text-3xl font-bold text-center">
+    <h1 className="text-3xl font-bold text-center" style={{ color: "black" }}>
       Página del usuario por id
     </h1>
   );

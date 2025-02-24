@@ -3,36 +3,54 @@
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
-import moment from "moment";
 import { useRouter, useParams } from "next/navigation";
 
-const StudentTest = () => {
+const TeacherDataComplete = () => {
   const [specialization, setSpecialization] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [birthDate, setBirthDate] = useState("2022-01-01");
   const [dni, setDni] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
   const params = useParams();
 
+  const fetchData = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/metadata", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!response.ok) {
+        setError("Error en obteniendo los metadatos");
+      } else {
+        const data = await response.json();
+
+        setSpecialization(data.specialization || "");
+        setFirstName(data.firstName || "");
+        setLastName(data.lastName || "");
+        setDni(data.dni || "");
+      }
+    } catch (error) {
+      setError("Error en obteniendo los metadatos");
+    }
+  };
+
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("user")).role == "STUDENT") {
       router.push(`/data_complete/student/${params.id}`);
+    } else {
+      fetchData();
     }
-  });
+  }, []);
 
   const dniRegex = (dni) => {
     const dniPattern = /^\d{8}[A-Z]$/;
     return dniPattern.test(dni);
-  };
-
-  const dateRegex = (dateString) => {
-    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-    return (
-      datePattern.test(dateString) && !isNaN(new Date(dateString).getTime())
-    );
   };
 
   const handleSubmit = async (event) => {
@@ -42,11 +60,6 @@ const StudentTest = () => {
       setError(
         "El DNI debe tener el formato correcto (8 dígitos seguidos de una letra)."
       );
-      return;
-    }
-
-    if (!dateRegex(birthDate)) {
-      setError("La fecha de nacimiento debe estar en el formato YYYY-MM-DD.");
       return;
     }
 
@@ -60,7 +73,6 @@ const StudentTest = () => {
         body: JSON.stringify({
           firstName,
           lastName,
-          birthDate,
           dni,
           specialization,
         }),
@@ -81,7 +93,7 @@ const StudentTest = () => {
         return;
       }
       setSuccess(true);
-      router.push(`/home/${id}`);
+      router.push(`/home/${params.id}`);
     } catch (error) {
       console.error(error);
       setError("Ha ocurrido un error inesperado");
@@ -131,21 +143,6 @@ const StudentTest = () => {
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Apellido"
-                className="block w-full mt-1 p-2 border border-gray-300"
-                style={{
-                  borderColor: theme.palette.light.hex,
-                  color: theme.palette.text.hex,
-                  fontFamily: "Montserrat, sans-serif",
-                  borderRadius: theme.buttonRadios.m,
-                }}
-              />
-              <label className="block text-sm font-medium text-gray-700">
-                Fecha de nacimiento
-              </label>
-              <input
-                type="date"
-                value={moment(birthDate).format("YYYY-MM-DD")}
-                onChange={(e) => setBirthDate(e.target.value)}
                 className="block w-full mt-1 p-2 border border-gray-300"
                 style={{
                   borderColor: theme.palette.light.hex,
@@ -221,4 +218,4 @@ const StudentTest = () => {
   );
 };
 
-export default StudentTest;
+export default TeacherDataComplete;

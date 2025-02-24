@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { theme } from "../../constants/theme";
 import "@fontsource/montserrat";
 import ErrorPopUp from "../../components/ErrorPopUp";
@@ -12,10 +12,14 @@ const RoadmapGuide = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const params = useParams();
+  const router = useRouter();
   const [user, setUser] = useState({});
 
   useEffect(() => {
-    if (JSON.parse(localStorage.getItem("user"))) {
+    if (
+      JSON.parse(localStorage.getItem("user")) &&
+      localStorage.getItem("token")
+    ) {
       setUser(JSON.parse(localStorage.getItem("user")));
       console.log(user, "Usuario: ");
       if (user.role === "TEACHER") {
@@ -25,7 +29,53 @@ const RoadmapGuide = () => {
             path={`/home/${params.id}`}
           />
         );
+      } else {
+        //Asignamos de momento solo la especialización de Analista de datos.
+        const errorMessages = {
+          NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido",
+          INVALID_USER_ID: "El usuario no existe",
+          INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
+        };
+
+        try {
+          fetch("http://localhost:3000/metadata", {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ specialization: "Analista de datos" }),
+          })
+            .then((response) => {
+              if (response.ok) {
+                setSuccess("Especialización actualizada correctamente.");
+                router.push(`/home/${params.id}`);
+              } else {
+                setError(
+                  errorMessages[error] ||
+                    "Error al actualizar la especialización."
+                );
+              }
+            })
+            .catch((error) => {
+              setError(
+                errorMessages[error] ||
+                  "Error al actualizar la especialización."
+              );
+            });
+        } catch (error) {
+          setError(
+            errorMessages[error] || "Error al actualizar la especialización."
+          );
+        }
       }
+    } else {
+      return (
+        <ErrorPopUp
+          message={"Debes iniciar sesión para ver esta página."}
+          path={`/login`}
+        />
+      );
     }
   }, [params.id, user]);
 

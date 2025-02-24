@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
-import ProfileCompletionModal from "../../../components/ProfileCompletionModal";
 import ErrorPopUp from "../../../components/ErrorPopUp";
 
 const Teacher = () => {
@@ -13,14 +12,13 @@ const Teacher = () => {
   const params = useParams();
   const id = params?.id;
 
+  // Estados inicializados con valores por defecto
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("SIN COMPLETAR");
   const [dni, setDni] = useState("SIN COMPLETAR");
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -40,8 +38,6 @@ const Teacher = () => {
 
   const fetchData = async () => {
     if (!token || !id) return;
-
-    setLoading(true);
     try {
       const response = await fetch("http://localhost:3000/metadata", {
         method: "GET",
@@ -58,59 +54,32 @@ const Teacher = () => {
       const data = await response.json();
       console.log("✅ Datos recibidos:", data);
 
-      setFirstName(data.metadata.firstName || null);
-      setLastName(data.metadata.lastName || null);
-      setBirthDate(data.metadata.birthDate || "SIN COMPLETAR");
-      setDni(data.metadata.dni || "SIN COMPLETAR");
+      // Asegúrate de que los valores nunca sean undefined o null
+      setFirstName(data.metadata.firstName || "");
+      setLastName(data.metadata.lastName || "");
+      setBirthDate(data.metadata.birthDate || "");
+      setDni(data.metadata.dni || "");
 
-      if (!data.metadata.firstName || !data.metadata.lastName) {
+      /*if (!data.metadata.firstName || !data.metadata.lastName) {
         setShowModal(true);
       } else {
         setShowModal(false);
-      }
+      }*/
     } catch (error) {
       setError(error.message);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
-
-  //Ya no es necesaria
-  const handleSave = async (newFirstName, newLastName) => {
-    try {
-      const response = await fetch("http://localhost:3000/metadata", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          firstName: newFirstName,
-          lastName: newLastName,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al actualizar los datos");
-      }
-
-      setShowModal(false);
-      fetchData(); // 🔹 Volver a hacer `GET` para actualizar los datos en pantalla
-    } catch (error) {
-      setError("Error al guardar los cambios.");
-    }
-  };
+  }, [token, id]); // Añade token e id como dependencias
 
   return (
     <>
-      {firstName == "" && lastName == "" ? (
+      {firstName === "" && lastName === "" ? (
         <ErrorPopUp
           message={"Debes completar tus datos básicos"}
-          path={`/data_complete/student/${id}`}
+          path={`/data_complete/teacher/${id}`}
         />
       ) : (
         <div className="flex flex-col items-start justify-start min-h-screen p-10">
@@ -131,16 +100,16 @@ const Teacher = () => {
             Detalles del perfil
           </h2>
           <p style={{ color: theme.palette.text.hex }}>
-            <strong>Nombre:</strong> {firstName ?? "SIN COMPLETAR"}
+            <strong>Nombre:</strong> {firstName}
           </p>
           <p style={{ color: theme.palette.text.hex }}>
-            <strong>Apellidos:</strong> {lastName ?? "SIN COMPLETAR"}
+            <strong>Apellidos:</strong> {lastName}
           </p>
           <p style={{ color: theme.palette.text.hex }}>
-            <strong>DNI:</strong> {dni || "SIN COMPLETAR"}
+            <strong>DNI:</strong> {dni}
           </p>
           <p style={{ color: theme.palette.text.hex }}>
-            <strong>Fecha de nacimiento:</strong> {birthDate || "SIN COMPLETAR"}
+            <strong>Fecha de nacimiento:</strong> {birthDate}
           </p>
 
           <button

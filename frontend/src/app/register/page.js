@@ -76,7 +76,7 @@ const Register = () => {
           data.user.role ||
           JSON.parse(localStorage.getItem("user")).role == "TEACHER"
         ) {
-          router.push(`/test/teacher/${data.user.id}`);
+          router.push(`/data_complete/teacher/${data.user.id}`);
         }
       }
       setSuccess(true);

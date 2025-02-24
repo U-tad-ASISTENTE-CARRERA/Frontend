@@ -36,7 +36,7 @@ const Profile = ({ params }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const [activeSection, setActiveSection] = useState("personal")
+  const [activeSection, setActiveSection] = useState("personal");
 
   const fetchData = async () => {
     setLoading(true);
@@ -164,85 +164,80 @@ const Profile = ({ params }) => {
 
   /* Función que permite cambier el estado de la información que queremos mostrar por pantallas*/
   const handleInformation = (info) => {
-    setActiveSection()
-  }
+    setActiveSection();
+  };
 
   return (
     <>
-      <div 
-          className="flex items-center justify-evenly min-h-screen"
-          style={{ backgroundColor: theme.palette.neutral.hex }}
+      <div
+        className="flex items-center justify-evenly min-h-screen"
+        style={{ backgroundColor: theme.palette.neutral.hex }}
       >
         <div className="w-full max-w-8xl ml-32 m-20 p-6 bg-white rounded-lg shadow-lg grid grid-cols-5 gap-3">
-            {/* Botones para cambiar la información */}
-            <div className="bg-gray-200 p-2 mt-2 shadow-md grid grid-cols-1">
-              <button 
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold" 
-                style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("personal")}
-              >
-                Información Personal
-              </button>
+          {/* Botones para cambiar la información */}
+          <div className="bg-gray-200 p-2 mt-2 shadow-md grid grid-cols-1">
+            <button
+              className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+              style={{ color: theme.palette.text.hex }}
+              onClick={handleInformation("personal")}
+            >
+              Información Personal
+            </button>
 
-              <button 
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold" 
-                style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("languages")}
-              >
-                Idiomas
-              </button>
+            <button
+              className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+              style={{ color: theme.palette.text.hex }}
+              onClick={handleInformation("languages")}
+            >
+              Idiomas
+            </button>
 
-              <button 
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold" 
-                style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("programming")}
-              >
-                Lenguajes de Programación
-              </button>
+            <button
+              className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+              style={{ color: theme.palette.text.hex }}
+              onClick={handleInformation("programming")}
+            >
+              Lenguajes de Programación
+            </button>
 
-              <button 
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold" 
-                style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("certifications")}
-              >
-                Certificaciones
-              </button> 
+            <button
+              className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+              style={{ color: theme.palette.text.hex }}
+              onClick={handleInformation("certifications")}
+            >
+              Certificaciones
+            </button>
 
-              <button
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold" 
-                style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("academic")}
-              >
-                Expediente Académico
-              </button> 
+            <button
+              className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+              style={{ color: theme.palette.text.hex }}
+              onClick={handleInformation("academic")}
+            >
+              Expediente Académico
+            </button>
 
-              <button 
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold" 
-                style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("employee")}
-              >
-                Experiencias Laborales  
-              </button>
+            <button
+              className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+              style={{ color: theme.palette.text.hex }}
+              onClick={handleInformation("employee")}
+            >
+              Experiencias Laborales
+            </button>
+          </div>
 
-            </div>
-
-            {/* Información variable */}
-            <div  className="bg-gray-200 p-2 mt-2 shadow-md col-span-4">
-              { section.personal && (
-                <div>
-                  <p>
-                    prueba personal
-                  </p>
-                </div>
-              )}
-              { section.programming && (
-                <div>
-                  <p>
-                    prueba programming
-                  </p>
-                </div>
-              )}
-            </div>
+          {/* Información variable */}
+          <div className="bg-gray-200 p-2 mt-2 shadow-md col-span-4">
+            {section.personal && (
+              <div>
+                <p>prueba personal</p>
+              </div>
+            )}
+            {section.programming && (
+              <div>
+                <p>prueba programming</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

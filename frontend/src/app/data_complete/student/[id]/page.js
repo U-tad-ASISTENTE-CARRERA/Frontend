@@ -23,9 +23,38 @@ const StudentTest = () => {
   const params = useParams();
   const id = params.id;
 
+  const fetchData = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/metadata", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!response.ok) {
+        setError("Error en obteniendo los metadatos");
+      }
+      const data = await response.json();
+      setFirstName(data.metadata.firstName || "");
+      setLastName(data.metadata.lastName || "");
+      setDni(data.metadata.dni || "");
+      setDegree(data.metadata.degree || "");
+      setGender(data.metadata.gender || "");
+      setInstitution(data.metadata.institution || "");
+      setLanguages(data.metadata.languages || []);
+      setEndDate(data.metadata.endDate || "2022-01-01");
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("user")).role == "TEACHER") {
       router.push(`/data_complete/teacher/${id}`);
+    } else {
+      fetchData();
     }
   });
 
