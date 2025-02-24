@@ -227,12 +227,12 @@ const Profile = ({ params }) => {
 
           {/* Información variable */}
           <div className="bg-gray-200 p-2 mt-2 shadow-md col-span-4">
-            {section.personal && (
+            {(activeSection == "personal") && (
               <div>
                 <p>prueba personal</p>
               </div>
             )}
-            {section.programming && (
+            {(activeSection == "programming") && (
               <div>
                 <p>prueba programming</p>
               </div>
