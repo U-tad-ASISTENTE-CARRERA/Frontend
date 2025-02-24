@@ -38,7 +38,7 @@ const RoadmapGuide = () => {
         />
       );
     }
-  }, [params.id, user]);
+  }, [params.id, user, setUser]);
 
   const questions = [
     "¿Cuánto te apasiona trabajar con datos y descubrir patrones ocultos?",
