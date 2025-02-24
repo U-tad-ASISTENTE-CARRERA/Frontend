@@ -56,7 +56,7 @@ const StudentTest = () => {
     } else {
       fetchData();
     }
-  });
+  }, []);
 
   const handleLanguageChange = (index, event) => {
     const { name, value } = event.target;

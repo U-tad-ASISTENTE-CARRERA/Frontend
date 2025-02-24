@@ -76,7 +76,7 @@ const Teacher = () => {
 
   return (
     <>
-      {firstName === "" && lastName === "" ? (
+      {firstName === "" || lastName === "" ? (
         <ErrorPopUp
           message={"Debes completar tus datos básicos"}
           path={`/data_complete/teacher/${id}`}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { theme } from "../../constants/theme";
 import "@fontsource/montserrat";
@@ -29,45 +29,6 @@ const RoadmapGuide = () => {
             path={`/home/${params.id}`}
           />
         );
-      } else {
-        //Asignamos de momento solo la especialización de Analista de datos.
-        const errorMessages = {
-          NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido",
-          INVALID_USER_ID: "El usuario no existe",
-          INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
-        };
-
-        try {
-          fetch("http://localhost:3000/metadata", {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify({ specialization: "Analista de datos" }),
-          })
-            .then((response) => {
-              if (response.ok) {
-                setSuccess("Especialización actualizada correctamente.");
-                router.push(`/home/${params.id}`);
-              } else {
-                setError(
-                  errorMessages[error] ||
-                    "Error al actualizar la especialización."
-                );
-              }
-            })
-            .catch((error) => {
-              setError(
-                errorMessages[error] ||
-                  "Error al actualizar la especialización."
-              );
-            });
-        } catch (error) {
-          setError(
-            errorMessages[error] || "Error al actualizar la especialización."
-          );
-        }
       }
     } else {
       return (
@@ -105,9 +66,40 @@ const RoadmapGuide = () => {
       setCurrentQuestion(currentQuestion - 1);
     }
   };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("Todas las preguntas han sido respondidas:", answers);
+    try {
+      const response = await fetch("http://localhost:3000/metadata", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          specialization: "Data Analyst",
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (!response.ok) {
+        const errorMessages = {
+          NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido",
+          INVALID_USER_ID: "El usuario no existe",
+          INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
+        };
+
+        setError(
+          errorMessages[data?.error] || "Error al actualizar los metadatos"
+        );
+        return;
+      }
+      setSuccess(true);
+      router.push(`/home/${id}`);
+    } catch (error) {
+      console.error(error);
+      setError("Ha ocurrido un error inesperado");
+    }
   };
 
   return (
