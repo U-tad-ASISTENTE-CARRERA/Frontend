@@ -164,7 +164,7 @@ const Profile = ({ params }) => {
 
   /* Función que permite cambier el estado de la información que queremos mostrar por pantallas*/
   const handleInformation = (info) => {
-    setActiveSection();
+    setActiveSection(info);
   };
 
   return (
@@ -185,7 +185,7 @@ const Profile = ({ params }) => {
               <button
                 className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("personal")}
+                onClick={() => handleInformation("personal")}
               >
                 Información Personal
               </button>
@@ -193,7 +193,7 @@ const Profile = ({ params }) => {
               <button
                 className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("languages")}
+                onClick={() => handleInformation("languages")}
               >
                 Idiomas
               </button>
@@ -201,7 +201,7 @@ const Profile = ({ params }) => {
               <button
                 className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("programming")}
+                onClick={() => handleInformation("programming")}
               >
                 Lenguajes de Programación
               </button>
@@ -209,7 +209,7 @@ const Profile = ({ params }) => {
               <button
                 className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("certifications")}
+                onClick={() => handleInformation("certifications")}
               >
                 Certificaciones
               </button>
@@ -217,7 +217,7 @@ const Profile = ({ params }) => {
               <button
                 className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("academic")}
+                onClick={() => handleInformation("academic")}
               >
                 Expediente Académico
               </button>
@@ -225,7 +225,7 @@ const Profile = ({ params }) => {
               <button
                 className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
-                onClick={handleInformation("employee")}
+                onClick={() => handleInformation("employee")}
               >
                 Experiencias Laborales
               </button>
@@ -233,16 +233,88 @@ const Profile = ({ params }) => {
 
             {/* Información variable */}
             <div className="bg-gray-200 p-2 mt-2 shadow-md col-span-4">
-              {activeSection == "personal" && (
-                <div>
-                  <p>prueba personal</p>
-                </div>
+              {activeSection === "personal" && (
+                <form 
+                  onSubmit={handleSubmit}
+                  className="grid grid-cols-2 gap-4"  
+                >
+                  <div>
+                    <label>Nombre</label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label>Apellido</label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label>DNI</label>
+                    <input
+                      type="text"
+                      name="dni"
+                      value={dni}
+                      onChange={(e) => setDni(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label>Grado</label>
+                    <input
+                      type="text"
+                      name="degree"
+                      value={degree}
+                      onChange={(e) => setDegree(e.target.value)}
+                    />
+                  </div>
+                  <button type="submit">Guardar</button>
+                </form>
               )}
-              {activeSection == "programming" && (
-                <div>
-                  <p>prueba programming</p>
-                </div>
+              {activeSection === "languages" && (
+                <form onSubmit={handleSubmit}>
+                  {languages.map((lang, index) => (
+                    <div key={index}>
+                      <label>Idioma</label>
+                      <input
+                        type="text"
+                        name={`language-${index}`}
+                        value={lang.language}
+                        onChange={(e) => {
+                          const newLanguages = [...languages];
+                          newLanguages[index].language = e.target.value;
+                          setLanguages(newLanguages);
+                        }}
+                      />
+                      <label>Nivel</label>
+                      <select
+                        name={`level-${index}`}
+                        value={lang.level}
+                        onChange={(e) => {
+                          const newLanguages = [...languages];
+                          newLanguages[index].level = e.target.value;
+                          setLanguages(newLanguages);
+                        }}
+                      >
+                        <option value="low">Básico</option>
+                        <option value="medium">Intermedio</option>
+                        <option value="high">Avanzado</option>
+                      </select>
+                    </div>
+                  ))}
+                  <button type="button" onClick={addLanguage}>
+                    Añadir Idioma
+                  </button>
+                  <button type="submit">Guardar</button>
+                </form>
               )}
+              {/* Add similar forms for other sections */}
             </div>
           </div>
         </div>
