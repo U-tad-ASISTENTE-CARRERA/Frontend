@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { styles } from "../../constants/theme";
+import { styles } from "../constants/theme";
 
 const LogOut = () => {
   const [error, setError] = useState("");
