@@ -164,7 +164,7 @@ const Profile = ({ params }) => {
 
   /* Función que permite cambier el estado de la información que queremos mostrar por pantallas*/
   const handleInformation = (info) => {
-    setActiveSection(info)
+    setActiveSection()
   }
 
   return (
@@ -228,14 +228,14 @@ const Profile = ({ params }) => {
 
             {/* Información variable */}
             <div  className="bg-gray-200 p-2 mt-2 shadow-md col-span-4">
-              { activeSection == "personal" && (
+              { section.personal && (
                 <div>
                   <p>
                     prueba personal
                   </p>
                 </div>
               )}
-              { activeSection == "programming" && (
+              { section.programming && (
                 <div>
                   <p>
                     prueba programming

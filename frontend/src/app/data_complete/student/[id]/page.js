@@ -10,12 +10,13 @@ import { useParams } from "next/navigation";
 const StudentTest = () => {
   const [user, setUser] = useState({});
   const [languages, setLanguages] = useState([]);
-  const [specialization, setSpecialization] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [birthDate, setBirthDate] = useState("2022-01-01");
   const [dni, setDni] = useState("");
   const [degree, setDegree] = useState("");
+  const [gender, setGender] = useState("");
+  const [institution, setInstitution] = useState("");
+  const [endDate, setEndDate] = useState("2022-01-01");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
@@ -24,9 +25,9 @@ const StudentTest = () => {
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("user")).role == "TEACHER") {
-      router.push(`/test/teacher/${id}`);
+      router.push(`/data_complete/teacher/${id}`);
     }
-  }, []);
+  });
 
   const handleLanguageChange = (index, event) => {
     const { name, value } = event.target;
@@ -63,7 +64,7 @@ const StudentTest = () => {
       return;
     }
 
-    if (!dateRegex(birthDate)) {
+    if (!dateRegex(endDate)) {
       setError("La fecha de nacimiento debe estar en el formato YYYY-MM-DD.");
       return;
     }
@@ -78,11 +79,12 @@ const StudentTest = () => {
         body: JSON.stringify({
           firstName,
           lastName,
-          birthDate,
+          endDate,
           dni,
           degree,
           languages,
-          specialization,
+          gender,
+          institution,
         }),
       });
 
@@ -101,7 +103,7 @@ const StudentTest = () => {
         return;
       }
       setSuccess(true);
-      router.push(`/home/${id}`);
+      router.push(`/roadmap_guide/${id}`);
     } catch (error) {
       console.error(error);
       setError("Ha ocurrido un error inesperado");
@@ -133,12 +135,14 @@ const StudentTest = () => {
               >
                 Información Personal
               </h2>
+
               <input
                 type="text"
+                required
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="Nombre"
-                className="block w-full mt-1 p-2 border border-gray-300"
+                className="block w-full mt-1 p-2 border"
                 style={{
                   borderColor: theme.palette.light.hex,
                   color: theme.palette.text.hex,
@@ -146,12 +150,14 @@ const StudentTest = () => {
                   borderRadius: theme.buttonRadios.m,
                 }}
               />
+
               <input
                 type="text"
+                required
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Apellido"
-                className="block w-full mt-1 p-2 border border-gray-300"
+                className="block w-full mt-1 p-2 border"
                 style={{
                   borderColor: theme.palette.light.hex,
                   color: theme.palette.text.hex,
@@ -159,24 +165,34 @@ const StudentTest = () => {
                   borderRadius: theme.buttonRadios.m,
                 }}
               />
-              <input
-                type="date"
-                value={moment(birthDate).format("YYYY-MM-DD")}
-                onChange={(e) => setBirthDate(e.target.value)}
-                className="block w-full mt-1 p-2 border border-gray-300"
+
+              <select
+                required
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="block w-full mt-1 p-2 border"
                 style={{
                   borderColor: theme.palette.light.hex,
                   color: theme.palette.text.hex,
                   fontFamily: "Montserrat, sans-serif",
                   borderRadius: theme.buttonRadios.m,
                 }}
-              />
+              >
+                <option value="" disabled>
+                  Género
+                </option>
+                <option value="male">Masculino</option>
+                <option value="female">Femenino</option>
+                <option value="prefer not to say">Prefiero no decirlo</option>
+              </select>
+
               <input
                 type="text"
+                required
                 value={dni}
                 onChange={(e) => setDni(e.target.value)}
                 placeholder="DNI"
-                className="block w-full mt-1 p-2 border border-gray-300"
+                className="block w-full mt-1 p-2 border"
                 style={{
                   borderColor: theme.palette.light.hex,
                   color: theme.palette.text.hex,
@@ -184,12 +200,53 @@ const StudentTest = () => {
                   borderRadius: theme.buttonRadios.m,
                 }}
               />
-              <input
-                type="text"
+
+              <select
+                required
                 value={degree}
                 onChange={(e) => setDegree(e.target.value)}
-                placeholder="Grado"
-                className="block w-full mt-1 p-2 border border-gray-300"
+                className="block w-full mt-1 p-2 border"
+                style={{
+                  borderColor: theme.palette.light.hex,
+                  color: theme.palette.text.hex,
+                  fontFamily: "Montserrat, sans-serif",
+                  borderRadius: theme.buttonRadios.m,
+                }}
+              >
+                <option value="" disabled>
+                  Grado
+                </option>
+                <option value="MAIS">MAIS</option>
+                <option value="FIIS">FIIS</option>
+                <option value="INSO_GAME">INSO+VIDEOJUEGOS</option>
+                <option value="INSO_CYBER">INSO+CYBER</option>
+                <option value="INSO_DATA">INSO+DATA</option>
+              </select>
+
+              <input
+                type="text"
+                required
+                value={institution}
+                onChange={(e) => setInstitution(e.target.value)}
+                placeholder="Institución Educativa"
+                className="block w-full mt-1 p-2 border"
+                style={{
+                  borderColor: theme.palette.light.hex,
+                  color: theme.palette.text.hex,
+                  fontFamily: "Montserrat, sans-serif",
+                  borderRadius: theme.buttonRadios.m,
+                }}
+              />
+
+              <label className="block text-sm font-medium text-gray-700">
+                Fecha de graduación
+              </label>
+              <input
+                type="date"
+                required
+                value={moment({ endDate }).format("YYYY-MM-DD")}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="block w-full mt-1 p-2 border"
                 style={{
                   borderColor: theme.palette.light.hex,
                   color: theme.palette.text.hex,
@@ -215,7 +272,7 @@ const StudentTest = () => {
                     placeholder="Idioma"
                     value={lang.language}
                     onChange={(event) => handleLanguageChange(index, event)}
-                    className="block w-full mt-1 p-2 border border-gray-300"
+                    className="block w-full mt-1 p-2 border"
                     style={{
                       borderColor: theme.palette.light.hex,
                       color: theme.palette.text.hex,
@@ -227,7 +284,7 @@ const StudentTest = () => {
                     name="level"
                     value={lang.level}
                     onChange={(event) => handleLanguageChange(index, event)}
-                    className="block w-full mt-2 p-2 border border-gray-300"
+                    className="block w-full mt-2 p-2 border"
                     style={{
                       borderColor: theme.palette.light.hex,
                       color: theme.palette.text.hex,
