@@ -14,19 +14,15 @@ const RoadmapGuide = () => {
   const params = useParams();
   const router = useRouter();
   const [user, setUser] = useState({});
+  const [specialization, setSpecialization] = useState("Data Analyst");
 
   useEffect(() => {
-    if (
-      JSON.parse(localStorage.getItem("user")) &&
-      localStorage.getItem("token")
-    ) {
-      setUser(JSON.parse(localStorage.getItem("user")));
-      console.log(user, "Usuario: ");
-      if (user.role === "TEACHER") {
+    if (localStorage.getItem("user") && localStorage.getItem("token")) {
+      if (JSON.parse(localStorage.getItem("user")).role === "TEACHER") {
         return (
           <ErrorPopUp
             message={"No tienes acceso a esta página."}
-            path={`/home/${params.id}`}
+            path={`/home/student/${params.id}`}
           />
         );
       }
@@ -38,7 +34,7 @@ const RoadmapGuide = () => {
         />
       );
     }
-  }, [params.id, user, setUser]);
+  }, [params.id, user]);
 
   const questions = [
     "¿Cuánto te apasiona trabajar con datos y descubrir patrones ocultos?",
@@ -76,12 +72,13 @@ const RoadmapGuide = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
-          specialization: "Data Analyst",
+          specialization,
         }),
       });
 
       const data = await response.json();
       console.log(data);
+
       if (!response.ok) {
         const errorMessages = {
           NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido",
@@ -93,9 +90,10 @@ const RoadmapGuide = () => {
           errorMessages[data?.error] || "Error al actualizar los metadatos"
         );
         return;
+      } else {
+        setSuccess(true);
+        router.push(`/home/student/${params.id}`);
       }
-      setSuccess(true);
-      router.push(`/home/${id}`);
     } catch (error) {
       console.error(error);
       setError("Ha ocurrido un error inesperado");

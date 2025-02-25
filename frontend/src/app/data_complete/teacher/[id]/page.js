@@ -93,7 +93,7 @@ const TeacherDataComplete = () => {
         return;
       }
       setSuccess(true);
-      router.push(`/home/${params.id}`);
+      router.push(`/home/teacher/${params.id}`);
     } catch (error) {
       console.error(error);
       setError("Ha ocurrido un error inesperado");
