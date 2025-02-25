@@ -34,7 +34,6 @@ const Profile = ({ params }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   const [activeSection, setActiveSection] = useState("personal");
 
@@ -55,9 +54,6 @@ const Profile = ({ params }) => {
       const data = await response.json();
       setFirstName(data.metadata.firstName || "");
       setLastName(data.metadata.lastName || "");
-
-      // setBirthDate(data.metadata.birthDate || "");
-
       setDni(data.metadata.dni || "");
       setDegree(data.metadata.degree || "");
       setLanguages(data.metadata.languages || []);
@@ -75,19 +71,6 @@ const Profile = ({ params }) => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  const getLangLevel = (level) => {
-    switch (level) {
-      case "low":
-        return "Básico";
-      case "medium":
-        return "Intermedio";
-      case "high":
-        return "Avanzado";
-      default:
-        return level;
-    }
-  };
 
   const addLanguage = () => {
     setLanguages([...languages, { language: "", level: "low" }]);
@@ -233,18 +216,32 @@ const Profile = ({ params }) => {
 
             {/* Información variable */}
             <div className="bg-gray-200 p-2 mt-2 shadow-md col-span-4">
+              {/* Sección de Información Personal */}
               {activeSection === "personal" && (
                 <form 
                   onSubmit={handleSubmit}
                   className="grid grid-cols-2 gap-4"  
                 >
                   <div>
-                    <label>Nombre</label>
+                    <h2
+                      className="text-lg font-semibold mb-1"
+                      style={{ color: theme.palette.text.hex }}    
+                    >
+                      Información Personal
+                    </h2>
                     <input
                       type="text"
                       name="firstName"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="Nombre"
+                      className="block w-full mt-1 p-2 border border-gray-300"
+                      style={{
+                        borderColor: theme.palette.light.hex,
+                        color: theme.palette.text.hex,
+                        fontFamily: "Montserrat, sans-serif",
+                        borderRadius: theme.buttonRadios.m,
+                      }}
                     />
                   </div>
                   <div>
@@ -254,6 +251,14 @@ const Profile = ({ params }) => {
                       name="lastName"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Apellido"
+                      className="block w-full mt-1 p-2 border border-gray-300"
+                      style={{
+                        borderColor: theme.palette.light.hex,
+                        color: theme.palette.text.hex,
+                        fontFamily: "Montserrat, sans-serif",
+                        borderRadius: theme.buttonRadios.m,
+                      }}
                     />
                   </div>
                   <div>
@@ -263,6 +268,14 @@ const Profile = ({ params }) => {
                       name="dni"
                       value={dni}
                       onChange={(e) => setDni(e.target.value)}
+                      placeholder="DNI"
+                      className="block w-full mt-1 p-2 border border-gray-300"
+                      style={{
+                        borderColor: theme.palette.light.hex,
+                        color: theme.palette.text.hex,
+                        fontFamily: "Montserrat, sans-serif",
+                        borderRadius: theme.buttonRadios.m,
+                      }}
                     />
                   </div>
                   <div>
@@ -272,15 +285,24 @@ const Profile = ({ params }) => {
                       name="degree"
                       value={degree}
                       onChange={(e) => setDegree(e.target.value)}
+                      placeholder="Grado"
+                      className="block w-full mt-1 p-2 border border-gray-300"
+                      style={{
+                        borderColor: theme.palette.light.hex,
+                        color: theme.palette.text.hex,
+                        fontFamily: "Montserrat, sans-serif",
+                        borderRadius: theme.buttonRadios.m,
+                      }}
                     />
                   </div>
                   <button type="submit">Guardar</button>
                 </form>
               )}
+              {/* Sección de Idiomas */}
               {activeSection === "languages" && (
                 <form onSubmit={handleSubmit}>
                   {languages.map((lang, index) => (
-                    <div key={index}>
+                    <div key={index} className="mb-4">  
                       <label>Idioma</label>
                       <input
                         type="text"
@@ -290,6 +312,13 @@ const Profile = ({ params }) => {
                           const newLanguages = [...languages];
                           newLanguages[index].language = e.target.value;
                           setLanguages(newLanguages);
+                        }}
+                        className="block w-full mt-1 p-2 border border-gray-300"
+                        style={{
+                          borderColor: theme.palette.light.hex,
+                          color: theme.palette.text.hex,
+                          fontFamily: "Montserrat, sans-serif",
+                          borderRadius: theme.buttonRadios.m,
                         }}
                       />
                       <label>Nivel</label>
@@ -301,6 +330,13 @@ const Profile = ({ params }) => {
                           newLanguages[index].level = e.target.value;
                           setLanguages(newLanguages);
                         }}
+                        className="block w-full mt-2 p-2 border border-gray-300"
+                        style={{
+                          borderColor: theme.palette.light.hex,
+                          color: theme.palette.text.hex,
+                          fontFamily: "Montserrat, sans-serif",
+                          borderRadius: theme.buttonRadios.m,
+                        }}
                       >
                         <option value="low">Básico</option>
                         <option value="medium">Intermedio</option>
@@ -308,13 +344,156 @@ const Profile = ({ params }) => {
                       </select>
                     </div>
                   ))}
-                  <button type="button" onClick={addLanguage}>
+                  <button 
+                    type="button" 
+                    onClick={addLanguage}
+                    className="w-full px-4 py-2 text-white rounded-md transition duration-200"
+                    style={{
+                      backgroundColor: theme.palette.primary.hex,
+                      borderRadius: theme.buttonRadios.m,
+                      fontWeight: theme.fontWeight.bold,
+                    }}
+                  >
                     Añadir Idioma
                   </button>
                   <button type="submit">Guardar</button>
                 </form>
               )}
-              {/* Add similar forms for other sections */}
+              {/* Sección de Lenguajes de Programación */}
+              {activeSection === "programming" && (
+                <form 
+                  onSubmit={handleSubmit}
+                  className="grid grid-cols-2 gap-4"  
+                >
+                  <div className="m-8 space-y-3">
+                    <h2
+                      className="text-lg font-semibold mb-1"
+                      style={{ color: theme.palette.text.hex }}
+                    >
+                      Habilidades
+                    </h2>
+                    <input
+                      type="text"
+                      value={programmingLanguages.map((lang) => lang.language).join(", ")}
+                      onChange={(e) => {
+                        const newLanguages = e.target.value.split(",").map((lang) => ({ language: lang.trim() }));
+                        setProgrammingLanguages(newLanguages);
+                      }}
+                      placeholder="HTML , JS , PHP..."
+                      className="block w-full mt-1 p-2 border border-gray-300"
+                      style={{
+                        borderColor: theme.palette.light.hex,
+                        color: theme.palette.text.hex,
+                        fontFamily: "Montserrat, sans-serif",
+                        borderRadius: theme.buttonRadios.m,
+                      }}
+                    />
+                  </div>
+                  <button type="submit">Guardar</button>
+                </form>
+              )}
+              {/* Sección de Certificaciones */}  
+              {activeSection === "certifications" && (
+                <form 
+                  onSubmit={handleSubmit}
+                  className="grid grid-cols-2 gap-4"  
+                >
+                  <div className="m-8 space-y-3">
+                    <h2
+                      className="text-lg font-semibold mb-1"
+                      style={{ color: theme.palette.text.hex }}
+                    >
+                      Certificaciones
+                    </h2>
+                    <input
+                      type="text"
+                      value={certifications.join(", ")}
+                      onChange={(e) =>
+                        setCertifications(
+                          e.target.value.split(",").map((cert) => cert.trim())
+                        )
+                      }
+                      placeholder="Certificaciones"
+                      className="block w-full mt-1 p-2 border border-gray-300"
+                      style={{
+                        borderColor: theme.palette.light.hex,
+                        color: theme.palette.text.hex,
+                        fontFamily: "Montserrat, sans-serif",
+                        borderRadius: theme.buttonRadios.m,
+                      }}
+                    />
+                  </div>
+                  <button type="submit">Guardar</button>
+                </form>
+              )}
+              {/* Sección de Expediente Académico */} 
+              {activeSection === "academic" && (
+                <form 
+                  onSubmit={handleSubmit}
+                  className="grid grid-cols-2 gap-4"  
+                >
+                  <div className="m-8 space-y-3">
+                    <h2
+                      className="text-lg font-semibold mb-1"
+                      style={{ color: theme.palette.text.hex }}
+                    >
+                      Experiencia
+                    </h2>
+                    <input
+                      type="text"
+                      value={workExperience.join(", ")}
+                      onChange={(e) =>
+                        setWorkExperience(
+                          e.target.value.split(",").map((exp) => exp.trim())
+                        )
+                      }
+                      placeholder="Experiencia Laboral"
+                      className="block w-full mt-1 p-2 border border-gray-300"
+                      style={{
+                        borderColor: theme.palette.light.hex,
+                        color: theme.palette.text.hex,
+                        fontFamily: "Montserrat, sans-serif",
+                        borderRadius: theme.buttonRadios.m,
+                      }}
+                    />
+                  </div>
+                  <button type="submit">Guardar</button>
+                </form>
+              )}
+              {/* Sección de Experiencia Laboral */} 
+              {activeSection === "employee" && (
+                <form 
+                  onSubmit={handleSubmit}
+                  className="grid grid-cols-2 gap-4"  
+                >
+                  <div className="m-8 space-y-3">
+                    <h2
+                      className="text-lg font-semibold mb-1"
+                      style={{ color: theme.palette.text.hex }}
+                    >
+                      Experiencia
+                    </h2>
+                    <input
+                      type="text"
+                      value={workExperience.join(", ")}
+                      onChange={(e) =>
+                        setWorkExperience(
+                          e.target.value.split(",").map((exp) => exp.trim())
+                        )
+                      }
+                      placeholder="Experiencia Laboral"
+                      className="block w-full mt-1 p-2 border border-gray-300"
+                      style={{
+                        borderColor: theme.palette.light.hex,
+                        color: theme.palette.text.hex,
+                        fontFamily: "Montserrat, sans-serif",
+                        borderRadius: theme.buttonRadios.m,
+                      }}
+                    />
+                  </div>
+                  <button type="submit">Guardar</button>
+                </form>
+              )}
             </div>
           </div>
         </div>
