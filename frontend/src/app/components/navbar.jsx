@@ -17,6 +17,7 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isToken, setIsToken] = useState("") 
   const router = useRouter()
 
   /* 
@@ -24,9 +25,9 @@ export default function Navbar() {
     de Mi Perfil y Log Out
   */
   useEffect(() => {
-    const IsToken = localStorage.getItem("token");
+    setIsToken(localStorage.getItem("token"))
 
-    if (IsToken){
+    if (isToken){
       setIsLoggedIn(true)
     } else{
       setIsLoggedIn(false)
@@ -34,7 +35,7 @@ export default function Navbar() {
   });
 
   /* Recogemos los datos del usuario iniciado para enviarlo a la ruta correcta */
-  const handleTypeUser = async(e) => {
+  const handleTypeUserProfile = async(e) => {
       const response =await fetch("http://localhost:3000/",{
         method: "GET",
         headers:{
@@ -54,6 +55,28 @@ export default function Navbar() {
       router.push(`/profile/${data.user.role.toLowerCase()}/${data.user.id}`)
   }
 
+  const handleTypeUserHome = async(e) => {
+    if(!localStorage.getItem("token")){
+      router.push("/")
+    } else{
+      const response =await fetch("http://localhost:3000/",{
+        method: "GET",
+        headers:{
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      })
+
+      if(!response.ok){
+        throw new error("Error al captar al usuario")
+      }
+
+      const data = await response.json()
+
+      router.push(`/home/${data.user.role.toLowerCase()}/${data.user.id}`)
+    }    
+}
+
   return (
     <>
       {/* Navbar principal */}
@@ -70,12 +93,11 @@ export default function Navbar() {
 
         <ul className="hidden peer-checked:flex flex-col md:flex md:flex-row md:space-x-8 space-y-4 md:space-y-0 text-white text-lg">
           <li className="md:ml-auto">
-            <Link
-              href="/"
-              className="hover:text-gray-300 transition-colors duration-200 text-nowrap"
-            >
-              <i className="bi bi-house-door-fill text-4xl"></i>
-            </Link>
+              <i 
+                className="bi bi-house-door-fill text-4xl hover:text-gray-300 transition-colors duration-200 text-nowrap"
+                onClick={() => (handleTypeUserHome())}  
+              >
+              </i>
           </li>
 
           <li className="md:ml-auto">
@@ -92,7 +114,7 @@ export default function Navbar() {
                     <div style={styles.submenu}>
                       <button
                         style={styles.dropdownButton}
-                        onClick={() => (handleTypeUser())}
+                        onClick={() => (handleTypeUserProfile())}
                       >
                         Mi Perfil
                       </button>
@@ -157,7 +179,7 @@ export default function Navbar() {
                     <>
                       <button
                         className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={handleTypeUser}
+                        onClick={handleTypeUserProfile()}
                       >
                         Mi Perfil
                       </button>
