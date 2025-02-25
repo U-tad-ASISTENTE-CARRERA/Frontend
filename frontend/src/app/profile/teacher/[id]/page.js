@@ -5,6 +5,7 @@ import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
 import ErrorPopUp from "../../../components/ErrorPopUp";
+import LoadingModal from "../../../components/LoadingModal";
 
 const Teacher = () => {
   const router = useRouter();
@@ -12,18 +13,19 @@ const Teacher = () => {
   const params = useParams();
   const id = params?.id;
 
-  // Estados inicializados con valores por defecto
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [birthDate, setBirthDate] = useState("SIN COMPLETAR");
+  const [firstName, setFirstName] = useState(null);
+  const [lastName, setLastName] = useState(null);
   const [dni, setDni] = useState("SIN COMPLETAR");
+  const [gender, setGender] = useState("");
+  const [specialization, setSpecialization] = useState("");
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       let storedToken = localStorage.getItem("token");
-
       if (!storedToken) {
         const urlToken = searchParams.get("token");
         if (urlToken) {
@@ -31,7 +33,6 @@ const Teacher = () => {
           storedToken = urlToken;
         }
       }
-
       setToken(storedToken);
     }
   }, [searchParams]);
@@ -46,53 +47,62 @@ const Teacher = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-
       if (!response.ok) {
         throw new Error("Error al obtener metadatos del profesor");
       }
-
       const data = await response.json();
-      console.log("✅ Datos recibidos:", data);
+      const metadata = data.metadata || {}; // Evitar undefined
 
-      // Asegúrate de que los valores nunca sean undefined o null
-      setFirstName(data.metadata.firstName || "");
-      setLastName(data.metadata.lastName || "");
-      setBirthDate(data.metadata.birthDate || "");
-      setDni(data.metadata.dni || "");
+      // Activar modal si no hay metadatos
+      setShowModal(Object.keys(metadata).length === 0);
 
-      /*if (!data.metadata.firstName || !data.metadata.lastName) {
-        setShowModal(true);
-      } else {
-        setShowModal(false);
-      }*/
+      // Guardar datos introducidos
+      setFirstName(metadata.firstName);
+      setLastName(metadata.lastName);
+      setDni(metadata.dni);
+      setGender(metadata.gender);
+      setSpecialization(metadata.specialization);
+
     } catch (error) {
       setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, [token, id]); // Añade token e id como dependencias
+  }, [token, id]);
+
+  // Determinar el mensaje de bienvenida según el género
+  const getWelcomeMessage = () => {
+    if (gender === "male") return "Bienvenido";
+    if (gender === "female") return "Bienvenida";
+    return "Bienvenid@";
+  };
 
   return (
     <>
-      {firstName === "" || lastName === "" ? (
+      {/* Mensaje de carga */}
+      {isLoading && <LoadingModal message="Cargando perfil..." />}
+
+      {/* Mostrar modal si no hay datos en metadata */}
+      {!isLoading && showModal && (
         <ErrorPopUp
           message={"Debes completar tus datos básicos"}
           path={`/data_complete/teacher/${id}`}
         />
-      ) : (
+      )}
+
+      {/* Mostrar el perfil si no se está redirigiendo */}
+      {!isLoading && !showModal && (
         <div className="flex flex-col items-start justify-start min-h-screen p-10">
           <h1
             className="text-2xl font-bold mb-6"
-            style={{
-              color: theme.palette.primary.hex,
-              fontFamily: "Montserrat",
-            }}
+            style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
           >
-            Bienvenid@ {firstName || "Usuario"}
+            {getWelcomeMessage()} {firstName || "Usuario"}
           </h1>
-
           <h2
             className="text-xl font-semibold mb-4"
             style={{ color: theme.palette.dark.hex }}
@@ -109,7 +119,10 @@ const Teacher = () => {
             <strong>DNI:</strong> {dni}
           </p>
           <p style={{ color: theme.palette.text.hex }}>
-            <strong>Fecha de nacimiento:</strong> {birthDate}
+            <strong>Género:</strong> {gender ? (gender === "male" ? "Masculino" : gender === "female" ? "Femenino" : "Prefiero no decirlo") : "SIN COMPLETAR"}
+          </p>
+          <p style={{ color: theme.palette.text.hex }}>
+            <strong>Especialización:</strong> {specialization || "No especificado"}
           </p>
 
           <button
@@ -119,18 +132,13 @@ const Teacher = () => {
           >
             Modificar
           </button>
-
+          
           <h2
             className="text-xl font-semibold mt-6"
             style={{ color: theme.palette.dark.hex }}
           >
             Alumnos tutelados
           </h2>
-          {/* TODO: Añadir alumnos */}
-
-          {error && (
-            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
-          )}
         </div>
       )}
     </>

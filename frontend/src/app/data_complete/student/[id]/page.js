@@ -152,7 +152,7 @@ const StudentTest = () => {
             fontFamily: "Montserrat",
           }}
         >
-          ¡ Queremos saber más de tí !
+          ¡ Queremos saber más de ti !
         </h1>
         <div className="w-full max-w-4xl mt-10 p-6 bg-white rounded-lg shadow-xl transition-transform transform hover:-translate-y-2 hover:opacity-80 duration-300">
           <form onSubmit={handleSubmit} className=" space-y-6 grid grid-cols-2">

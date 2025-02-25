@@ -4,63 +4,123 @@ import React, { useState, useEffect } from "react";
 import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
 import { useRouter, useParams } from "next/navigation";
+import LoadingModal from "../../../components/LoadingModal";
 
 const TeacherDataComplete = () => {
-  const [specialization, setSpecialization] = useState("");
-  const [firstName, setFirstName] = useState("");
+  const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState("");
   const [dni, setDni] = useState("");
-  const [error, setError] = useState("");
+  const [gender, setGender] = useState("");
+  const [specialization, setSpecialization] = useState("");
+  const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [redirecting, setRedirecting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
   const params = useParams();
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/metadata", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      if (!response.ok) {
-        setError("Error en obteniendo los metadatos");
-      } else {
-        const data = await response.json();
-
-        setSpecialization(data.specialization || "");
-        setFirstName(data.firstName || "");
-        setLastName(data.lastName || "");
-        setDni(data.dni || "");
-      }
-    } catch (error) {
-      setError("Error en obteniendo los metadatos");
+  useEffect(() => {
+    if (JSON.parse(localStorage.getItem("user")).role === "STUDENT") {
+      router.push(`/data_complete/student/${params.id}`);
     }
+
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/metadata", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al obtener los datos del usuario");
+        }
+
+        const data = await response.json();
+        const metadata = data.metadata || {}; // Asegurar que metadata no sea undefined
+
+        // Si metadata está vacío, mostrar el formulario en lugar de redirigir
+        if (Object.keys(metadata).length === 0) {
+          setLoading(false);
+          return;
+        }
+        else{
+          setRedirecting(true);
+          router.push(`/profile/teacher/${params.id}`);
+        }
+
+        // Asignar valores a los estados
+        setFirstName(metadata.firstName || "");
+        setLastName(metadata.lastName || "");
+        setDni(metadata.dni || "");
+        setGender(metadata.gender || "");
+        setSpecialization(metadata.specialization || "");
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [params.id, router]);
+
+  const dniRegex = (dni) => /^\d{8}[A-Z]$/.test(dni);
+
+  const validateField = (field, value) => {
+    let error = "";
+    if (!value.trim()) {
+      error = `El campo ${field} es obligatorio.`;
+    } else if (field === "DNI" && !dniRegex(value)) {
+      error = "Formato incorrecto (8 dígitos seguidos de una letra).";
+    }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: error || undefined,
+    }));
   };
 
-  useEffect(() => {
-    if (JSON.parse(localStorage.getItem("user")).role == "STUDENT") {
-      router.push(`/data_complete/student/${params.id}`);
-    } else {
-      fetchData();
-    }
-  }, []);
+  const handleChange = (field, value, setter) => {
+    setter(value);
+    validateField(field, value);
+  };
 
-  const dniRegex = (dni) => {
-    const dniPattern = /^\d{8}[A-Z]$/;
-    return dniPattern.test(dni);
+  const isFormValid = () => {
+    return Object.values(errors).every((error) => !error) &&
+      firstName && lastName && dni && dniRegex(dni) && gender;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!dniRegex(dni)) {
-      setError(
-        "El DNI debe tener el formato correcto (8 dígitos seguidos de una letra)."
-      );
+    if (!isFormValid()) {
+      setErrors({
+        firstName: !firstName?.trim() ? "El nombre es obligatorio." : undefined,
+        lastName: !lastName.trim() ? "El apellido es obligatorio." : undefined,
+        dni: !dni.trim()
+          ? "El DNI es obligatorio."
+          : !dniRegex(dni)
+            ? "Formato incorrecto (8 dígitos + letra)."
+            : undefined,
+        gender: !gender ? "El género es obligatorio." : undefined,
+      });
       return;
+    }
+
+    setSubmitting(true);
+
+    const requestBody = {
+      firstName,
+      lastName,
+      dni,
+      gender,
+    };
+
+    if (specialization.trim()) {
+      requestBody.specialization = specialization;
     }
 
     try {
@@ -70,147 +130,118 @@ const TeacherDataComplete = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          dni,
-          specialization,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
-      console.log(data);
+      setSubmitting(false);
+
       if (!response.ok) {
         const errorMessages = {
-          NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido",
-          INVALID_USER_ID: "El usuario no existe",
-          INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
+          USER_NOT_FOUND: "El usuario no existe.",
+          NO_VALID_FIELDS_TO_UPDATE: "No hay cambios válidos en los campos.",
+          INTERNAL_SERVER_ERROR: "Error interno del servidor. Inténtalo más tarde.",
         };
-
-        setError(
-          errorMessages[data?.error] || "Error al actualizar los metadatos"
-        );
+        setErrors({ general: errorMessages[data?.error] || "Error al actualizar los metadatos." });
         return;
       }
+
       setSuccess(true);
-      router.push(`/home/teacher/${params.id}`);
+      setTimeout(() => {
+        router.push(`/profile/teacher/${params.id}`);
+      }, 1500);
     } catch (error) {
-      console.error(error);
-      setError("Ha ocurrido un error inesperado");
+      setSubmitting(false);
+      setErrors({ general: "Ha ocurrido un error inesperado." });
     }
   };
 
+  if (loading || redirecting) {
+    return <LoadingModal />;
+  }
+
   return (
     <>
-      <div
-        className="flex flex-col items-center justify-center min-h-screen"
-        style={{ backgroundColor: theme.palette.neutral.hex }}
-      >
-        <h1
-          className="text-4xl font-bold text-center pb-4"
-          style={{
-            color: theme.palette.primary.hex,
-            fontFamily: "Montserrat",
-          }}
-        >
-          ¡ Queremos saber más de tí !
+      <div className="flex flex-col items-center justify-center min-h-screen" style={{ backgroundColor: theme.palette.neutral.hex }}>
+        <h1 className="text-4xl font-bold text-center pb-4" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
+          ¡Queremos saber más de ti!
         </h1>
-        <div className="w-full max-w-4xl m-10 p-6 bg-white rounded-lg shadow-xl transition-transform transform hover:-translate-y-2 hover:opacity-80 duration-300">
-          <form onSubmit={handleSubmit} className=" space-y-6 grid grid-cols-2">
-            {/* Sección de Información Personal */}
-            <div className="m-8 space-y-3">
-              <h2
-                className="text-lg font-semibold mb-1"
-                style={{ color: theme.palette.text.hex }}
-              >
-                Información Personal
+        <div className="w-full max-w-4xl m-10 p-6 bg-white rounded-lg shadow-xl">
+          <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-2 gap-4">
+
+            {/* Información personal */}
+            <div className="m-4 space-y-3">
+              <h2 className="text-lg font-semibold mb-1" style={{ color: theme.palette.text.hex }}>
+                Información personal
               </h2>
               <input
                 type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                value={firstName || ""}
+                onChange={(e) => handleChange("Nombre", e.target.value, setFirstName)}
                 placeholder="Nombre"
-                className="block w-full mt-1 p-2 border border-gray-300"
-                style={{
-                  borderColor: theme.palette.light.hex,
-                  color: theme.palette.text.hex,
-                  fontFamily: "Montserrat, sans-serif",
-                  borderRadius: theme.buttonRadios.m,
-                }}
+                className="block w-full p-2 border border-gray-300 rounded-md"
+                style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
               />
+              {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
+
               <input
                 type="text"
                 value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={(e) => handleChange("Apellido", e.target.value, setLastName)}
                 placeholder="Apellido"
-                className="block w-full mt-1 p-2 border border-gray-300"
-                style={{
-                  borderColor: theme.palette.light.hex,
-                  color: theme.palette.text.hex,
-                  fontFamily: "Montserrat, sans-serif",
-                  borderRadius: theme.buttonRadios.m,
-                }}
+                className="block w-full p-2 border border-gray-300 rounded-md"
+                style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
               />
+              {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
+
               <input
                 type="text"
                 value={dni}
-                onChange={(e) => setDni(e.target.value)}
+                onChange={(e) => handleChange("DNI", e.target.value, setDni)}
                 placeholder="DNI"
-                className="block w-full mt-1 p-2 border border-gray-300"
-                style={{
-                  borderColor: theme.palette.light.hex,
-                  color: theme.palette.text.hex,
-                  fontFamily: "Montserrat, sans-serif",
-                  borderRadius: theme.buttonRadios.m,
-                }}
+                className="block w-full p-2 border border-gray-300 rounded-md"
+                style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
               />
+              {errors.dni && <p className="text-red-500 text-sm">{errors.dni}</p>}
             </div>
 
-            {/* Sección de Especialización */}
-            <div className="m-8 space-y-3">
-              <h2
-                className="text-lg font-semibold mb-1"
-                style={{ color: theme.palette.text.hex }}
+            {/* Género y Especialización */}
+            <div className="m-4 space-y-3">
+              <h2 className="text-lg font-semibold mb-1" style={{ color: theme.palette.text.hex }}>
+                Género
+              </h2>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="block w-full p-2 border border-gray-300 rounded-md"
+                style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
               >
+                <option value="">Selecciona tu género</option>
+                <option value="male">Masculino</option>
+                <option value="female">Femenino</option>
+                <option value="prefer not to say">Prefiero no decirlo</option>
+              </select>
+              {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
+              
+              <h2 className="text-lg font-semibold mb-1" style={{ color: theme.palette.text.hex }}>
                 Especialización
               </h2>
-              <input
-                type="text"
+              <select
                 value={specialization}
                 onChange={(e) => setSpecialization(e.target.value)}
-                placeholder="Especialización"
-                className="block w-full mt-1 p-2 border border-gray-300"
-                style={{
-                  borderColor: theme.palette.light.hex,
-                  color: theme.palette.text.hex,
-                  fontFamily: "Montserrat, sans-serif",
-                  borderRadius: theme.buttonRadios.m,
-                }}
-              />
-            </div>
-            <div className="pt-8 pl-8 pb-8 space-y-6">
-              <button
-                type="submit"
-                className="w-full px-4 py-2 text-white rounded-md transition duration-200"
-                style={{
-                  backgroundColor: theme.palette.primary.hex,
-                  borderRadius: theme.buttonRadios.m,
-                  fontWeight: theme.fontWeight.bold,
-                }}
+                className="block w-full p-2 border border-gray-300 rounded-md"
+                style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
               >
-                Enviar
-              </button>
+                <option value="">Selecciona tu especialización</option>
+                <option value="Base de datos">Base de datos</option>
+                <option value="Frontend">Frontend</option>
+              </select>
 
-              {/* Mensajes de error y éxito */}
-              {error && (
-                <p className="text-red-500 text-sm text-center mt-2">{error}</p>
-              )}
-              {success && (
-                <p className="text-green-500 text-sm text-center mt-2">
-                  Bienvenido al GPS Académico de U-tad
-                </p>
-              )}
             </div>
+
+            <button type="submit" className="col-span-2 bg-blue-500 text-white px-4 py-2 rounded-md" disabled={submitting}>
+              {submitting ? "Enviando..." : "Enviar"}
+            </button>
           </form>
         </div>
       </div>
