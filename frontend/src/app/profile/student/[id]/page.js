@@ -218,14 +218,14 @@ const Profile = ({ params }) => {
             <div className="bg-gray-200 p-2 mt-2 shadow-md col-span-4">
               {/* Sección de Información Personal */}
               {activeSection === "personal" && (
-                <form 
+                <form
                   onSubmit={handleSubmit}
-                  className="grid grid-cols-2 gap-4"  
+                  className="grid grid-cols-2 gap-4"
                 >
                   <div>
                     <h2
                       className="text-lg font-semibold mb-1"
-                      style={{ color: theme.palette.text.hex }}    
+                      style={{ color: theme.palette.text.hex }}
                     >
                       Información Personal
                     </h2>
@@ -281,10 +281,11 @@ const Profile = ({ params }) => {
                   <div>
                     <label>Grado</label>
                     <input
+                      disabled
                       type="text"
                       name="degree"
-                      value={degree}
-                      onChange={(e) => setDegree(e.target.value)}
+                      value={"INSO+DATA"}
+                      onChange={() => {}}
                       placeholder="Grado"
                       className="block w-full mt-1 p-2 border border-gray-300"
                       style={{
@@ -302,7 +303,7 @@ const Profile = ({ params }) => {
               {activeSection === "languages" && (
                 <form onSubmit={handleSubmit}>
                   {languages.map((lang, index) => (
-                    <div key={index} className="mb-4">  
+                    <div key={index} className="mb-4">
                       <label>Idioma</label>
                       <input
                         type="text"
@@ -344,8 +345,8 @@ const Profile = ({ params }) => {
                       </select>
                     </div>
                   ))}
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={addLanguage}
                     className="w-full px-4 py-2 text-white rounded-md transition duration-200"
                     style={{
@@ -361,9 +362,9 @@ const Profile = ({ params }) => {
               )}
               {/* Sección de Lenguajes de Programación */}
               {activeSection === "programming" && (
-                <form 
+                <form
                   onSubmit={handleSubmit}
-                  className="grid grid-cols-2 gap-4"  
+                  className="grid grid-cols-2 gap-4"
                 >
                   <div className="m-8 space-y-3">
                     <h2
@@ -374,9 +375,13 @@ const Profile = ({ params }) => {
                     </h2>
                     <input
                       type="text"
-                      value={programmingLanguages.map((lang) => lang.language).join(", ")}
+                      value={programmingLanguages
+                        .map((lang) => lang.language)
+                        .join(", ")}
                       onChange={(e) => {
-                        const newLanguages = e.target.value.split(",").map((lang) => ({ language: lang.trim() }));
+                        const newLanguages = e.target.value
+                          .split(",")
+                          .map((lang) => ({ language: lang.trim() }));
                         setProgrammingLanguages(newLanguages);
                       }}
                       placeholder="HTML , JS , PHP..."
@@ -392,11 +397,11 @@ const Profile = ({ params }) => {
                   <button type="submit">Guardar</button>
                 </form>
               )}
-              {/* Sección de Certificaciones */}  
+              {/* Sección de Certificaciones */}
               {activeSection === "certifications" && (
-                <form 
+                <form
                   onSubmit={handleSubmit}
-                  className="grid grid-cols-2 gap-4"  
+                  className="grid grid-cols-2 gap-4"
                 >
                   <div className="m-8 space-y-3">
                     <h2
@@ -426,11 +431,11 @@ const Profile = ({ params }) => {
                   <button type="submit">Guardar</button>
                 </form>
               )}
-              {/* Sección de Expediente Académico */} 
+              {/* Sección de Expediente Académico */}
               {activeSection === "academic" && (
-                <form 
+                <form
                   onSubmit={handleSubmit}
-                  className="grid grid-cols-2 gap-4"  
+                  className="grid grid-cols-2 gap-4"
                 >
                   <div className="m-8 space-y-3">
                     <h2
@@ -460,11 +465,11 @@ const Profile = ({ params }) => {
                   <button type="submit">Guardar</button>
                 </form>
               )}
-              {/* Sección de Experiencia Laboral */} 
+              {/* Sección de Experiencia Laboral */}
               {activeSection === "employee" && (
-                <form 
+                <form
                   onSubmit={handleSubmit}
-                  className="grid grid-cols-2 gap-4"  
+                  className="grid grid-cols-2 gap-4"
                 >
                   <div className="m-8 space-y-3">
                     <h2

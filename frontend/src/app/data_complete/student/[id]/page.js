@@ -110,15 +110,16 @@ const StudentTest = () => {
           lastName,
           endDate,
           dni,
-          degree,
+          degree: "INSO_DATA",
           languages,
           gender,
-          institution,
+          institution: "U-tad",
         }),
       });
 
       const data = await response.json();
       console.log(data);
+      setError("");
       if (!response.ok) {
         const errorMessages = {
           NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido",
@@ -231,9 +232,10 @@ const StudentTest = () => {
               />
 
               <select
+                disabled
                 required
-                value={degree}
-                onChange={(e) => setDegree(e.target.value)}
+                value={"INSO_DATA"}
+                onChange={() => {}}
                 className="block w-full mt-1 p-2 border"
                 style={{
                   borderColor: theme.palette.light.hex,
@@ -245,18 +247,15 @@ const StudentTest = () => {
                 <option value="" disabled>
                   Grado
                 </option>
-                <option value="MAIS">MAIS</option>
-                <option value="FIIS">FIIS</option>
-                <option value="INSO_GAME">INSO+VIDEOJUEGOS</option>
-                <option value="INSO_CYBER">INSO+CYBER</option>
-                <option value="INSO_DATA">INSO+DATA</option>
+                <option value="INSO+DATA">INSO+DATA</option>
               </select>
 
               <input
+                disabled
                 type="text"
                 required
-                value={institution}
-                onChange={(e) => setInstitution(e.target.value)}
+                value={"U-tad"}
+                onChange={() => {}}
                 placeholder="Institución Educativa"
                 className="block w-full mt-1 p-2 border"
                 style={{
@@ -273,8 +272,9 @@ const StudentTest = () => {
               <input
                 type="date"
                 required
-                value={moment({ endDate }).format("YYYY-MM-DD")}
+                value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                min="1900-01-01"
                 className="block w-full mt-1 p-2 border"
                 style={{
                   borderColor: theme.palette.light.hex,
