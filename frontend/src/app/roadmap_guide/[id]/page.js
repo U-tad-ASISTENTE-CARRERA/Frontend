@@ -102,17 +102,20 @@ const RoadmapGuide = () => {
 
   return (
     <div
-      className="flex flex-col items-center justify-start pt-24 min-h-screen"
-      style={{ backgroundColor: theme.palette.neutral.hex }}
+      className="flex flex-col items-center justify-start min-h-screen"
+      style={{
+        backgroundColor: theme.palette.neutral.hex,
+        fontFamily: "Montserrat",
+      }}
     >
       <h1
-        className="text-2xl m-24 font-bold text-center"
+        className="text-3xl m-24 font-bold text-center"
         style={{
           color: theme.palette.primary.hex,
           fontFamily: "Montserrat",
         }}
       >
-        Podemos sugerirte una ruta de aprendizaje
+        Test para ruta de aprendizaje
       </h1>
       <div className="w-full max-w-4xl p-8 bg-white rounded-lg shadow-lg">
         <h2
@@ -122,7 +125,7 @@ const RoadmapGuide = () => {
             fontFamily: "Montserrat",
           }}
         >
-          ¡Responde sin miedo!
+          Responde para recibir recomendaciones
         </h2>
         {currentQuestion < questions.length ? (
           <div className="space-y-6">
