@@ -71,7 +71,10 @@ const Login = () => {
     <>
       <div
         className="flex items-center justify-center min-h-screen"
-        style={{ backgroundColor: theme.palette.neutral.hex }}
+        style={{
+          backgroundColor: theme.palette.neutral.hex,
+          fontFamily: "Montserrat, sans-serif"
+        }}
       >
         <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
           <h2
@@ -81,7 +84,7 @@ const Login = () => {
               fontFamily: "Montserrat",
             }}
           >
-            Iniciar Sesión
+            Iniciar sesión
           </h2>
           <form className="space-y-6" onSubmit={validateForm}>
             <div>
@@ -96,7 +99,6 @@ const Login = () => {
                 style={{
                   borderColor: theme.palette.light.hex,
                   color: theme.palette.text.hex,
-                  fontFamily: "Montserrat, sans-serif",
                   borderRadius: theme.buttonRadios.m,
                 }}
               />
@@ -132,11 +134,11 @@ const Login = () => {
                 (e.currentTarget.style.backgroundColor = theme.palette.dark.hex)
               }
               onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  theme.palette.primary.hex)
+              (e.currentTarget.style.backgroundColor =
+                theme.palette.primary.hex)
               }
             >
-              Iniciar Sesión
+              Iniciar sesión
             </button>
           </form>
           <p

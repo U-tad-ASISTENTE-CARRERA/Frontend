@@ -165,7 +165,7 @@ const TeacherEdit = () => {
                 <div className="w-full max-w-4xl p-6">
 
                     {/* Botón volver atrás */}
-                    <div className="w-full max-w-3xl mb-5">
+                    <div className="w-full max-w-3xl mb-10">
                         <button
                             onClick={() => router.back()}
                             className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
@@ -174,7 +174,7 @@ const TeacherEdit = () => {
                         </button>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-2 gap-4">
+                    <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-2 gap-10">
 
                         {/* Información personal */}
                         <div className="m-4 space-y-3">
@@ -252,7 +252,12 @@ const TeacherEdit = () => {
                             </select>
                         </div>
 
-                        <button type="submit" className="col-span-2 bg-blue-500 text-white px-4 py-2 rounded-md" disabled={submitting}>
+                        <button
+                            type="submit"
+                            className="col-span-2 text-white px-4 py-2 rounded-md"
+                            style={{ backgroundColor: theme.palette.primary.hex }}
+                            disabled={submitting}
+                        >
                             {submitting ? "Guardando..." : "Guardar cambios"}
                         </button>
                     </form>

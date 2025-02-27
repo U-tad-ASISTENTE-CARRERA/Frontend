@@ -90,7 +90,10 @@ const Register = () => {
     <>
       <div
         className="flex items-center justify-center min-h-screen"
-        style={{ backgroundColor: theme.palette.neutral.hex }}
+        style={{
+          backgroundColor: theme.palette.neutral.hex,
+          fontFamily: "Montserrat",
+        }}
       >
         <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
           <h2

@@ -102,7 +102,7 @@ const Teacher = () => {
             {getWelcomeMessage()} {firstName || "Usuario"}
           </h1>
 
-          <div className="w-full max-w-6xl flex flex-col items-start pt-6">
+          <div className="w-full max-w-6xl flex flex-col items-start pt-6 leading-relaxed">
             {/* Contenido a la izquierda */}
             <div className="w-full">
               <h2

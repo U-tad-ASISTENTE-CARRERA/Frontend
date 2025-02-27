@@ -1,32 +1,58 @@
 "use client";
 
-import Head from "next/head";
+import { theme } from "./constants/theme";
 
 export default function Home() {
   return (
     <>
-      <Head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <h1 className="text-4xl font-bold text-gray-800 transition-opacity duration-1000 opacity-0 animate-fadeIn">
-          Bienvenido al asistente de carrera de U-tad
+      <div
+        className="flex flex-col items-center justify-center min-h-screen text-center px-6"
+        style={{
+          backgroundColor: theme.palette.background.hex,
+          fontFamily: "Montserrat",
+          color: theme.palette.text.hex,
+        }}
+      >
+        <h1
+          className="text-4xl font-bold animate-fadeIn"
+          style={{ color: theme.palette.primary.hex }}
+        >
+          Bienvenido al Asistente de Carrera Profesional de U-tad
         </h1>
+
+        <p
+          className="text-lg mt-10 animate-fadeIn"
+          style={{ maxWidth: "600px", color: theme.palette.darkGray.hex }}
+        >
+          Explora diferentes especializaciones en Ingeniería de Datos, Ciencia de Datos y más. Descubre cuál es el camino profesional adecuado para ti con nuestras guías personalizadas.
+        </p>
+
+        <button
+          className="mt-8 px-6 py-3 rounded-md text-lg font-semibold transition-colors duration-300"
+          style={{
+            backgroundColor: theme.palette.primary.hex,
+            color: theme.palette.background.hex,
+            borderRadius: theme.buttonRadios.m,
+          }}
+          onClick={() => window.location.href = "/explorar"}
+        >
+          Explorar carreras
+        </button>
       </div>
+
       <style jsx>{`
         @keyframes fadeIn {
-          0% {
+          from {
             opacity: 0;
+            transform: translateY(-10px);
           }
-          100% {
+          to {
             opacity: 1;
+            transform: translateY(0);
           }
         }
         .animate-fadeIn {
-          animation: fadeIn 1s forwards;
+          animation: fadeIn 1s ease-out forwards;
         }
       `}</style>
     </>

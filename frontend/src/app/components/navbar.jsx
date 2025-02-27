@@ -10,7 +10,7 @@ export default function Navbar() {
 
   /* 
    isLoggedIn --> variable que permite saber si un usario ha iniciado sesión
-   isDropdownOpen --> variable que cambia la opción LogIn por Mi Perfil y Log Out
+   isDropdownOpen --> variable que cambia la opción Iniciar sesión por Mi perfil y Log Out
    isMenuOpen --> variable que permite activar el menu hamburguesa lateral
   */
 
@@ -22,7 +22,7 @@ export default function Navbar() {
 
   /* 
     Comrobamos que exista el token del usuario para poder activar las opciones
-    de Mi Perfil y Log Out
+    de Mi perfil y Log Out
   */
   useEffect(() => {
     setIsToken(localStorage.getItem("token"))  
@@ -116,13 +116,13 @@ export default function Navbar() {
                         style={styles.dropdownButton}
                         onClick={() => (handleTypeUserProfile())}
                       >
-                        Mi Perfil
+                        Mi perfil
                       </button>
                       <button
                         style={styles.dropdownButton}
                         onClick={() => (router.push("/logout"))}
                       >
-                        LogOut
+                        Cerrar sesión
                       </button>
                     </div>
                   ) : (
@@ -130,7 +130,7 @@ export default function Navbar() {
                       style={styles.dropdownButton}
                       onClick={() => (router.push("/login"))}
                     >
-                      LogIn
+                      Iniciar sesión
                     </button>
                   )}
                 </div>
@@ -181,13 +181,13 @@ export default function Navbar() {
                         className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
                         onClick={handleTypeUserProfile()}
                       >
-                        Mi Perfil
+                        Mi perfil
                       </button>
                       <button
                         className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
                         onClick={() => router.push("/logout")}
                       >
-                        Cerrar Sesión
+                        Cerrar sesión
                       </button>
                     </>
                   ) : (
@@ -195,7 +195,7 @@ export default function Navbar() {
                       className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
                       onClick={() => router.push("/login")}
                     >
-                      Iniciar Sesión
+                      Iniciar sesión
                     </button>
                   )}
                 </div>
