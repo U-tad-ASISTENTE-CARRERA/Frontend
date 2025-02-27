@@ -98,7 +98,7 @@ const Teacher = () => {
       {!isLoading && !showModal && (
         <div className="flex flex-col items-center min-h-screen">
 
-          <h1 className="text-3xl font-bold text-center pb-4 mt-10" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
+          <h1 className="text-3xl font-bold text-center pt-20 pb-10" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
             {getWelcomeMessage()} {firstName || "Usuario"}
           </h1>
 
@@ -136,7 +136,7 @@ const Teacher = () => {
               </button>
 
               <h2
-                className="text-xl font-semibold mt-6"
+                className="text-xl font-semibold mt-20"
                 style={{ color: theme.palette.dark.hex }}
               >
                 Alumnos tutelados

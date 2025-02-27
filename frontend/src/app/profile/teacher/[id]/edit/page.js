@@ -154,13 +154,26 @@ const TeacherEdit = () => {
 
     return (
         <>
-            <div className="flex flex-col items-center justify-center min-h-screen">
+            <div className="flex flex-col items-center min-h-screen">
 
-                <h1 className="text-3xl font-bold text-center pb-4 mt-10" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
+                {/* Título */}
+                <h1 className="text-3xl font-bold text-center pt-20 pb-10" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
                     Editar perfil
                 </h1>
 
-                <div className="w-full max-w-4xl m-10 p-6">
+                {/* Campos editables */}
+                <div className="w-full max-w-4xl p-6">
+
+                    {/* Botón volver atrás */}
+                    <div className="w-full max-w-3xl mb-5">
+                        <button
+                            onClick={() => router.back()}
+                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                        >
+                            ← Volver atrás
+                        </button>
+                    </div>
+
                     <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-2 gap-4">
 
                         {/* Información personal */}
