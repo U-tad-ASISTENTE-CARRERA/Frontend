@@ -67,15 +67,11 @@ const Register = () => {
         localStorage.getItem("token") &&
         localStorage.getItem("user")
       ) {
-        if (
-          data.user.role ||
-          JSON.parse(localStorage.getItem("user")).role == "STUDENT"
-        ) {
+        const userRole = data.user.role || JSON.parse(localStorage.getItem("user"))?.role;
+
+        if (userRole === "STUDENT") {
           router.push(`/data_complete/student/${data.user.id}`);
-        } else if (
-          data.user.role ||
-          JSON.parse(localStorage.getItem("user")).role == "TEACHER"
-        ) {
+        } else if (userRole === "TEACHER") {
           router.push(`/data_complete/teacher/${data.user.id}`);
         }
       }
