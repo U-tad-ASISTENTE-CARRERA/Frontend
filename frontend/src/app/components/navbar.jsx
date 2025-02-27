@@ -25,7 +25,7 @@ export default function Navbar() {
     de Mi Perfil y Log Out
   */
   useEffect(() => {
-    setIsToken(localStorage.getItem("token"))
+    setIsToken(localStorage.getItem("token"))  
 
     if (isToken){
       setIsLoggedIn(true)
@@ -80,7 +80,7 @@ export default function Navbar() {
   return (
     <>
       {/* Navbar principal */}
-      <nav className="bg-blue-600 p-4 flex items-center justify-between rounded-lg shadow-lg m-4">
+      <nav className="bg-blue-600 p-4 flex items-center justify-between shadow-lg">
         <img src="/logo.png" title="Logo" className="h-10 w-10" onClick={() => (router.push("/"))}></img>
 
         {/* Botón Hamburguesa para móviles */}
