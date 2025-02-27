@@ -96,49 +96,53 @@ const Teacher = () => {
 
       {/* Mostrar el perfil si no se está redirigiendo */}
       {!isLoading && !showModal && (
-        <div className="flex flex-col items-start justify-start min-h-screen p-10">
-          <h1
-            className="text-2xl font-bold mb-6"
-            style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
-          >
+        <div className="flex flex-col items-center min-h-screen">
+
+          <h1 className="text-3xl font-bold text-center pb-4 mt-10" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
             {getWelcomeMessage()} {firstName || "Usuario"}
           </h1>
-          <h2
-            className="text-xl font-semibold mb-4"
-            style={{ color: theme.palette.dark.hex }}
-          >
-            Detalles del perfil
-          </h2>
-          <p style={{ color: theme.palette.text.hex }}>
-            <strong>Nombre:</strong> {firstName}
-          </p>
-          <p style={{ color: theme.palette.text.hex }}>
-            <strong>Apellidos:</strong> {lastName}
-          </p>
-          <p style={{ color: theme.palette.text.hex }}>
-            <strong>DNI:</strong> {dni}
-          </p>
-          <p style={{ color: theme.palette.text.hex }}>
-            <strong>Género:</strong> {gender ? (gender === "male" ? "Masculino" : gender === "female" ? "Femenino" : "Prefiero no decirlo") : "SIN COMPLETAR"}
-          </p>
-          <p style={{ color: theme.palette.text.hex }}>
-            <strong>Especialización:</strong> {specialization || "No especificado"}
-          </p>
 
-          <button
-            onClick={() => router.push(`/profile/teacher/${id}/edit`)}
-            className="mt-4 px-6 py-2 rounded-lg text-white"
-            style={{ backgroundColor: theme.palette.primary.hex }}
-          >
-            Modificar
-          </button>
-          
-          <h2
-            className="text-xl font-semibold mt-6"
-            style={{ color: theme.palette.dark.hex }}
-          >
-            Alumnos tutelados
-          </h2>
+          <div className="w-full max-w-6xl flex flex-col items-start pt-6">
+            {/* Contenido a la izquierda */}
+            <div className="w-full">
+              <h2
+                className="text-xl font-semibold mb-4"
+                style={{ color: theme.palette.dark.hex }}
+              >
+                Detalles del perfil
+              </h2>
+              <p style={{ color: theme.palette.text.hex }}>
+                <strong>Nombre:</strong> {firstName}
+              </p>
+              <p style={{ color: theme.palette.text.hex }}>
+                <strong>Apellidos:</strong> {lastName}
+              </p>
+              <p style={{ color: theme.palette.text.hex }}>
+                <strong>DNI:</strong> {dni}
+              </p>
+              <p style={{ color: theme.palette.text.hex }}>
+                <strong>Género:</strong> {gender ? (gender === "male" ? "Masculino" : gender === "female" ? "Femenino" : "Prefiero no decirlo") : "SIN COMPLETAR"}
+              </p>
+              <p style={{ color: theme.palette.text.hex }}>
+                <strong>Especialización:</strong> {specialization || "No especificado"}
+              </p>
+
+              <button
+                onClick={() => router.push(`/profile/teacher/${id}/edit`)}
+                className="mt-4 px-6 py-2 rounded-lg text-white"
+                style={{ backgroundColor: theme.palette.primary.hex }}
+              >
+                Modificar
+              </button>
+
+              <h2
+                className="text-xl font-semibold mt-6"
+                style={{ color: theme.palette.dark.hex }}
+              >
+                Alumnos tutelados
+              </h2>
+            </div>
+          </div>
         </div>
       )}
     </>

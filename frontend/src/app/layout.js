@@ -13,17 +13,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Asistente de carrera",
-  description: "Proyecto de grupo de Proyectos III",
+  title: "Asistente de Carrera Profesional",
+  description: "Plataforma de orientación profesional para estudiantes de Ingeniería de Software de Datos, proporcionando guías personalizadas sobre especializaciones en Ingeniería de Datos, Ciencia de Datos y áreas afines.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="es">
+
       <body>
-        <Navbar></Navbar>
+
+        <Navbar />
+
         {children}
+        
       </body>
+
     </html>
   );
 }

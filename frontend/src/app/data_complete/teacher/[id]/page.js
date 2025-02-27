@@ -162,7 +162,7 @@ const TeacherDataComplete = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-screen" style={{ backgroundColor: theme.palette.neutral.hex }}>
+      <div className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-4xl font-bold text-center pb-4" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
           ¡Queremos saber más de ti!
         </h1>
