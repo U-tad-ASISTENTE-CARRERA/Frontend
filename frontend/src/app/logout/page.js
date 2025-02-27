@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { styles } from "../constants/theme";
+import { theme } from "../constants/theme";
 
 const LogOut = () => {
   const [error, setError] = useState("");
@@ -29,17 +30,40 @@ const LogOut = () => {
   };
 
   return (
-    <div style={styles.overlay}>
-      <div style={styles.modal}>
-        <h2>¿Estás seguro de que quieres cerrar sesión?</h2>
+    <div style={{ ...styles.overlay, fontFamily: "Montserrat" }}>
+      <div
+        style={{
+          ...styles.modal,
+          background: theme.palette.background.hex,
+          color: theme.palette.text.hex,
+          borderRadius: theme.buttonRadios.m,
+        }}
+      >
+        <h2 style={{ fontSize: theme.fontSizes.xl, fontWeight: theme.fontWeight.bold }}>
+          ¿Estás seguro de que quieres cerrar sesión?
+        </h2>
+
+        {/* Mostrar error si existe */}
+        {error && <p style={{ color: theme.palette.error.hex, fontSize: theme.fontSizes.m }}>{error}</p>}
+
         <button
-          style={{ ...styles.modalButton, ...styles.confirm }}
-          onClick={() => handleLogOut()}
+          style={{
+            ...styles.modalButton,
+            backgroundColor: theme.palette.error.hex,
+            color: theme.palette.background.hex,
+            borderRadius: theme.buttonRadios.m,
+          }}
+          onClick={handleLogOut}
         >
           Salir
         </button>
         <button
-          style={{ ...styles.modalButton, ...styles.cancel }}
+          style={{
+            ...styles.modalButton,
+            backgroundColor: theme.palette.gray.hex,
+            color: theme.palette.text.hex,
+            borderRadius: theme.buttonRadios.m,
+          }}
           onClick={() => (window.location.href = "/")}
         >
           Cancelar
