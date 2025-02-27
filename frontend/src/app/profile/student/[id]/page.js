@@ -21,9 +21,7 @@ const Profile = ({ params }) => {
   const [firstName, setFirstName] = useState("");
   const searchParams = useSearchParams();
   const [lastName, setLastName] = useState("");
-
-  //const [birthDate, setBirthDate] = useState("2022-01-01");
-
+  const [birthDate, setBirthDate] = useState("2022-01-01");
   const [dni, setDni] = useState("");
   const [degree, setDegree] = useState("");
   const [programmingLanguages, setProgrammingLanguages] = useState([
@@ -113,7 +111,7 @@ const Profile = ({ params }) => {
         body: JSON.stringify({
           firstName,
           lastName,
-          // birthDate,
+          birthDate,
           dni,
           degree,
           languages,
@@ -162,11 +160,11 @@ const Profile = ({ params }) => {
           className="flex items-center justify-evenly min-h-screen"
           style={{ backgroundColor: theme.palette.neutral.hex }}
         >
-          <div className="w-full max-w-8xl ml-32 m-20 p-6 bg-white rounded-lg shadow-lg grid grid-cols-5 gap-3">
+          <div className="w-full max-w-8xl ml-32 m-20  p-6 bg-white rounded-lg shadow-lg grid grid-cols-5 gap-3">
             {/* Botones para cambiar la información */}
-            <div className="bg-gray-200 p-2 mt-2 shadow-md grid grid-cols-1">
+            <div className="p-2 mt-2 shadow-md grid grid-cols-1">
               <button
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-blue-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
                 onClick={() => handleInformation("personal")}
               >
@@ -174,7 +172,7 @@ const Profile = ({ params }) => {
               </button>
 
               <button
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-blue-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
                 onClick={() => handleInformation("languages")}
               >
@@ -182,7 +180,7 @@ const Profile = ({ params }) => {
               </button>
 
               <button
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-blue-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
                 onClick={() => handleInformation("programming")}
               >
@@ -190,7 +188,7 @@ const Profile = ({ params }) => {
               </button>
 
               <button
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-blue-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
                 onClick={() => handleInformation("certifications")}
               >
@@ -198,7 +196,7 @@ const Profile = ({ params }) => {
               </button>
 
               <button
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-blue-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
                 onClick={() => handleInformation("academic")}
               >
@@ -206,7 +204,7 @@ const Profile = ({ params }) => {
               </button>
 
               <button
-                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-slate-300 rounded font-semibold"
+                className="block w-full text-center mb-6 text-white py-1 px-2 hover:bg-blue-300 rounded font-semibold"
                 style={{ color: theme.palette.text.hex }}
                 onClick={() => handleInformation("employee")}
               >
@@ -215,7 +213,7 @@ const Profile = ({ params }) => {
             </div>
 
             {/* Información variable */}
-            <div className="bg-gray-200 p-2 mt-2 shadow-md col-span-4">
+            <div className="bg-white p-2 mt-2 shadow-md col-span-4">
               {/* Sección de Información Personal */}
               {activeSection === "personal" && (
                 <form
@@ -296,7 +294,19 @@ const Profile = ({ params }) => {
                       }}
                     />
                   </div>
-                  <button type="submit">Guardar</button>
+                  <div className="col-span-2 flex justify-center mt-4">
+                    <button
+                      type="submit"
+                      className="px-8 py-2 text-white rounded-md transition duration-200"
+                      style={{
+                        backgroundColor: theme.palette.primary.hex,
+                        borderRadius: theme.buttonRadios.m,
+                        fontWeight: theme.fontWeight.bold,
+                      }}
+                    >
+                      Guardar
+                    </button>
+                  </div>
                 </form>
               )}
               {/* Sección de Idiomas */}
@@ -345,19 +355,33 @@ const Profile = ({ params }) => {
                       </select>
                     </div>
                   ))}
-                  <button
-                    type="button"
-                    onClick={addLanguage}
-                    className="w-full px-4 py-2 text-white rounded-md transition duration-200"
-                    style={{
-                      backgroundColor: theme.palette.primary.hex,
-                      borderRadius: theme.buttonRadios.m,
-                      fontWeight: theme.fontWeight.bold,
-                    }}
-                  >
-                    Añadir Idioma
-                  </button>
-                  <button type="submit">Guardar</button>
+                  <div className="col-span-2 flex justify-center mt-4">
+                    <button
+                      type="button"
+                      onClick={addLanguage}
+                      className="px-8 py-2 text-white rounded-md transition duration-200"
+                      style={{
+                        backgroundColor: theme.palette.primary.hex,
+                        borderRadius: theme.buttonRadios.m,
+                        fontWeight: theme.fontWeight.bold,
+                      }}
+                    >
+                      Añadir Idioma
+                    </button>
+                  </div>
+                  <div className="col-span-2 flex justify-center mt-4">
+                    <button
+                      type="submit"
+                      className="px-8 py-2 text-white rounded-md transition duration-200"
+                      style={{
+                        backgroundColor: theme.palette.primary.hex,
+                        borderRadius: theme.buttonRadios.m,
+                        fontWeight: theme.fontWeight.bold,
+                      }}
+                    >
+                      Guardar
+                    </button>
+                  </div>
                 </form>
               )}
               {/* Sección de Lenguajes de Programación */}
@@ -394,7 +418,19 @@ const Profile = ({ params }) => {
                       }}
                     />
                   </div>
-                  <button type="submit">Guardar</button>
+                  <div className="col-span-2 flex justify-center mt-4">
+                  <button
+                    type="submit"
+                    className="px-8 py-2 text-white rounded-md transition duration-200"
+                    style={{
+                      backgroundColor: theme.palette.primary.hex,
+                      borderRadius: theme.buttonRadios.m,
+                      fontWeight: theme.fontWeight.bold,
+                    }}
+                    >
+                      Guardar
+                    </button>
+                  </div>
                 </form>
               )}
               {/* Sección de Certificaciones */}
@@ -428,7 +464,19 @@ const Profile = ({ params }) => {
                       }}
                     />
                   </div>
-                  <button type="submit">Guardar</button>
+                  <div className="col-span-2 flex justify-center mt-4">
+                    <button
+                      type="submit"
+                      className="px-8 py-2 text-white rounded-md transition duration-200"
+                      style={{
+                        backgroundColor: theme.palette.primary.hex,
+                        borderRadius: theme.buttonRadios.m,
+                        fontWeight: theme.fontWeight.bold,
+                      }}
+                    >
+                      Guardar
+                    </button>
+                  </div>
                 </form>
               )}
               {/* Sección de Expediente Académico */}
@@ -452,7 +500,7 @@ const Profile = ({ params }) => {
                           e.target.value.split(",").map((exp) => exp.trim())
                         )
                       }
-                      placeholder="Experiencia Laboral"
+                      placeholder="Expediente Académico"
                       className="block w-full mt-1 p-2 border border-gray-300"
                       style={{
                         borderColor: theme.palette.light.hex,
@@ -462,7 +510,19 @@ const Profile = ({ params }) => {
                       }}
                     />
                   </div>
-                  <button type="submit">Guardar</button>
+                  <div className="col-span-2 flex justify-center mt-4">
+                    <button
+                      type="submit"
+                      className="px-8 py-2 text-white rounded-md transition duration-200"
+                      style={{
+                        backgroundColor: theme.palette.primary.hex,
+                        borderRadius: theme.buttonRadios.m,
+                        fontWeight: theme.fontWeight.bold,
+                      }}
+                    >
+                      Guardar
+                    </button>
+                  </div>
                 </form>
               )}
               {/* Sección de Experiencia Laboral */}
@@ -496,7 +556,19 @@ const Profile = ({ params }) => {
                       }}
                     />
                   </div>
-                  <button type="submit">Guardar</button>
+                  <div className="col-span-2 flex justify-center mt-4">
+                    <button
+                      type="submit"
+                      className="px-8 py-2 text-white rounded-md transition duration-200"
+                      style={{
+                        backgroundColor: theme.palette.primary.hex,
+                        borderRadius: theme.buttonRadios.m,
+                        fontWeight: theme.fontWeight.bold,
+                      }}
+                    >
+                      Guardar
+                    </button>
+                  </div>
                 </form>
               )}
             </div>
