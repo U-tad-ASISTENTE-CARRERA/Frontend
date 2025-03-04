@@ -128,7 +128,7 @@ const Home = () => {
           <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8">
             <div
               className="bg-blue-600 h-2.5 rounded-full"
-              style={{ width: `${40}%` }}
+              style={{ width: `${progress}%` }}
             ></div>
             <h2 className="text-center mt-4">{progress}%</h2>
           </div>
