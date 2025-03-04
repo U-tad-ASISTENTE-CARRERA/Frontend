@@ -153,7 +153,7 @@ const Profile = ({ params }) => {
       {firstName === "" || lastName === "" ? (
         <ErrorPopUp
           message={"Debes completar tus datos básicos"}
-          path={`/data_complete/teacher/${id}`}
+          path={`/data_complete/student/${id}`}
         />
       ) : (
         <div

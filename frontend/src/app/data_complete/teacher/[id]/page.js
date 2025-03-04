@@ -6,13 +6,13 @@ import "@fontsource/montserrat";
 import { useRouter, useParams } from "next/navigation";
 import LoadingModal from "../../../components/LoadingModal";
 
-const TeacherDataComplete = () => {
+const TeacherInitForm = () => {
+  const [errors, setErrors] = useState({});
   const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState("");
   const [dni, setDni] = useState("");
   const [gender, setGender] = useState("");
   const [specialization, setSpecialization] = useState("");
-  const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [redirecting, setRedirecting] = useState(false);
@@ -47,7 +47,7 @@ const TeacherDataComplete = () => {
           setLoading(false);
           return;
         }
-        else{
+        else {
           setRedirecting(true);
           router.push(`/profile/teacher/${params.id}`);
         }
@@ -222,7 +222,7 @@ const TeacherDataComplete = () => {
                 <option value="prefer not to say">Prefiero no decirlo</option>
               </select>
               {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
-              
+
               <h2 className="text-lg font-semibold mb-1" style={{ color: theme.palette.text.hex }}>
                 Especialización
               </h2>
@@ -249,4 +249,4 @@ const TeacherDataComplete = () => {
   );
 };
 
-export default TeacherDataComplete;
+export default TeacherInitForm;

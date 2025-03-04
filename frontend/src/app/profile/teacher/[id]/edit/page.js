@@ -238,7 +238,7 @@ const TeacherEdit = () => {
                             </select>
                             {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
 
-                            <h2 className="text-lg font-semibold mb-1" style={{ color: theme.palette.text.hex }}>Especialización (Opcional)</h2>
+                            <h2 className="text-lg font-semibold mb-1" style={{ color: theme.palette.text.hex }}>Especialización</h2>
 
                             <select
                                 value={specialization}
