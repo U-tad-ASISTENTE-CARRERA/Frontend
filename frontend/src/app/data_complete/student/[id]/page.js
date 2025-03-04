@@ -72,6 +72,11 @@ const StudentInitForm = () => {
     return dniPattern.test(dni);
   };
 
+  const languageRegex = (language) => {
+    const languagePattern = /^[a-zA-Z]$/;
+    return languagePattern.test(language);
+  };
+
   const dateRegex = (dateString) => {
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
     return (
@@ -88,11 +93,11 @@ const StudentInitForm = () => {
       dni: !dni.trim()
         ? "El DNI es obligatorio."
         : !dniRegex(dni)
-          ? "Formato incorrecto (8 dígitos + letra)."
-          : undefined,
+        ? "Formato incorrecto (8 dígitos + letra)."
+        : undefined,
       gender: !gender ? "El género es obligatorio." : undefined,
       endDate: !dateRegex(endDate) ? "Formato inválido." : undefined,
-      general: languages.some(lang => !languageRegex(lang.language))
+      general: languages.some((lang) => !languageRegex(lang.language))
         ? "Uno o más idiomas tienen caracteres inválidos."
         : undefined,
       ...languages.reduce((acc, lang, index) => {
@@ -102,7 +107,6 @@ const StudentInitForm = () => {
         return acc;
       }, {}),
     });
-
 
     try {
       const response = await fetch("http://localhost:3000/metadata", {
@@ -118,7 +122,7 @@ const StudentInitForm = () => {
           dni,
           degree: "INSO_DATA",
           languages,
-          gender
+          gender,
         }),
       });
 
@@ -136,8 +140,10 @@ const StudentInitForm = () => {
           errorMessages[data?.error] || "Error al actualizar los metadatos"
         );
         return;
+      } else {
+        localStorage.setItem("metadata", JSON.stringify(data.updatedFields));
+        router.push(`/roadmap_guide/${id}`);
       }
-      router.push(`/roadmap_guide/${id}`);
     } catch (error) {
       console.error(error);
       setError("Ha ocurrido un error inesperado");
@@ -145,86 +151,155 @@ const StudentInitForm = () => {
   };
 
   const removeLanguage = (index) => {
-    setLanguages((prevLanguages) => prevLanguages.filter((_, i) => i !== index));
+    setLanguages((prevLanguages) =>
+      prevLanguages.filter((_, i) => i !== index)
+    );
   };
-
 
   return (
     <div
       className="flex flex-col items-center min-h-screen px-6 py-10"
-      style={{ backgroundColor: theme.palette.neutral.hex, fontFamily: "Montserrat" }}
+      style={{
+        backgroundColor: theme.palette.neutral.hex,
+        fontFamily: "Montserrat",
+      }}
     >
       {/* Título */}
-      <h1 className="text-3xl font-bold text-center pt-10 pb-6" style={{ color: theme.palette.primary.hex }}>
+      <h1
+        className="text-3xl font-bold text-center pt-10 pb-6"
+        style={{ color: theme.palette.primary.hex }}
+      >
         ¡Queremos saber más de ti!
       </h1>
 
       {/* Formulario */}
       <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-md">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-10">
-
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-10"
+        >
           {/* Sección Información Personal */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>Información personal</h2>
+            <h2
+              className="text-lg font-semibold"
+              style={{ color: theme.palette.text.hex }}
+            >
+              Información personal
+            </h2>
 
-            <input type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)}
+            <input
+              type="text"
+              required
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               placeholder="Nombre"
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             />
-            {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
+            {errors.firstName && (
+              <p className="text-red-500 text-sm">{errors.firstName}</p>
+            )}
 
-
-            <input type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)}
+            <input
+              type="text"
+              required
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               placeholder="Apellido"
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             />
-            {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
+            {errors.lastName && (
+              <p className="text-red-500 text-sm">{errors.lastName}</p>
+            )}
 
-
-            <select required value={gender} onChange={(e) => setGender(e.target.value)}
+            <select
+              required
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             >
-              <option value="" disabled>Género</option>
+              <option value="" disabled>
+                Género
+              </option>
               <option value="male">Masculino</option>
               <option value="female">Femenino</option>
               <option value="prefer not to say">Prefiero no decirlo</option>
             </select>
-            {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
+            {errors.gender && (
+              <p className="text-red-500 text-sm">{errors.gender}</p>
+            )}
 
-
-            <input type="text" required value={dni} onChange={(e) => setDni(e.target.value)}
+            <input
+              type="text"
+              required
+              value={dni}
+              onChange={(e) => setDni(e.target.value)}
               placeholder="DNI"
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             />
             {errors.dni && <p className="text-red-500 text-sm">{errors.dni}</p>}
 
-
-            <label className="block text-sm font-medium text-gray-700">Grado</label>
-            <select disabled required value={"INSO_DATA"} onChange={() => { }}
+            <label className="block text-sm font-medium text-gray-700">
+              Grado
+            </label>
+            <select
+              disabled
+              required
+              value={"INSO_DATA"}
+              onChange={() => {}}
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             >
-              <option value="" disabled>Grado</option>
+              <option value="" disabled>
+                Grado
+              </option>
               <option value="INSO+DATA">INSO-DATA</option>
             </select>
 
-
-            <label className="block text-sm font-medium text-gray-700">Fecha de graduación</label>
-            <input type="date" required value={endDate} onChange={(e) => setEndDate(e.target.value)}
+            <label className="block text-sm font-medium text-gray-700">
+              Fecha de graduación
+            </label>
+            <input
+              type="date"
+              required
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
               min="1900-01-01"
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             />
-            {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate}</p>}
+            {errors.endDate && (
+              <p className="text-red-500 text-sm">{errors.endDate}</p>
+            )}
           </div>
 
           {/* Sección de Añadir Idiomas */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>
+            <h2
+              className="text-lg font-semibold"
+              style={{ color: theme.palette.text.hex }}
+            >
               Añadir idiomas
             </h2>
 
@@ -238,7 +313,10 @@ const StudentInitForm = () => {
                   value={lang.language}
                   onChange={(event) => handleLanguageChange(index, event)}
                   className="block w-full p-2 border rounded-md"
-                  style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+                  style={{
+                    borderColor: theme.palette.light.hex,
+                    color: theme.palette.text.hex,
+                  }}
                 />
 
                 {/* Contenedor para el desplegable y el botón de eliminar */}
@@ -249,7 +327,10 @@ const StudentInitForm = () => {
                     value={lang.level}
                     onChange={(event) => handleLanguageChange(index, event)}
                     className="w-full p-2 border rounded-md"
-                    style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+                    style={{
+                      borderColor: theme.palette.light.hex,
+                      color: theme.palette.text.hex,
+                    }}
                   >
                     <option value="low">Bajo</option>
                     <option value="medium">Medio</option>
@@ -286,36 +367,42 @@ const StudentInitForm = () => {
             >
               Añadir idioma
             </button>
-            {languages.map((_, index) => (
-              errors[`language-${index}`] && (
-                <p key={`error-lang-${index}`} className="text-red-500 text-sm">
-                  {errors[`language-${index}`]}
-                </p>
-              )
-            ))}
-
+            {languages.map(
+              (_, index) =>
+                errors[`language-${index}`] && (
+                  <p
+                    key={`error-lang-${index}`}
+                    className="text-red-500 text-sm"
+                  >
+                    {errors[`language-${index}`]}
+                  </p>
+                )
+            )}
           </div>
-
-
 
           {/* Botón de enviar */}
           <div className="col-span-1 md:col-span-2 flex flex-col items-center space-y-4">
-            <button type="submit"
+            <button
+              type="submit"
               className="w-full md:w-auto px-6 py-3 text-white rounded-md transition duration-200"
-              style={{ backgroundColor: theme.palette.primary.hex, borderRadius: theme.buttonRadios.m, fontWeight: theme.fontWeight.bold }}
+              style={{
+                backgroundColor: theme.palette.primary.hex,
+                borderRadius: theme.buttonRadios.m,
+                fontWeight: theme.fontWeight.bold,
+              }}
             >
               Enviar y comenzar test
             </button>
 
             {/* Mensajes de error y éxito */}
-            {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
+            {error && (
+              <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+            )}
           </div>
-
         </form>
       </div>
     </div>
   );
-
 };
 
 export default StudentInitForm;
