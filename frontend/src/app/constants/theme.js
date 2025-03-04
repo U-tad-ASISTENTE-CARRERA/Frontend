@@ -134,9 +134,9 @@ export const styles = {
   dropdown: {
     display: "block",
     position: "absolute",
-    top: "50px",
+    top: "71px",
     right: 0,
-    backgroundColor: "white",
+    backgroundColor: "light-blue",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
     borderRadius: "5px",
     overflow: "hidden",

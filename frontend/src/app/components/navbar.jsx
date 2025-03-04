@@ -27,6 +27,7 @@ export default function Navbar() {
   useEffect(() => {
     setIsToken(localStorage.getItem("token"))  
 
+
     if (isToken){
       setIsLoggedIn(true)
     } else{
@@ -103,15 +104,14 @@ export default function Navbar() {
           <li className="md:ml-auto">
             <div
               className="hover:text-gray-300 transition-colors duration-200 text-nowrap"
-              onMouseEnter={() => setIsDropdownOpen(true)}
-              onMouseLeave={() => setIsDropdownOpen(false)}
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               <i className="bi bi-person-fill text-4xl"></i>
 
               {isDropdownOpen && (
                 <div style={styles.dropdown}>
                   {isLoggedIn ? (
-                    <div style={styles.submenu}>
+                    <div style={styles.submenu} >
                       <button
                         style={styles.dropdownButton}
                         onClick={() => (handleTypeUserProfile())}
@@ -148,7 +148,8 @@ export default function Navbar() {
         >
           <div
             className={`fixed top-0 right-0 w-64 h-full bg-blue-700 shadow-lg transform ${ isMenuOpen ? "translate-x-0" : "translate-x-full"} 
-            transition-transform duration-300 flex flex-col p-6 space-y-6`}
+            transition-transform duration-600 flex flex-col p-6 space-y-6`}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Botón para cerrar la navbar lateral */}
             <button
@@ -168,10 +169,13 @@ export default function Navbar() {
 
             <div
               className="text-white text-lg hover:text-gray-300 transition-colors duration-200"
-              onMouseEnter={() => setIsDropdownOpen(true)}
-              onMouseLeave={() => setIsDropdownOpen(false)}
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               <i className="bi bi-person-fill text-2xl"></i> Usuario
+
+              <i
+                className={`${isDropdownOpen ? "bi bi-chevron-down ml-3" : "bi bi-chevron-left ml-3"}`}
+              ></i>
 
               {isDropdownOpen && (
                 <div className="bg-blue-600 p-2 rounded-lg mt-2 shadow-md">
