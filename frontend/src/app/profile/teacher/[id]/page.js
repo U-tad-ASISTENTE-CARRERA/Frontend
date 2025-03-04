@@ -128,7 +128,7 @@ const Teacher = () => {
 
       {/* Mostrar el perfil si no se está redirigiendo */}
       {!isLoading && !showModal && (
-        <div className="flex flex-col items-center min-h-screen">
+        <div className="flex flex-col items-center min-h-screen p-6">
 
           <h1 className="text-3xl font-bold text-center pt-20 pb-10" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
             {getWelcomeMessage()} {firstName || "Usuario"}
@@ -178,7 +178,6 @@ const Teacher = () => {
                 Alumnos tutelados
               </h2>
 
-              {/* Código a añadir */}
               <div className="w-full overflow-x-auto mt-6 mb-20">
                 {studentsError ? (
                   <p className="text-red-500">{studentsError}</p>

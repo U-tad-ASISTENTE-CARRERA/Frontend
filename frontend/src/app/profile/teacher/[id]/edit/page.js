@@ -174,7 +174,7 @@ const TeacherEdit = () => {
                         </button>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
 
                         {/* Información personal */}
                         <div className="m-4 space-y-3">
