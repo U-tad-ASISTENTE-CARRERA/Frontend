@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
+import LoadingModal from "../../../components/LoadingModal";
 
 const StudentInitForm = () => {
   const [errors, setErrors] = useState({});
@@ -16,37 +17,37 @@ const StudentInitForm = () => {
   const [gender, setGender] = useState("");
   const [endDate, setEndDate] = useState("2022-01-01");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const params = useParams();
   const id = params.id;
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/metadata", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      if (!response.ok) {
-        setError("Error en obteniendo los metadatos");
-      }
-      const data = await response.json();
-      setFirstName(data.metadata.firstName || "");
-      setLastName(data.metadata.lastName || "");
-      setDni(data.metadata.dni || "");
-      setDegree(data.metadata.degree || "");
-      setGender(data.metadata.gender || "");
-      setLanguages(data.metadata.languages || []);
-      setEndDate(data.metadata.endDate || "");
-    } catch (error) {
-      setError(error.message);
-    }
-  };
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/metadata", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (!response.ok) {
+          setError("Error en obteniendo los metadatos");
+        }
+        const data = await response.json();
+        if (data.metadata) {
+          router.push(`/roadmap_guide/${id}`);
+        }
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (JSON.parse(localStorage.getItem("user")).role == "TEACHER") {
       router.push(`/data_complete/teacher/${id}`);
     } else {
@@ -67,10 +68,7 @@ const StudentInitForm = () => {
     setLanguages([...languages, { language: "", level: "low" }]);
   };
 
-  const dniRegex = (dni) => {
-    const dniPattern = /^\d{8}[A-Z]$/;
-    return dniPattern.test(dni);
-  };
+  const dniRegex = (dni) => /^\d{8}[A-Z]$/.test(dni);
 
   const languageRegex = (language) => {
     const languagePattern = /^[a-zA-Z]$/;
@@ -108,6 +106,56 @@ const StudentInitForm = () => {
       }, {}),
     });
 
+    if (!isFormValid()) {
+      setErrors({
+        firstName: !firstName?.trim()
+          ? "El nombre es obligatorio."
+          : !languageRegex(firstName)
+          ? "Solo se permiten caracteres latinos en el nombre."
+          : undefined,
+
+        lastName: !lastName.trim()
+          ? "El apellido es obligatorio."
+          : !languageRegex(lastName)
+          ? "Solo se permiten caracteres latinos en el apellido."
+          : undefined,
+
+        dni: !dni.trim()
+          ? "El DNI es obligatorio."
+          : !dniRegex(dni)
+          ? "Formato incorrecto (8 dígitos + letra)."
+          : undefined,
+
+        gender: !gender ? "El género es obligatorio." : undefined,
+
+        endDate: !dateRegex(endDate) ? "Formato inválido." : undefined,
+
+        general: languages.some((lang) => !languageRegex(lang.language))
+          ? "Uno o más idiomas tienen caracteres inválidos."
+          : undefined,
+
+        ...languages.reduce((acc, lang, index) => {
+          if (!languageRegex(lang.language)) {
+            acc[`language-${index}`] = "Solo se permiten caracteres latinos.";
+          }
+          return acc;
+        }, {}),
+      });
+      return;
+    }
+
+    setSubmitting(true);
+
+    const requestBody = {
+      firstName,
+      lastName,
+      dni,
+      gender,
+      endDate,
+      degree: "INSO_DATA",
+      languages,
+    };
+
     try {
       const response = await fetch("http://localhost:3000/metadata", {
         method: "PATCH",
@@ -124,29 +172,34 @@ const StudentInitForm = () => {
           languages,
           gender,
         }),
+
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
-      console.log(data);
-      setError("");
+      setSubmitting(false);
+
       if (!response.ok) {
         const errorMessages = {
-          NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido",
-          INVALID_USER_ID: "El usuario no existe",
-          INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
+          NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido.",
+          INVALID_USER_ID: "El usuario no existe.",
+          INTERNAL_SERVER_ERROR:
+            "Error interno del servidor. Inténtalo más tarde.",
         };
-
-        setError(
-          errorMessages[data?.error] || "Error al actualizar los metadatos"
-        );
+        setErrors({
+          general:
+            errorMessages[data?.error] || "Error al actualizar los metadatos.",
+        });
         return;
       } else {
         localStorage.setItem("metadata", JSON.stringify(data.updatedFields));
         router.push(`/roadmap_guide/${id}`);
       }
+
+      router.push(`/roadmap_guide/${id}`);
     } catch (error) {
-      console.error(error);
-      setError("Ha ocurrido un error inesperado");
+      setSubmitting(false);
+      setErrors({ general: "Ha ocurrido un error inesperado." });
     }
   };
 
@@ -155,6 +208,10 @@ const StudentInitForm = () => {
       prevLanguages.filter((_, i) => i !== index)
     );
   };
+
+  if (loading) {
+    return <LoadingModal message="Cargando..." />;
+  }
 
   return (
     <div
@@ -189,7 +246,6 @@ const StudentInitForm = () => {
 
             <input
               type="text"
-              required
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               placeholder="Nombre"
@@ -205,7 +261,6 @@ const StudentInitForm = () => {
 
             <input
               type="text"
-              required
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               placeholder="Apellido"
@@ -220,7 +275,6 @@ const StudentInitForm = () => {
             )}
 
             <select
-              required
               value={gender}
               onChange={(e) => setGender(e.target.value)}
               className="block w-full p-2 border rounded-md"
@@ -242,7 +296,6 @@ const StudentInitForm = () => {
 
             <input
               type="text"
-              required
               value={dni}
               onChange={(e) => setDni(e.target.value)}
               placeholder="DNI"
@@ -260,7 +313,7 @@ const StudentInitForm = () => {
             <select
               disabled
               required
-              value={"INSO_DATA"}
+              value={"INSO+DATA"}
               onChange={() => {}}
               className="block w-full p-2 border rounded-md"
               style={{
@@ -279,10 +332,9 @@ const StudentInitForm = () => {
             </label>
             <input
               type="date"
-              required
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              min="1900-01-01"
+              min="2020-01-01"
               className="block w-full p-2 border rounded-md"
               style={{
                 borderColor: theme.palette.light.hex,
@@ -390,6 +442,7 @@ const StudentInitForm = () => {
                 borderRadius: theme.buttonRadios.m,
                 fontWeight: theme.fontWeight.bold,
               }}
+              disabled={submitting}
             >
               Enviar y comenzar test
             </button>
