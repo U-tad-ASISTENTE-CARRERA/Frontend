@@ -178,6 +178,8 @@ const Teacher = () => {
                 Alumnos tutelados
               </h2>
 
+              {/* TODO: Añadir barra de búsqueda */}
+
               <div className="w-full overflow-x-auto mt-6 mb-20">
                 {studentsError ? (
                   <p className="text-red-500">{studentsError}</p>

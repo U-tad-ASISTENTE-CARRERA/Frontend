@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { theme } from "../../../constants/theme";
 import "@fontsource/montserrat";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
+import LoadingModal from "../../../components/LoadingModal";
 
 const StudentInitForm = () => {
   const [errors, setErrors] = useState({});
@@ -16,38 +17,37 @@ const StudentInitForm = () => {
   const [gender, setGender] = useState("");
   const [endDate, setEndDate] = useState("2022-01-01");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const params = useParams();
   const id = params.id;
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/metadata", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      if (!response.ok) {
-        setError("Error en obteniendo los metadatos");
-      }
-      const data = await response.json();
-      setFirstName(data.metadata.firstName || "");
-      setLastName(data.metadata.lastName || "");
-      setDni(data.metadata.dni || "");
-      setDegree(data.metadata.degree || "");
-      setGender(data.metadata.gender || "");
-      setLanguages(data.metadata.languages || []);
-      setEndDate(data.metadata.endDate || "");
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/metadata", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (!response.ok) {
+          setError("Error en obteniendo los metadatos");
+        }
+        const data = await response.json();
+        if (data.metadata) {
+          router.push(`/roadmap_guide/${id}`);
+        }
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (JSON.parse(localStorage.getItem("user")).role == "TEACHER") {
       router.push(`/data_complete/teacher/${id}`);
     } else {
@@ -79,7 +79,7 @@ const StudentInitForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     if (!isFormValid()) {
       setErrors({
         firstName: !firstName?.trim()
@@ -87,27 +87,27 @@ const StudentInitForm = () => {
           : !languageRegex(firstName)
             ? "Solo se permiten caracteres latinos en el nombre."
             : undefined,
-  
+
         lastName: !lastName.trim()
           ? "El apellido es obligatorio."
           : !languageRegex(lastName)
             ? "Solo se permiten caracteres latinos en el apellido."
             : undefined,
-  
+
         dni: !dni.trim()
           ? "El DNI es obligatorio."
           : !dniRegex(dni)
             ? "Formato incorrecto (8 dígitos + letra)."
             : undefined,
-  
+
         gender: !gender ? "El género es obligatorio." : undefined,
-  
+
         endDate: !dateRegex(endDate) ? "Formato inválido." : undefined,
-  
+
         general: languages.some(lang => !languageRegex(lang.language))
           ? "Uno o más idiomas tienen caracteres inválidos."
           : undefined,
-  
+
         ...languages.reduce((acc, lang, index) => {
           if (!languageRegex(lang.language)) {
             acc[`language-${index}`] = "Solo se permiten caracteres latinos.";
@@ -117,9 +117,9 @@ const StudentInitForm = () => {
       });
       return;
     }
-  
+
     setSubmitting(true);
-  
+
     const requestBody = {
       firstName,
       lastName,
@@ -129,7 +129,7 @@ const StudentInitForm = () => {
       degree: "INSO_DATA",
       languages,
     };
-  
+
     try {
       const response = await fetch("http://localhost:3000/metadata", {
         method: "PATCH",
@@ -139,10 +139,10 @@ const StudentInitForm = () => {
         },
         body: JSON.stringify(requestBody),
       });
-  
+
       const data = await response.json();
       setSubmitting(false);
-  
+
       if (!response.ok) {
         const errorMessages = {
           NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido.",
@@ -152,19 +152,21 @@ const StudentInitForm = () => {
         setErrors({ general: errorMessages[data?.error] || "Error al actualizar los metadatos." });
         return;
       }
-  
+
       router.push(`/roadmap_guide/${id}`);
     } catch (error) {
       setSubmitting(false);
       setErrors({ general: "Ha ocurrido un error inesperado." });
     }
   };
-  
 
   const removeLanguage = (index) => {
     setLanguages((prevLanguages) => prevLanguages.filter((_, i) => i !== index));
   };
 
+  if (loading) {
+    return <LoadingModal message="Cargando..." />;
+  }
 
   return (
     <div
@@ -191,14 +193,12 @@ const StudentInitForm = () => {
             />
             {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
 
-
             <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)}
               placeholder="Apellido"
               className="block w-full p-2 border rounded-md"
               style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
             />
             {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
-
 
             <select value={gender} onChange={(e) => setGender(e.target.value)}
               className="block w-full p-2 border rounded-md"
@@ -211,14 +211,12 @@ const StudentInitForm = () => {
             </select>
             {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
 
-
             <input type="text" value={dni} onChange={(e) => setDni(e.target.value)}
               placeholder="DNI"
               className="block w-full p-2 border rounded-md"
               style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
             />
             {errors.dni && <p className="text-red-500 text-sm">{errors.dni}</p>}
-
 
             <label className="block text-sm font-medium text-gray-700">Grado</label>
             <select disabled value={"INSO_DATA"} onChange={() => { }}
@@ -229,10 +227,9 @@ const StudentInitForm = () => {
               <option value="INSO+DATA">INSO-DATA</option>
             </select>
 
-
             <label className="block text-sm font-medium text-gray-700">Fecha de graduación</label>
             <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
-              min="1900-01-01"
+              min="2020-01-01"
               className="block w-full p-2 border rounded-md"
               style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
             />
@@ -312,8 +309,6 @@ const StudentInitForm = () => {
             ))}
 
           </div>
-
-
 
           {/* Botón de enviar */}
           <div className="col-span-1 md:col-span-2 flex flex-col items-center space-y-4">
