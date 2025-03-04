@@ -69,6 +69,8 @@ const TeacherInitForm = () => {
   }, [params.id, router]);
 
   const dniRegex = (dni) => /^\d{8}[A-Z]$/.test(dni);
+  const languageRegex = (language) => /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/.test(language.trim());
+
 
   const validateField = (field, value) => {
     let error = "";
@@ -98,13 +100,24 @@ const TeacherInitForm = () => {
 
     if (!isFormValid()) {
       setErrors({
-        firstName: !firstName?.trim() ? "El nombre es obligatorio." : undefined,
-        lastName: !lastName.trim() ? "El apellido es obligatorio." : undefined,
+        firstName: !firstName?.trim()
+          ? "El nombre es obligatorio."
+          : !languageRegex(firstName)
+            ? "Solo se permiten caracteres latinos en el nombre."
+            : undefined,
+
+        lastName: !lastName.trim()
+          ? "El apellido es obligatorio."
+          : !languageRegex(lastName)
+            ? "Solo se permiten caracteres latinos en el apellido."
+            : undefined,
+
         dni: !dni.trim()
           ? "El DNI es obligatorio."
           : !dniRegex(dni)
             ? "Formato incorrecto (8 dígitos + letra)."
             : undefined,
+
         gender: !gender ? "El género es obligatorio." : undefined,
       });
       return;
@@ -239,7 +252,11 @@ const TeacherInitForm = () => {
 
             </div>
 
-            <button type="submit" className="col-span-2 bg-blue-500 text-white px-4 py-2 rounded-md" disabled={submitting}>
+            <button
+              type="submit"
+              className="col-span-2 bg-blue-500 text-white px-4 py-2 rounded-md"
+              disabled={submitting}
+            >
               {submitting ? "Enviando..." : "Enviar"}
             </button>
           </form>

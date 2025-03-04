@@ -19,6 +19,7 @@ const StudentInitForm = () => {
   const router = useRouter();
   const params = useParams();
   const id = params.id;
+  const [submitting, setSubmitting] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -67,43 +68,68 @@ const StudentInitForm = () => {
     setLanguages([...languages, { language: "", level: "low" }]);
   };
 
-  const dniRegex = (dni) => {
-    const dniPattern = /^\d{8}[A-Z]$/;
-    return dniPattern.test(dni);
-  };
+  const dniRegex = (dni) => /^\d{8}[A-Z]$/.test(dni);
+  const dateRegex = (dateString) => /^\d{4}-\d{2}-\d{2}$/.test(dateString) && !isNaN(new Date(dateString).getTime());
+  const languageRegex = (language) => /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/.test(language.trim());
 
-  const dateRegex = (dateString) => {
-    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-    return (
-      datePattern.test(dateString) && !isNaN(new Date(dateString).getTime())
-    );
+  const isFormValid = () => {
+    return Object.values(errors).every((error) => !error) &&
+      firstName && lastName && dni && dniRegex(dni) && gender;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    setErrors({
-      firstName: !firstName?.trim() ? "El nombre es obligatorio." : undefined,
-      lastName: !lastName.trim() ? "El apellido es obligatorio." : undefined,
-      dni: !dni.trim()
-        ? "El DNI es obligatorio."
-        : !dniRegex(dni)
-          ? "Formato incorrecto (8 dígitos + letra)."
+  
+    if (!isFormValid()) {
+      setErrors({
+        firstName: !firstName?.trim()
+          ? "El nombre es obligatorio."
+          : !languageRegex(firstName)
+            ? "Solo se permiten caracteres latinos en el nombre."
+            : undefined,
+  
+        lastName: !lastName.trim()
+          ? "El apellido es obligatorio."
+          : !languageRegex(lastName)
+            ? "Solo se permiten caracteres latinos en el apellido."
+            : undefined,
+  
+        dni: !dni.trim()
+          ? "El DNI es obligatorio."
+          : !dniRegex(dni)
+            ? "Formato incorrecto (8 dígitos + letra)."
+            : undefined,
+  
+        gender: !gender ? "El género es obligatorio." : undefined,
+  
+        endDate: !dateRegex(endDate) ? "Formato inválido." : undefined,
+  
+        general: languages.some(lang => !languageRegex(lang.language))
+          ? "Uno o más idiomas tienen caracteres inválidos."
           : undefined,
-      gender: !gender ? "El género es obligatorio." : undefined,
-      endDate: !dateRegex(endDate) ? "Formato inválido." : undefined,
-      general: languages.some(lang => !languageRegex(lang.language))
-        ? "Uno o más idiomas tienen caracteres inválidos."
-        : undefined,
-      ...languages.reduce((acc, lang, index) => {
-        if (!languageRegex(lang.language)) {
-          acc[`language-${index}`] = "Solo se permiten caracteres latinos.";
-        }
-        return acc;
-      }, {}),
-    });
-
-
+  
+        ...languages.reduce((acc, lang, index) => {
+          if (!languageRegex(lang.language)) {
+            acc[`language-${index}`] = "Solo se permiten caracteres latinos.";
+          }
+          return acc;
+        }, {}),
+      });
+      return;
+    }
+  
+    setSubmitting(true);
+  
+    const requestBody = {
+      firstName,
+      lastName,
+      dni,
+      gender,
+      endDate,
+      degree: "INSO_DATA",
+      languages,
+    };
+  
     try {
       const response = await fetch("http://localhost:3000/metadata", {
         method: "PATCH",
@@ -111,38 +137,29 @@ const StudentInitForm = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          endDate,
-          dni,
-          degree: "INSO_DATA",
-          languages,
-          gender
-        }),
+        body: JSON.stringify(requestBody),
       });
-
+  
       const data = await response.json();
-      console.log(data);
-      setError("");
+      setSubmitting(false);
+  
       if (!response.ok) {
         const errorMessages = {
-          NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido",
-          INVALID_USER_ID: "El usuario no existe",
-          INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
+          NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido.",
+          INVALID_USER_ID: "El usuario no existe.",
+          INTERNAL_SERVER_ERROR: "Error interno del servidor. Inténtalo más tarde.",
         };
-
-        setError(
-          errorMessages[data?.error] || "Error al actualizar los metadatos"
-        );
+        setErrors({ general: errorMessages[data?.error] || "Error al actualizar los metadatos." });
         return;
       }
+  
       router.push(`/roadmap_guide/${id}`);
     } catch (error) {
-      console.error(error);
-      setError("Ha ocurrido un error inesperado");
+      setSubmitting(false);
+      setErrors({ general: "Ha ocurrido un error inesperado." });
     }
   };
+  
 
   const removeLanguage = (index) => {
     setLanguages((prevLanguages) => prevLanguages.filter((_, i) => i !== index));
@@ -167,7 +184,7 @@ const StudentInitForm = () => {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>Información personal</h2>
 
-            <input type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)}
+            <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)}
               placeholder="Nombre"
               className="block w-full p-2 border rounded-md"
               style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
@@ -175,7 +192,7 @@ const StudentInitForm = () => {
             {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
 
 
-            <input type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)}
+            <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)}
               placeholder="Apellido"
               className="block w-full p-2 border rounded-md"
               style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
@@ -183,7 +200,7 @@ const StudentInitForm = () => {
             {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
 
 
-            <select required value={gender} onChange={(e) => setGender(e.target.value)}
+            <select value={gender} onChange={(e) => setGender(e.target.value)}
               className="block w-full p-2 border rounded-md"
               style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
             >
@@ -195,7 +212,7 @@ const StudentInitForm = () => {
             {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
 
 
-            <input type="text" required value={dni} onChange={(e) => setDni(e.target.value)}
+            <input type="text" value={dni} onChange={(e) => setDni(e.target.value)}
               placeholder="DNI"
               className="block w-full p-2 border rounded-md"
               style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
@@ -204,7 +221,7 @@ const StudentInitForm = () => {
 
 
             <label className="block text-sm font-medium text-gray-700">Grado</label>
-            <select disabled required value={"INSO_DATA"} onChange={() => { }}
+            <select disabled value={"INSO_DATA"} onChange={() => { }}
               className="block w-full p-2 border rounded-md"
               style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
             >
@@ -214,7 +231,7 @@ const StudentInitForm = () => {
 
 
             <label className="block text-sm font-medium text-gray-700">Fecha de graduación</label>
-            <input type="date" required value={endDate} onChange={(e) => setEndDate(e.target.value)}
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
               min="1900-01-01"
               className="block w-full p-2 border rounded-md"
               style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
@@ -225,7 +242,7 @@ const StudentInitForm = () => {
           {/* Sección de Añadir Idiomas */}
           <div className="space-y-4">
             <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>
-              Añadir idiomas
+              Idiomas
             </h2>
 
             {languages.map((lang, index) => (
@@ -303,6 +320,7 @@ const StudentInitForm = () => {
             <button type="submit"
               className="w-full md:w-auto px-6 py-3 text-white rounded-md transition duration-200"
               style={{ backgroundColor: theme.palette.primary.hex, borderRadius: theme.buttonRadios.m, fontWeight: theme.fontWeight.bold }}
+              disabled={submitting}
             >
               Enviar y comenzar test
             </button>
