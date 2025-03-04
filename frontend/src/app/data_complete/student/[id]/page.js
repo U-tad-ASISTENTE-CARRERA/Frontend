@@ -69,42 +69,68 @@ const StudentInitForm = () => {
   };
 
   const dniRegex = (dni) => /^\d{8}[A-Z]$/.test(dni);
-  const dateRegex = (dateString) => /^\d{4}-\d{2}-\d{2}$/.test(dateString) && !isNaN(new Date(dateString).getTime());
-  const languageRegex = (language) => /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/.test(language.trim());
 
-  const isFormValid = () => {
-    return Object.values(errors).every((error) => !error) &&
-      firstName && lastName && dni && dniRegex(dni) && gender;
+  const languageRegex = (language) => {
+    const languagePattern = /^[a-zA-Z]$/;
+    return languagePattern.test(language);
+  };
+
+  const dateRegex = (dateString) => {
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+    return (
+      datePattern.test(dateString) && !isNaN(new Date(dateString).getTime())
+    );
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    setErrors({
+      firstName: !firstName?.trim() ? "El nombre es obligatorio." : undefined,
+      lastName: !lastName.trim() ? "El apellido es obligatorio." : undefined,
+      dni: !dni.trim()
+        ? "El DNI es obligatorio."
+        : !dniRegex(dni)
+        ? "Formato incorrecto (8 dígitos + letra)."
+        : undefined,
+      gender: !gender ? "El género es obligatorio." : undefined,
+      endDate: !dateRegex(endDate) ? "Formato inválido." : undefined,
+      general: languages.some((lang) => !languageRegex(lang.language))
+        ? "Uno o más idiomas tienen caracteres inválidos."
+        : undefined,
+      ...languages.reduce((acc, lang, index) => {
+        if (!languageRegex(lang.language)) {
+          acc[`language-${index}`] = "Solo se permiten caracteres latinos.";
+        }
+        return acc;
+      }, {}),
+    });
 
     if (!isFormValid()) {
       setErrors({
         firstName: !firstName?.trim()
           ? "El nombre es obligatorio."
           : !languageRegex(firstName)
-            ? "Solo se permiten caracteres latinos en el nombre."
-            : undefined,
+          ? "Solo se permiten caracteres latinos en el nombre."
+          : undefined,
 
         lastName: !lastName.trim()
           ? "El apellido es obligatorio."
           : !languageRegex(lastName)
-            ? "Solo se permiten caracteres latinos en el apellido."
-            : undefined,
+          ? "Solo se permiten caracteres latinos en el apellido."
+          : undefined,
 
         dni: !dni.trim()
           ? "El DNI es obligatorio."
           : !dniRegex(dni)
-            ? "Formato incorrecto (8 dígitos + letra)."
-            : undefined,
+          ? "Formato incorrecto (8 dígitos + letra)."
+          : undefined,
 
         gender: !gender ? "El género es obligatorio." : undefined,
 
         endDate: !dateRegex(endDate) ? "Formato inválido." : undefined,
 
-        general: languages.some(lang => !languageRegex(lang.language))
+        general: languages.some((lang) => !languageRegex(lang.language))
           ? "Uno o más idiomas tienen caracteres inválidos."
           : undefined,
 
@@ -137,6 +163,16 @@ const StudentInitForm = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          endDate,
+          dni,
+          degree: "INSO_DATA",
+          languages,
+          gender,
+        }),
+
         body: JSON.stringify(requestBody),
       });
 
@@ -147,10 +183,17 @@ const StudentInitForm = () => {
         const errorMessages = {
           NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido.",
           INVALID_USER_ID: "El usuario no existe.",
-          INTERNAL_SERVER_ERROR: "Error interno del servidor. Inténtalo más tarde.",
+          INTERNAL_SERVER_ERROR:
+            "Error interno del servidor. Inténtalo más tarde.",
         };
-        setErrors({ general: errorMessages[data?.error] || "Error al actualizar los metadatos." });
+        setErrors({
+          general:
+            errorMessages[data?.error] || "Error al actualizar los metadatos.",
+        });
         return;
+      } else {
+        localStorage.setItem("metadata", JSON.stringify(data.updatedFields));
+        router.push(`/roadmap_guide/${id}`);
       }
 
       router.push(`/roadmap_guide/${id}`);
@@ -161,7 +204,9 @@ const StudentInitForm = () => {
   };
 
   const removeLanguage = (index) => {
-    setLanguages((prevLanguages) => prevLanguages.filter((_, i) => i !== index));
+    setLanguages((prevLanguages) =>
+      prevLanguages.filter((_, i) => i !== index)
+    );
   };
 
   if (loading) {
@@ -171,75 +216,143 @@ const StudentInitForm = () => {
   return (
     <div
       className="flex flex-col items-center min-h-screen px-6 py-10"
-      style={{ backgroundColor: theme.palette.neutral.hex, fontFamily: "Montserrat" }}
+      style={{
+        backgroundColor: theme.palette.neutral.hex,
+        fontFamily: "Montserrat",
+      }}
     >
       {/* Título */}
-      <h1 className="text-3xl font-bold text-center pt-10 pb-6" style={{ color: theme.palette.primary.hex }}>
+      <h1
+        className="text-3xl font-bold text-center pt-10 pb-6"
+        style={{ color: theme.palette.primary.hex }}
+      >
         ¡Queremos saber más de ti!
       </h1>
 
       {/* Formulario */}
       <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-md">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-10">
-
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-10"
+        >
           {/* Sección Información Personal */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>Información personal</h2>
+            <h2
+              className="text-lg font-semibold"
+              style={{ color: theme.palette.text.hex }}
+            >
+              Información personal
+            </h2>
 
-            <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)}
+            <input
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               placeholder="Nombre"
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             />
-            {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
+            {errors.firstName && (
+              <p className="text-red-500 text-sm">{errors.firstName}</p>
+            )}
 
-            <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)}
+            <input
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               placeholder="Apellido"
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             />
-            {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
+            {errors.lastName && (
+              <p className="text-red-500 text-sm">{errors.lastName}</p>
+            )}
 
-            <select value={gender} onChange={(e) => setGender(e.target.value)}
+            <select
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             >
-              <option value="" disabled>Género</option>
+              <option value="" disabled>
+                Género
+              </option>
               <option value="male">Masculino</option>
               <option value="female">Femenino</option>
               <option value="prefer not to say">Prefiero no decirlo</option>
             </select>
-            {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
+            {errors.gender && (
+              <p className="text-red-500 text-sm">{errors.gender}</p>
+            )}
 
-            <input type="text" value={dni} onChange={(e) => setDni(e.target.value)}
+            <input
+              type="text"
+              value={dni}
+              onChange={(e) => setDni(e.target.value)}
               placeholder="DNI"
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             />
             {errors.dni && <p className="text-red-500 text-sm">{errors.dni}</p>}
 
-            <label className="block text-sm font-medium text-gray-700">Grado</label>
-            <select disabled value={"INSO_DATA"} onChange={() => { }}
+            <label className="block text-sm font-medium text-gray-700">
+              Grado
+            </label>
+            <select
+              disabled
+              required
+              value={"INSO+DATA"}
+              onChange={() => {}}
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             >
-              <option value="" disabled>Grado</option>
+              <option value="" disabled>
+                Grado
+              </option>
               <option value="INSO+DATA">INSO-DATA</option>
             </select>
 
-            <label className="block text-sm font-medium text-gray-700">Fecha de graduación</label>
-            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
+            <label className="block text-sm font-medium text-gray-700">
+              Fecha de graduación
+            </label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
               min="2020-01-01"
               className="block w-full p-2 border rounded-md"
-              style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+              }}
             />
-            {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate}</p>}
+            {errors.endDate && (
+              <p className="text-red-500 text-sm">{errors.endDate}</p>
+            )}
           </div>
 
           {/* Sección de Añadir Idiomas */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>
-              Idiomas
+            <h2
+              className="text-lg font-semibold"
+              style={{ color: theme.palette.text.hex }}
+            >
+              Añadir idiomas
             </h2>
 
             {languages.map((lang, index) => (
@@ -252,7 +365,10 @@ const StudentInitForm = () => {
                   value={lang.language}
                   onChange={(event) => handleLanguageChange(index, event)}
                   className="block w-full p-2 border rounded-md"
-                  style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+                  style={{
+                    borderColor: theme.palette.light.hex,
+                    color: theme.palette.text.hex,
+                  }}
                 />
 
                 {/* Contenedor para el desplegable y el botón de eliminar */}
@@ -263,7 +379,10 @@ const StudentInitForm = () => {
                     value={lang.level}
                     onChange={(event) => handleLanguageChange(index, event)}
                     className="w-full p-2 border rounded-md"
-                    style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
+                    style={{
+                      borderColor: theme.palette.light.hex,
+                      color: theme.palette.text.hex,
+                    }}
                   >
                     <option value="low">Bajo</option>
                     <option value="medium">Medio</option>
@@ -300,35 +419,43 @@ const StudentInitForm = () => {
             >
               Añadir idioma
             </button>
-            {languages.map((_, index) => (
-              errors[`language-${index}`] && (
-                <p key={`error-lang-${index}`} className="text-red-500 text-sm">
-                  {errors[`language-${index}`]}
-                </p>
-              )
-            ))}
-
+            {languages.map(
+              (_, index) =>
+                errors[`language-${index}`] && (
+                  <p
+                    key={`error-lang-${index}`}
+                    className="text-red-500 text-sm"
+                  >
+                    {errors[`language-${index}`]}
+                  </p>
+                )
+            )}
           </div>
 
           {/* Botón de enviar */}
           <div className="col-span-1 md:col-span-2 flex flex-col items-center space-y-4">
-            <button type="submit"
+            <button
+              type="submit"
               className="w-full md:w-auto px-6 py-3 text-white rounded-md transition duration-200"
-              style={{ backgroundColor: theme.palette.primary.hex, borderRadius: theme.buttonRadios.m, fontWeight: theme.fontWeight.bold }}
+              style={{
+                backgroundColor: theme.palette.primary.hex,
+                borderRadius: theme.buttonRadios.m,
+                fontWeight: theme.fontWeight.bold,
+              }}
               disabled={submitting}
             >
               Enviar y comenzar test
             </button>
 
             {/* Mensajes de error y éxito */}
-            {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
+            {error && (
+              <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+            )}
           </div>
-
         </form>
       </div>
     </div>
   );
-
 };
 
 export default StudentInitForm;

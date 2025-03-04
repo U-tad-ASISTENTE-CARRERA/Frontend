@@ -5,6 +5,7 @@ import "@fontsource/montserrat";
 import ErrorPopUp from "../../../components/ErrorPopUp";
 import { useRouter, useParams } from "next/navigation";
 import { theme } from "../../../constants/theme";
+import Image from "next/image";
 
 const Home = () => {
   const router = useRouter();
@@ -13,6 +14,8 @@ const Home = () => {
   const [roadmap, setRoadmap] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const metadata = JSON.parse(localStorage.getItem("metadata"));
 
   const fetchRoadMap = async () => {
     const response = await fetch(
@@ -31,6 +34,7 @@ const Home = () => {
     }
     const data = await response.json();
     console.log(data);
+    console.log(metadata);
     setRoadmap(data);
   };
 
@@ -58,8 +62,55 @@ const Home = () => {
 
   if (!roadmap) return <div>Loading...</div>;
 
+  const calculateProgress = () => {
+    let totalTasks = 0;
+    let completedTasks = 0;
+
+    Object.values(roadmap.body).forEach((section) => {
+      Object.values(section).forEach((task) => {
+        totalTasks++;
+        if (task.status === "done") {
+          completedTasks++;
+        }
+      });
+    });
+
+    return (completedTasks / totalTasks) * 100;
+  };
+
+  const progress = calculateProgress();
+
   return (
     <>
+      <div className="flex items-center justify-center gap-x-8 p-8">
+        <Image
+          src="/student.png"
+          alt="Student"
+          className="w-24"
+          width={500}
+          height={500}
+        />
+        <div className="flex flex-col items-left">
+          <h1
+            style={{
+              color: theme.palette.text.hex,
+              fontFamily: "Montserrat",
+              fontSize: theme.fontSizes.xxl,
+            }}
+          >
+            {metadata["metadata.firstName"]} {metadata["metadata.lastName"]}
+          </h1>
+          <h3
+            style={{
+              color: theme.palette.text.hex,
+              fontFamily: "Montserrat",
+              fontSize: theme.fontSizes.l,
+            }}
+          >
+            {metadata["metadata.gender"]}
+          </h3>
+        </div>
+      </div>
       <div
         className="flex items-center justify-center min-h-screen p-8"
         style={{ backgroundColor: theme.palette.neutral.hex }}
@@ -74,7 +125,14 @@ const Home = () => {
           >
             {roadmap.name}
           </h1>
-          <div className="space-y-8">
+          <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8">
+            <div
+              className="bg-blue-600 h-2.5 rounded-full"
+              style={{ width: `${progress}%` }}
+            ></div>
+            <h2 className="text-center mt-4">{progress}%</h2>
+          </div>
+          <div className="grid grid-cols-3 gap-10 mt-24 ">
             {Object.entries(roadmap.body).map(([sectionName, sectionData]) => (
               <Section
                 key={sectionName}
@@ -90,6 +148,22 @@ const Home = () => {
 };
 
 const Section = ({ sectionName, sectionData }) => {
+  const calculateSectionProgress = () => {
+    let totalTasks = 0;
+    let completedTasks = 0;
+
+    Object.values(sectionData).forEach((task) => {
+      totalTasks++;
+      if (task.status === "done") {
+        completedTasks++;
+      }
+    });
+
+    return (completedTasks / totalTasks) * 100;
+  };
+
+  const sectionProgress = calculateSectionProgress();
+
   return (
     <div
       className="bg-white p-6 rounded-lg shadow-md"
@@ -104,11 +178,24 @@ const Section = ({ sectionName, sectionData }) => {
       >
         {sectionName}
       </h2>
+      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+        <div
+          className="bg-green-600 h-2.5 rounded-full"
+          style={{ width: `${sectionProgress}%` }}
+        ></div>
+      </div>
       <div className="space-y-4">
         {Object.entries(sectionData).map(([taskName, taskData]) => (
           <Task key={taskName} taskName={taskName} taskData={taskData} />
         ))}
       </div>
+      {sectionProgress === 100 && (
+        <div className="mt-4">
+          <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-sm">
+            ¡Sección completada!
+          </span>
+        </div>
+      )}
     </div>
   );
 };

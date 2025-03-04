@@ -24,6 +24,8 @@ const LogOut = () => {
         return;
       } else {
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("metadata");
         window.location.href = "/";
       }
     } catch (error) {}
@@ -39,12 +41,26 @@ const LogOut = () => {
           borderRadius: theme.buttonRadios.m,
         }}
       >
-        <h2 style={{ fontSize: theme.fontSizes.xl, fontWeight: theme.fontWeight.bold }}>
+        <h2
+          style={{
+            fontSize: theme.fontSizes.xl,
+            fontWeight: theme.fontWeight.bold,
+          }}
+        >
           ¿Estás seguro de que quieres cerrar sesión?
         </h2>
 
         {/* Mostrar error si existe */}
-        {error && <p style={{ color: theme.palette.error.hex, fontSize: theme.fontSizes.m }}>{error}</p>}
+        {error && (
+          <p
+            style={{
+              color: theme.palette.error.hex,
+              fontSize: theme.fontSizes.m,
+            }}
+          >
+            {error}
+          </p>
+        )}
 
         <button
           style={{
