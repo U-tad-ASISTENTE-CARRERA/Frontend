@@ -6,12 +6,12 @@ export default function Home() {
   return (
     <>
       <div
+      style={{
+        backgroundColor: theme.palette.background.hex,
+        fontamily: "Montserrat",
+        color: theme.palette.text.hex,
+      }}
         className="flex flex-col items-center justify-center min-h-screen text-center px-6"
-        style={{
-          backgroundColor: theme.palette.background.hex,
-          fontFamily: "Montserrat",
-          color: theme.palette.text.hex,
-        }}
       >
         <h1
           className="text-4xl font-bold animate-fadeIn"
