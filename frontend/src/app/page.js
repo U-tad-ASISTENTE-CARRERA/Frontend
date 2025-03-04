@@ -1,6 +1,7 @@
 "use client";
 
 import { theme } from "./constants/theme";
+import "@fontsource/montserrat";
 
 export default function Home() {
   return (
@@ -8,14 +9,14 @@ export default function Home() {
       <div
       style={{
         backgroundColor: theme.palette.background.hex,
-        fontamily: "Montserrat",
+        fontFamily: "Montserrat",
         color: theme.palette.text.hex,
       }}
         className="flex flex-col items-center justify-center min-h-screen text-center px-6"
       >
         <h1
           className="text-4xl font-bold animate-fadeIn"
-          style={{ color: theme.palette.primary.hex }}
+          style={{color: theme.palette.primary.hex,  }}
         >
           Bienvenido al Asistente de Carrera Profesional de U-tad
         </h1>
@@ -28,12 +29,13 @@ export default function Home() {
         </p>
 
         <button
-          className="mt-8 px-6 py-3 rounded-md text-lg font-semibold transition-colors duration-300"
           style={{
             backgroundColor: theme.palette.primary.hex,
             color: theme.palette.background.hex,
             borderRadius: theme.buttonRadios.m,
           }}
+          className="mt-8 px-6 py-3 rounded-md text-lg font-semibold transition-colors duration-300"
+          
           onClick={() => window.location.href = "/explorar"}
         >
           Explorar carreras
