@@ -174,7 +174,7 @@ const TeacherEdit = () => {
                         </button>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-2 gap-10">
+                    <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-1 md:grid-cols-2 gap-10">
 
                         {/* Información personal */}
                         <div className="m-4 space-y-3">
@@ -254,7 +254,7 @@ const TeacherEdit = () => {
 
                         <button
                             type="submit"
-                            className="col-span-2 text-white px-4 py-2 rounded-md"
+                            className="col-span-1 md:col-span-2 text-white px-4 py-2 rounded-md"
                             style={{ backgroundColor: theme.palette.primary.hex }}
                             disabled={submitting}
                         >
