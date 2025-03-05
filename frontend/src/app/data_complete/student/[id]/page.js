@@ -39,7 +39,6 @@ const StudentInitForm = () => {
         }
         const data = await response.json();
         if (data.metadata) {
-          router.push(`/roadmap_guide/${id}`);
         }
       } catch (error) {
         setError(error.message);
@@ -71,7 +70,7 @@ const StudentInitForm = () => {
   const dniRegex = (dni) => /^\d{8}[A-Z]$/.test(dni);
 
   const languageRegex = (language) => {
-    const languagePattern = /^[a-zA-Z]$/;
+    const languagePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+$/;
     return languagePattern.test(language);
   };
 

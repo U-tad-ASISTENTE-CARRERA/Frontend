@@ -104,7 +104,6 @@ const RoadmapGuide = () => {
     <div
       className="flex flex-col items-center justify-start min-h-screen"
       style={{
-        backgroundColor: theme.palette.neutral.hex,
         fontFamily: "Montserrat",
       }}
     >
