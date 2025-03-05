@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { theme } from "../constants/theme";
 import "@fontsource/montserrat";
+import "../../../src/app/globals.css";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -67,7 +68,8 @@ const Register = () => {
         localStorage.getItem("token") &&
         localStorage.getItem("user")
       ) {
-        const userRole = data.user.role || JSON.parse(localStorage.getItem("user"))?.role;
+        const userRole =
+          data.user.role || JSON.parse(localStorage.getItem("user"))?.role;
 
         if (userRole === "STUDENT") {
           router.push(`/data_complete/student/${data.user.id}`);
@@ -87,7 +89,6 @@ const Register = () => {
       <div
         className="flex items-center justify-center min-h-screen"
         style={{
-          backgroundColor: theme.palette.neutral.hex,
           fontFamily: "Montserrat",
         }}
       >

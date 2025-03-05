@@ -85,14 +85,14 @@ const StudentInitForm = () => {
   // TODO: ARREGLAR ESTA FUNCIÓN PARA QUE ESTÉ COMPLETA
   const isFormValid = () => {
     return (
-        Object.values(errors).every((error) => !error) &&
-        firstName.trim() &&
-        lastName.trim() &&
-        dni.trim() &&
-        dniRegex(dni) &&
-        gender.trim()
+      Object.values(errors).every((error) => !error) &&
+      firstName.trim() &&
+      lastName.trim() &&
+      dni.trim() &&
+      dniRegex(dni) &&
+      gender.trim()
     );
-};
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -229,7 +229,6 @@ const StudentInitForm = () => {
     <div
       className="flex flex-col items-center min-h-screen px-6 py-10"
       style={{
-        backgroundColor: theme.palette.neutral.hex,
         fontFamily: "Montserrat",
       }}
     >
