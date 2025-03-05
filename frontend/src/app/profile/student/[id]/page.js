@@ -114,7 +114,8 @@ const StudentProfile = () => {
         setError(errorMessages[data?.error] || "Error actualizando los metadatos.");
         return;
       }
-
+      const data = await response.json();
+      localStorage.setItem("metadata", JSON.stringify(data.updatedFields));
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {

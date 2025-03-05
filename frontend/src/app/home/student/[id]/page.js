@@ -98,7 +98,7 @@ const Home = () => {
               fontSize: theme.fontSizes.xxl,
             }}
           >
-            {metadata["metadata.firstName"]} {metadata["metadata.lastName"]}
+            {metadata["metadata.firstName"] || "Name"} {metadata["metadata.lastName"] || "Last"}
           </h1>
           <h3
             style={{
@@ -107,7 +107,7 @@ const Home = () => {
               fontSize: theme.fontSizes.l,
             }}
           >
-            {metadata["metadata.gender"]}
+            {metadata["metadata.gender"] || ""}
           </h3>
         </div>
       </div>

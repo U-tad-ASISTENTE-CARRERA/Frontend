@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { theme } from "../../constants/theme";
-import { on } from "events";
 
 const Certifications = ({ certifications, setCertifications, onSave, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -71,7 +70,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
   // Cancelar cambios y restaurar valores originales
   const handleCancel = () => {
     setTempCertifications([...certifications]);
-    setDeletedCertifications([]); // Restaurar eliminados
+    setDeletedCertifications([]); 
     setErrors({});
     setIsEditing(false);
   };
@@ -106,7 +105,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
               </div>
           </div>
 
-          {/* Mensaje cuando no hay idiomas */}
+          {/* Mensaje cuando no hay certificaciones */}
           {tempCertifications.length === 0 && deletedCertifications.length === 0 && (
             <p className="text-gray-500 text-sm text-center">No hay certificaciones guardadas.</p>
           )}
@@ -123,9 +122,9 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                   onChange={(e) => handleCertificationChange(index, e)}
                   className="block w-full p-2 border rounded-md"
                   style={{
-                                  borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-                                  color: theme.palette.text.hex,
-                                }}
+                    borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                    color: theme.palette.text.hex,
+                  }}
                   disabled={!isEditing}
                 />
 
