@@ -210,9 +210,30 @@ const StudentProfile = () => {
                   onDelete={handleDeleteLanguage}
                 />
               )}
-              {activeSection === "programming" && <ProgrammingLanguages programmingLanguages={programmingLanguages} setProgrammingLanguages={setProgrammingLanguages} />}
-              {activeSection === "certifications" && <Certifications certifications={certifications} setCertifications={setCertifications} />}
-              {activeSection === "employee" && <WorkExperience workExperience={workExperience} setWorkExperience={setWorkExperience} />}
+              {activeSection === "programming" && 
+                <ProgrammingLanguages 
+                  programmingLanguages={programmingLanguages} 
+                  setProgrammingLanguages={setProgrammingLanguages} 
+                  onSave={handleSavePersonalInfo}
+                  onDelete={handleSavePersonalInfo}
+                />
+              }
+              {activeSection === "certifications" && 
+                <Certifications 
+                  certifications={certifications} 
+                  setCertifications={setCertifications} 
+                  onSave={handleSavePersonalInfo}
+                  onDelete={handleSavePersonalInfo}
+                 />
+              }
+              {activeSection === "employee" && 
+                <WorkExperience 
+                  workExperience={workExperience} 
+                  setWorkExperience={setWorkExperience} 
+                  onSave={handleSavePersonalInfo}
+                  onDelete={handleSavePersonalInfo}
+                />
+              }
             </div>
           </div>
         </div>

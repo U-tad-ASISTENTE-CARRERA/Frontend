@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { theme } from "../../constants/theme";
 
-const WorkExperience = ({ workExperience, setWorkExperience }) => {
+const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete }) => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
@@ -49,7 +49,7 @@ const WorkExperience = ({ workExperience, setWorkExperience }) => {
 
       if(deletedWorkExperience > 0){
         await onSave({ workExperience: tempWorkExperience });
-        setTempWorkExperience();
+        setWorkExperience(tempWorkExperience);
       }
     } catch (error) {
       console.error("Error al actualizar las experiencias laborales", error.message);
@@ -112,8 +112,9 @@ const WorkExperience = ({ workExperience, setWorkExperience }) => {
 
         {/* Lista de experiencia laboral */}
         {tempWorkExperience.map((workExperience, index) => (
-          <form key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
+          <form key={index} className="flex items-center gap-3">
+            {/* Tipo de Trabajo */}
+            <div className="w-1/4">
               <label className="block text-sm font-medium">Tipo de Trabajo</label>
               <input
                 type="text"
@@ -128,7 +129,7 @@ const WorkExperience = ({ workExperience, setWorkExperience }) => {
               )}
             </div>
 
-            <div>
+            {/*<div>
             <label className="block text-sm font-medium">Fecha de entrada</label>
               <input
                 type="text"
@@ -141,9 +142,9 @@ const WorkExperience = ({ workExperience, setWorkExperience }) => {
               {errors[`workExperience-${index}`] && (
                 <span className="text-xs text-red-500">{errors[`workExperience-${index}`]}</span>
               )}
-            </div>
+            </div>*/}
 
-            <div>
+            <div className="w-1/4">
               <label className="block text-sm font-medium">Compañia</label>
               <input
                 type="text"
@@ -158,7 +159,7 @@ const WorkExperience = ({ workExperience, setWorkExperience }) => {
               )}
             </div>
 
-            <div>
+            {/*<div>
               <label className="block text-sm font-medium">Fecha de salida</label>
               <input
                 type="text"
@@ -171,9 +172,10 @@ const WorkExperience = ({ workExperience, setWorkExperience }) => {
               {errors[`workExperience-${index}`] && (
                 <span className="text-xs text-red-500">{errors[`workExperience-${index}`]}</span>
               )}
-            </div>
+            </div>*/}
 
-            <div>
+            <div className="w-1/4">
+              <label className="block text-sm font-medium">Descripción</label>
               <input
                 type="text"
                 placeholder="Descripción"
@@ -187,7 +189,7 @@ const WorkExperience = ({ workExperience, setWorkExperience }) => {
               )}
             </div>
 
-            <div>
+            {/*<div>
               <input
                 type="text"
                 placeholder="Responsabilidades"
@@ -199,6 +201,26 @@ const WorkExperience = ({ workExperience, setWorkExperience }) => {
               {errors[`workExperience-${index}`] && (
                 <span className="text-xs text-red-500">{errors[`workExperience-${index}`]}</span>
               )}
+            </div>*/}
+
+            <div className="w-1/5">
+              <label className="block text-sm font-medium">Estado</label>
+                <select
+                  name="endDate"
+                  defaultValue={
+                    workExperience.endDate === "" ? "En vigor" : "Finalizado"
+                  }
+                  className="w-full p-2 border rounded-md"
+                  style={{
+                    borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                    color: theme.palette.text.hex,
+                  }}
+                  disabled={!isEditing}
+                >
+                  
+                  <option className="text-green-500">En vigor</option>
+                  <option className="text-red-500">Finalizado</option>
+              </select>
             </div>
 
             {/* Botón de eliminar */}
@@ -206,7 +228,7 @@ const WorkExperience = ({ workExperience, setWorkExperience }) => {
               <button
                 type="button"
                 onClick={() => handleDelete(index)}
-                className="px-3 py-2 text-sm text-white rounded-md transition duration-200"
+                className="mt-4 px-3 py-2 text-sm text-white rounded-md transition duration-200"
                 style={{
                   backgroundColor: theme.palette.error.hex,
                   fontWeight: "bold",

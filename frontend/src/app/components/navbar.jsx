@@ -51,6 +51,8 @@ export default function Navbar() {
       }
 
       const data = await response.json()
+
+      setIsDropdownOpen(false)
       
       router.push(`/profile/${data.user.role.toLowerCase()}/${data.user.id}`)
   }
@@ -119,7 +121,10 @@ export default function Navbar() {
                       </button>
                       <button
                         style={styles.dropdownButton}
-                        onClick={() => (router.push("/logout"))}
+                        onClick={() => (
+                          router.push("/logout"),
+                          setIsDropdownOpen(false)
+                        )}
                       >
                         Cerrar sesión
                       </button>
@@ -127,7 +132,8 @@ export default function Navbar() {
                   ) : (
                     <button
                       style={styles.dropdownButton}
-                      onClick={() => (router.push("/login"))}
+                      onClick={() => (router.push("/login"),
+                        setIsDropdownOpen(false))}
                     >
                       Iniciar sesión
                     </button>
@@ -188,7 +194,7 @@ export default function Navbar() {
                       </button>
                       <button
                         className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={() => router.push("/logout")}
+                        onClick={() => (router.push("/logout"), setIsDropdownOpen(false))}
                       >
                         Cerrar sesión
                       </button>
@@ -196,7 +202,7 @@ export default function Navbar() {
                   ) : (
                     <button
                       className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                      onClick={() => router.push("/login")}
+                      onClick={() => (router.push("/login"), setIsDropdownOpen(false))}
                     >
                       Iniciar sesión
                     </button>
