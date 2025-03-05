@@ -82,6 +82,18 @@ const StudentInitForm = () => {
     );
   };
 
+  // TODO: ARREGLAR ESTA FUNCIÓN PARA QUE ESTÉ COMPLETA
+  const isFormValid = () => {
+    return (
+        Object.values(errors).every((error) => !error) &&
+        firstName.trim() &&
+        lastName.trim() &&
+        dni.trim() &&
+        dniRegex(dni) &&
+        gender.trim()
+    );
+};
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -313,7 +325,7 @@ const StudentInitForm = () => {
             <select
               disabled
               required
-              value={"INSO+DATA"}
+              value={"INSO_DATA"}
               onChange={() => {}}
               className="block w-full p-2 border rounded-md"
               style={{
