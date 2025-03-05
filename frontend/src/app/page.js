@@ -7,16 +7,15 @@ export default function Home() {
   return (
     <>
       <div
-      style={{
-        backgroundColor: theme.palette.background.hex,
-        fontFamily: "Montserrat",
-        color: theme.palette.text.hex,
-      }}
+        style={{
+          fontFamily: "Montserrat",
+          color: theme.palette.text.hex,
+        }}
         className="flex flex-col items-center justify-center min-h-screen text-center px-6"
       >
         <h1
           className="text-4xl font-bold animate-fadeIn"
-          style={{color: theme.palette.primary.hex,  }}
+          style={{ color: theme.palette.primary.hex }}
         >
           Bienvenido al Asistente de Carrera Profesional de U-tad
         </h1>
@@ -25,7 +24,9 @@ export default function Home() {
           className="text-lg mt-10 animate-fadeIn"
           style={{ maxWidth: "600px", color: theme.palette.darkGray.hex }}
         >
-          Explora diferentes especializaciones en Ingeniería de Datos, Ciencia de Datos y más. Descubre cuál es el camino profesional adecuado para ti con nuestras guías personalizadas.
+          Explora diferentes especializaciones en Ingeniería de Datos, Ciencia
+          de Datos y más. Descubre cuál es el camino profesional adecuado para
+          ti con nuestras guías personalizadas.
         </p>
 
         <button
@@ -35,8 +36,7 @@ export default function Home() {
             borderRadius: theme.buttonRadios.m,
           }}
           className="mt-8 px-6 py-3 rounded-md text-lg font-semibold transition-colors duration-300"
-          
-          onClick={() => window.location.href = "/explorar"}
+          onClick={() => (window.location.href = "/explorar")}
         >
           Explorar carreras
         </button>

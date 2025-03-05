@@ -113,7 +113,7 @@ const Home = () => {
       </div>
       <div
         className="flex items-center justify-center min-h-screen p-8"
-        style={{ backgroundColor: theme.palette.neutral.hex }}
+        style={{}}
       >
         <div className="w-full p-8 bg-white rounded-lg shadow-lg">
           <h1
