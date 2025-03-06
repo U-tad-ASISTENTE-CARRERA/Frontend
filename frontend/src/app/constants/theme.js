@@ -32,7 +32,6 @@ export const theme = {
       name: "Blanco",
       hex: "#FFFFFF",
     },
-    // Nuevos colores añadidos
     secondary: {
       name: "Azul Secundario",
       hex: "#1E88E5",
@@ -112,6 +111,9 @@ export const theme = {
     l: "16px",
     xl: "18px",
     xxl: "24px",
+    xxxl: "32px",
+    xxxxl: "48px",
+    xxxxxl: "64px",
   },
   buttonRadios: {
     s: "4px",

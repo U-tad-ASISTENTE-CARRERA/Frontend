@@ -44,6 +44,22 @@ const RoadmapGuide = () => {
     "¿Cómo de cómodo te sientes aprendiendo conceptos nuevos y complejos de manera autodidacta?",
   ];
 
+  const generateRoadmap = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/userRoadmap", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleAnswer = (value) => {
     const newAnswers = [...answers];
     newAnswers[currentQuestion] = value;
@@ -92,6 +108,7 @@ const RoadmapGuide = () => {
         return;
       } else {
         setSuccess(true);
+        generateRoadmap();
         router.push(`/home/student/${params.id}`);
       }
     } catch (error) {
