@@ -8,6 +8,7 @@ import { theme } from "../../../constants/theme";
 import Image from "next/image";
 import "@fontsource/montserrat";
 import LoadingModal from "../../../components/LoadingModal";
+import ProgressBar from "../../../components/student_profile/ProgressBar";
 
 const Home = () => {
   const router = useRouter();
@@ -20,7 +21,7 @@ const Home = () => {
   const [metadata, setMetadata] = useState({});
   const [progress, setProgress] = useState(0);
 
-  const fetchMetadata = async () => {
+  const fetchMetadataAndRoadmap = async () => {
     const response = await fetch("http://localhost:3000/metadata", {
       method: "GET",
       headers: {
@@ -29,7 +30,10 @@ const Home = () => {
       },
     });
     const data = await response.json();
+    console.log("fetched metadata", data);
     setMetadata(data.metadata);
+    setRoadmap(data.metadata.roadmap);
+    setProgress(calculateProgress(data.metadata.roadmap));
   };
 
   const calculateProgress = (_roadmap) => {
@@ -46,22 +50,6 @@ const Home = () => {
     });
 
     return (completedTasks / totalTasks) * 100;
-  };
-
-  const handleMarkAsDone = async () => {
-    const response = await fetch("http://localhost:3000/userRoadmap", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({
-        roadmapId: id,
-        status: "done",
-      }),
-    });
-    const data = await response.json();
-    console.log(data);
   };
 
   {
@@ -95,10 +83,7 @@ const Home = () => {
         );
       } else {
         //fetchRoadMap();
-        fetchMetadata();
-        console.log("METADATA", metadata);
-        setRoadmap(metadata.roadmap);
-        setProgress(calculateProgress(roadmap));
+        fetchMetadataAndRoadmap();
       }
     } else {
       return (
@@ -110,13 +95,13 @@ const Home = () => {
     }
   }, []);
 
-  if (!roadmap) return <LoadingModal />;
+  if (!roadmap || Object.keys(roadmap).length === 0) return <LoadingModal />;
 
   return (
     <div
       style={{
         background:
-          "linear-gradient(0deg, rgba(2,78,163,1) 0%, rgba(0,95,189,1) 7%, rgba(255,255,255,1) 100%)",
+          "linear-gradient(0deg, rgb(0, 33, 71) 0%, rgb(0, 81, 255) 7%, rgb(255, 255, 255) 100%)",
         padding: 12,
       }}
     >
@@ -137,6 +122,7 @@ const Home = () => {
             }}
           >
             {metadata.firstName}
+            {"   "}
             {metadata.lastName}
           </h1>
           <h3
@@ -154,7 +140,10 @@ const Home = () => {
         className="flex items-center justify-center min-h-screen p-8"
         style={{}}
       >
-        <div className="w-full p-8 bg-white rounded-lg shadow-lg">
+        <div
+          className="w-full p-8 bg-white shadow-lg"
+          style={{ borderRadius: theme.buttonRadios.xxl }}
+        >
           <h1
             className="text-3xl font-bold text-center mb-8"
             style={{
@@ -165,24 +154,17 @@ const Home = () => {
             {roadmap.name}
           </h1>
           <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8">
-            <div
-              className="bg-blue-600 h-2.5 rounded-full"
-              style={{ width: `${progress}%` }}
-            ></div>
-            <h2 className="text-center mt-4">{progress}%</h2>
+            <ProgressBar progress={progress} />
           </div>
           <div className="grid grid-cols-3 gap-10 mt-24 ">
-            {/*roadmap
-              ? Object.entries(roadmap.body).map(
-                  ([sectionName, sectionData]) => (
-                    <Section
-                      key={sectionName}
-                      sectionName={sectionName}
-                      sectionData={sectionData}
-                    />
-                  )
-                )
-              : ""*/}
+            {roadmap.body &&
+              Object.entries(roadmap.body).map(([sectionName, sectionData]) => (
+                <Section
+                  key={sectionName}
+                  sectionName={sectionName}
+                  sectionData={sectionData}
+                />
+              ))}
           </div>
         </div>
       </div>
@@ -217,8 +199,8 @@ const Section = ({ sectionName, sectionData }) => {
     >
       <div>
         <h2
-          className="text-2xl font-semibold mb-4"
-          style={{ color: theme.palette.primary.hex }}
+          className="text-xl font-semibold mb-4"
+          style={{ color: theme.palette.purple.hex }}
         >
           {sectionName}
         </h2>
@@ -232,7 +214,12 @@ const Section = ({ sectionName, sectionData }) => {
       */}
         <div className="space-y-4">
           {Object.entries(sectionData).map(([taskName, taskData]) => (
-            <Task key={taskName} taskName={taskName} taskData={taskData} />
+            <Task
+              key={taskName}
+              taskName={taskName}
+              taskData={taskData}
+              sectionName={sectionName}
+            />
           ))}
         </div>
       </div>
@@ -251,8 +238,26 @@ const Section = ({ sectionName, sectionData }) => {
   );
 };
 
-const Task = ({ taskName, taskData }) => {
+const Task = ({ taskName, taskData, sectionName }) => {
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
+
+  const handleMarkAsDone = async () => {
+    const response = await fetch("http://localhost:3000/userRoadmap", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        sectionName: sectionName,
+        topicName: taskName,
+        newStatus: "done",
+      }),
+    });
+    const data = await response.json();
+    console.log(data);
+    window.location.reload();
+  };
 
   const toggleResources = () => {
     setIsResourcesOpen(!isResourcesOpen);
@@ -266,10 +271,10 @@ const Task = ({ taskName, taskData }) => {
         fontFamily: "Montserrat, sans-serif",
       }}
     >
-      <div className="flex items-center justify-between">
+      <div className="w-fullflex items-center justify-between">
         <h3
-          className="text-xl font-medium mb-2"
-          style={{ color: theme.palette.dark.hex }}
+          className="font-medium mb-2"
+          style={{ color: theme.palette.dark.hex, fontSize: 20 }}
         >
           {taskName}
         </h3>
@@ -278,6 +283,7 @@ const Task = ({ taskName, taskData }) => {
           alt={""}
           width={40}
           height={40}
+          style={{ marginTop: 24 }}
         />
       </div>
       <div className="flex-grow mb-2" style={{ minHeight: "200px" }}>
@@ -305,11 +311,14 @@ const Task = ({ taskName, taskData }) => {
       <div className="flex items-center justify-left">
         <button
           onClick={toggleResources}
-          className="w-20% text-m items-center px-4 py-2 mt-10 text-white rounded-md transition duration-200"
+          className="w-20% text-m items-center px-4 py-2 mt-10 rounded-md transition duration-200"
           style={{
-            backgroundColor: theme.palette.primary.hex,
-            borderRadius: theme.buttonRadios.m,
-            fontWeight: theme.fontWeight.light,
+            backgroundColor: "white",
+            borderRadius: theme.buttonRadios.xl,
+            fontWeight: theme.fontWeight.bold,
+            border: "3px solid",
+            borderColor: theme.palette.dark.hex,
+            color: theme.palette.dark.hex,
           }}
         >
           {isResourcesOpen ? "Ocultar Recursos" : "Mostrar Recursos"}
@@ -333,10 +342,12 @@ const Task = ({ taskName, taskData }) => {
         onClick={handleMarkAsDone}
         className="w-full px-4 py-2 mt-10 text-white rounded-md transition duration-200 transform hover:scale-105"
         style={{
-          backgroundColor: theme.palette.info.hex,
-          borderRadius: theme.buttonRadios.m,
+          background:
+            "radial-gradient(circle, rgba(44,69,228,1) 0%, rgba(96,169,255,1) 100%)",
+          borderRadius: theme.buttonRadios.xl,
           fontWeight: theme.fontWeight.bold,
           fontFamily: "Montserrat, sans-serif",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
         }}
       >
         Finalizar

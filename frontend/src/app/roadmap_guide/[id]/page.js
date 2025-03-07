@@ -187,7 +187,7 @@ const RoadmapGuide = () => {
               fontFamily: "Montserrat, sans-serif",
             }}
           >
-            ¡Gracias por completar el test!
+            {/*¡Gracias por completar el test!*/}
           </p>
         )}
         <div className="flex justify-evenly mt-6">
@@ -233,7 +233,7 @@ const RoadmapGuide = () => {
               }}
               className="text-green-500 text-sm text-center"
             >
-              ¡Gracias por completar el test!
+              {/*¡Gracias por completar el test!*/}
             </p>
           )}
         </div>

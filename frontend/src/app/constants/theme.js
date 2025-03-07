@@ -104,6 +104,10 @@ export const theme = {
       name: "Gris Azulado",
       hex: "#607D8B",
     },
+    purple: {
+      name: "Morado",
+      hex: "#7b04ff",
+    },
   },
   fontSizes: {
     s: "12px",
@@ -128,6 +132,7 @@ export const theme = {
     ultraLight: "200",
     light: "300",
     regular: "400",
+    semibold: "500",
     bold: "700",
   },
 };
