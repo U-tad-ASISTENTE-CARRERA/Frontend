@@ -2,6 +2,10 @@
 
 Este repositorio contiene el frontend de la aplicación **Asistente de Carrera Profesional**, desarrollado en **Next.js con React** para la asignatura **Proyectos III**.
 
+> ❗❗ **IMPORTANTE:**  
+> Asegúrate de probar siempre con la rama `main`, ya que contiene la última versión mostrada al cliente.
+
+
 ## ⚠️ REQUISITOS PREVIOS
 
 Antes de ejecutar este frontend, **asegúrate de que el backend esté en funcionamiento**.
@@ -43,7 +47,7 @@ La aplicación estará disponible en **[http://localhost:3001](http://localhost:
 
 Para facilitar el acceso durante el desarrollo, puedes utilizar estos usuarios de prueba:
 
-| Rol      | Usuario         | Contraseña  |
+| Rol      | Correo         | Contraseña  |
 |----------|---------------|------------|
 | Admin    | POR_COMPLETAR | POR_COMPLETAR   |
 | Estudiante  | alina@live.u-tad.com | Alina!@#    |
