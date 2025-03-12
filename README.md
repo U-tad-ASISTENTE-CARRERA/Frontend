@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Asistente de Carrera Profesional - Frontend
 
-## Getting Started
+Este repositorio contiene el frontend de la aplicación **Asistente de Carrera Profesional**, desarrollado en **Next.js con React** para la asignatura **Proyectos III**.
 
-First, run the development server:
+## ⚠️ REQUISITOS PREVIOS
 
+Antes de ejecutar este frontend, **asegúrate de que el backend esté en funcionamiento**.
+
+🔗 **Repositorio del backend**: [github.com/U-tad-ASISTENTE-CARRERA/Backend](https://github.com/U-tad-ASISTENTE-CARRERA/Backend)  
+📌 **Instrucciones para ejecutar el backend**: Consulta el README del backend.
+
+---
+
+## ⚡️ Puesta en marcha
+
+Sigue estos pasos para ejecutar el frontend en tu entorno local:
+
+### 1. Clonar el repositorio
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/U-tad-ASISTENTE-CARRERA/Frontend.git
+cd Frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Instalar dependencias
+```bash
+npm install
+# o
+yarn install
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 3. Iniciar el servidor de desarrollo
+```bash
+npm run dev
+# o
+yarn dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+La aplicación estará disponible en **[http://localhost:3001](http://localhost:3001)**.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 👤 Usuarios de prueba
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Para facilitar el acceso durante el desarrollo, puedes utilizar estos usuarios de prueba:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Rol      | Usuario         | Contraseña  |
+|----------|---------------|------------|
+| Admin    | POR_COMPLETAR | POR_COMPLETAR   |
+| Estudiante  | alina@live.u-tad.com | Alina!@#    |
+| Profesor  | profesor1@u-tad.com | #!Hola_9    |
 
-## Deploy on Vercel
+Si necesitas más credenciales, revisa el backend o la [base de datos en Firebase](https://console.firebase.google.com/u/2/project/asistente-carrera/firestore/databases/-default-/data/~2Fdegrees~2FINSO_DATA?hl=es-419).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📚 Recursos adicionales
+
+- [Documentación de Next.js](https://nextjs.org/docs)  
+- [Guía oficial de React](https://react.dev/)  
+- [Cómo desplegar en Vercel](https://vercel.com/docs)
+
