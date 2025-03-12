@@ -47,7 +47,7 @@ La aplicación estará disponible en **[http://localhost:3001](http://localhost:
 
 Para facilitar el acceso durante el desarrollo, puedes utilizar estos usuarios de prueba:
 
-| Rol      | Usuario         | Contraseña  |
+| Rol      | Correo         | Contraseña  |
 |----------|---------------|------------|
 | Admin    | POR_COMPLETAR | POR_COMPLETAR   |
 | Estudiante  | alina@live.u-tad.com | Alina!@#    |
