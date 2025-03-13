@@ -37,24 +37,30 @@ const PersonalInfo = ({
 
   // Función para validar el formulario
   const isFormValid = () => {
-    setErrors({
+    // Crear un objeto de errores sin actualizar aún el estado
+    const newErrors = {
       firstName: !tempFirstName.trim()
         ? "El nombre es obligatorio."
-        : !nameRegex.test(tempFirstName)
+        : !nameRegex(tempFirstName)
           ? "El nombre solo puede contener caracteres latinos."
           : undefined,
 
       lastName: !tempLastName.trim()
         ? "El apellido es obligatorio."
-        : !nameRegex.test(tempLastName)
+        : !nameRegex(tempLastName)
           ? "El apellido solo puede contener caracteres latinos."
           : undefined,
 
       gender: !tempGender ? "El género es obligatorio." : undefined,
-    });
+    };
 
-    return Object.values(errors).every((error) => error === undefined);
+    // Actualizar el estado con los errores
+    setErrors(newErrors);
+
+    // Evaluar si hay algún error
+    return Object.values(newErrors).every((error) => error === undefined);
   };
+
 
   // Función para actualizar la BD con PATCH sin borrar campos
   const handleSave = async () => {
@@ -73,7 +79,7 @@ const PersonalInfo = ({
     if (tempGender !== gender) updates.gender = tempGender;
 
     if (Object.keys(updates).length === 0) {
-      setError("No hay cambios para actualizar.");
+      setErrors("No hay cambios para actualizar.");
       return;
     }
 
@@ -94,7 +100,7 @@ const PersonalInfo = ({
           INTERNAL_SERVER_ERROR: "Error en el servidor.",
         };
         const data = await response.json();
-        setError(errorMessages[data?.error] || "Error actualizando los metadatos.");
+        setErrors(errorMessages[data?.error] || "Error actualizando los metadatos.");
         return;
       }
 
@@ -120,8 +126,12 @@ const PersonalInfo = ({
     setTempBirthDate(birthDate);
     setTempEndDate(endDate);
     setTempGender(gender);
+
+    // Limpia los errores cuando el usuario cancela
+    setErrors({});
     setIsEditing(false);
   };
+  
 
   return (
     <div className="p-4 bg-white rounded-lg">
@@ -161,10 +171,15 @@ const PersonalInfo = ({
           Información personal
         </h3>
 
+
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <div>
-            <label className="block text-sm font-medium">Nombre</label>
+            <label className="block text-sm font-medium flex items-center gap-1">
+              Nombre
+              {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
+            </label>
+
             <input
               type="text"
               value={tempFirstName}
@@ -175,11 +190,15 @@ const PersonalInfo = ({
                 borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
               }}
             />
-            {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
+            {isEditing && errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Apellidos</label>
+            <label className="block text-sm font-medium flex items-center gap-1">
+              Apellidos
+              {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
+            </label>
+
             <input
               type="text"
               value={tempLastName}
@@ -190,7 +209,7 @@ const PersonalInfo = ({
                 borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
               }}
             />
-            {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
+            {isEditing && errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
           </div>
 
 
@@ -210,24 +229,29 @@ const PersonalInfo = ({
           </div>
 
           <div>
-          <label className="block text-sm font-medium">Género</label>
-          <select
-            value={tempGender}
-            onChange={(e) => setTempGender(e.target.value)}
-            className="block w-full p-2 border rounded-md transition-all"
-            style={{
-              borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-              color: theme.palette.text.hex,
-            }}
-            disabled={!isEditing}
-          >
-            <option value="">Selecciona tu género</option>
-            <option value="male">Masculino</option>
-            <option value="female">Femenino</option>
-            <option value="prefer not to say">Prefiero no decirlo</option>
-          </select>
-          {errors.gender && <p className="text-red-500 text-xs mt-1">{errors.gender}</p>}
-        </div>
+
+            <label className="block text-sm font-medium flex items-center gap-1">
+              Género
+              {isEditing && <span className="text-red-500 text-xs ml-1">*</span>}
+            </label>
+
+            <select
+              value={tempGender}
+              onChange={(e) => setTempGender(e.target.value)}
+              className="block w-full p-2 border rounded-md transition-all"
+              style={{
+                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                color: theme.palette.text.hex,
+              }}
+              disabled={!isEditing}
+            >
+              <option value="">Selecciona tu género</option>
+              <option value="male">Masculino</option>
+              <option value="female">Femenino</option>
+              <option value="prefer not to say">Prefiero no decirlo</option>
+            </select>
+            {isEditing && errors.gender && <p className="text-red-500 text-xs mt-1">{errors.gender}</p>}
+          </div>
 
         </form>
       </div>
@@ -254,12 +278,18 @@ const PersonalInfo = ({
 
 
           <div>
-            <label className="block text-sm font-medium">Grado</label>
+          <label className="block text-sm font-medium flex items-center gap-1">
+              Grado
+              {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
+            </label>
             <input type="text" value={degree} className="block w-full p-2 border rounded-md bg-gray-200" disabled />
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Fecha de graduación</label>
+            <label className="block text-sm font-medium flex items-center gap-1">
+              Fecha de graduación
+              {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
+            </label>
             <input
               type="date"
               value={tempEndDate}
