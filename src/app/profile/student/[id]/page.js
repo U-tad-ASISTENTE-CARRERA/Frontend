@@ -11,6 +11,7 @@ import Languages from "@/components/student_profile/Languages";
 import ProgrammingLanguages from "@/components/student_profile/ProgrammingLanguages";
 import Certifications from "@/components/student_profile/Certifications";
 import WorkExperience from "@/components/student_profile/WorkExperience";
+import ExpedienteAcademico from "@/components/student_profile/ExpedienteAcademico";
 
 import { convertTimestampToDate } from "@/utils/FirebaseDateUtils";
 
@@ -34,6 +35,7 @@ const StudentProfile = () => {
   const [gender, setGender] = useState("");
   const [success, setSuccess] = useState(false);
   const [activeSection, setActiveSection] = useState("personal");
+  const [academicRecord, setAcademicRecord] = useState([]);
 
 
   // Cargar datos del usuario desde la BD
@@ -66,7 +68,7 @@ const StudentProfile = () => {
         setDegree(data.metadata.degree || "");
         setYearsCompleted(data.metadata.yearsCompleted || "");
         setLanguages(data.metadata.languages || []);
-        setSpecialization(data.metadata.specialization || "Sin especialización");
+        setSpecialization(data.metadata.specialization || "");
         setProgrammingLanguages(data.metadata.programmingLanguages || []);
         setCertifications(data.metadata.certifications || []);
         setWorkExperience(data.metadata.workExperience || []);
@@ -75,6 +77,11 @@ const StudentProfile = () => {
         // Aplicar conversión de fechas
         setEndDate(convertTimestampToDate(data.metadata.endDate));
         setBirthDate(convertTimestampToDate(data.metadata.birthDate));
+
+        // Cargar Expediente Académico
+        if (data.metadata.AH?.subjects) {
+          setAcademicRecord(data.metadata.AH.subjects);
+        }
 
       } catch (error) {
         setError(error.message);
@@ -143,6 +150,62 @@ const StudentProfile = () => {
       console.error("Error al eliminar idioma:", error.message);
     }
   };
+
+  const handleSaveGrades = async (updatedGrades) => {
+    try {
+      const response = await fetch("http://localhost:3000/AH", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ grades: updatedGrades }),
+      });
+  
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Error actualizando expediente académico.");
+      }
+  
+      // 📌 Obtener los datos actualizados después de hacer el PATCH
+      fetchAcademicRecord();
+  
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+  
+
+
+  const fetchAcademicRecord = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/AH", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Error obteniendo expediente académico.");
+      }
+  
+      const data = await response.json();
+      if (data.subjects) {
+        setAcademicRecord(data.subjects);
+      }
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+  
+  useEffect(() => {
+    fetchAcademicRecord();
+  }, []); // Se ejecuta solo una vez al cargar el componente
+  
 
   // Función específica para actualizar los datos personales
   const handleSavePersonalInfo = (updatedData) => {
@@ -228,6 +291,12 @@ const StudentProfile = () => {
                     onDelete={handleSavePersonalInfo}
                   />
                 }
+                {activeSection === "AH" && (
+                  <ExpedienteAcademico
+                    academicRecord={academicRecord}
+                    onSave={handleSaveGrades}
+                  />
+                )}
               </div>
             </div>
           </div>
