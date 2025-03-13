@@ -8,7 +8,7 @@ const SidebarNavigation = ({ activeSection, setActiveSection }) => {
   ];
 
   return (
-    <div className="flex md:flex-col flex-row w-full md:w-64 gap-2 overflow-x-auto md:overflow-visible whitespace-nowrap bg-white rounded-sm">
+    <div className="flex md:flex-col flex-row w-full md:w-64 gap-2 overflow-x-auto md:overflow-visible whitespace-nowrap rounded-sm">
       {sections.map(({ id, label }) => (
         <button
           key={id}

@@ -596,6 +596,12 @@ video {
 .m-4 {
   margin: 1rem;
 }
+.m-5 {
+  margin: 1.25rem;
+}
+.m-2 {
+  margin: 0.5rem;
+}
 .mb-1 {
   margin-bottom: 0.25rem;
 }
@@ -1245,6 +1251,10 @@ body {
 
   .md\:hidden {
     display: none;
+  }
+
+  .md\:min-h-screen {
+    min-height: 100vh;
   }
 
   .md\:w-64 {

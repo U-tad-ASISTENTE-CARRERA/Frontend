@@ -169,65 +169,70 @@ const StudentProfile = () => {
             {getWelcomeMessage()} {firstName || "Usuario"}
           </h1>
 
-          {/* Diseño responsive */}
-          <div className="w-full max-w-8xl flex flex-col md:flex-row">
-            <div className="w-full md:w-64 overflow-x-auto md:overflow-visible">
-              <SidebarNavigation activeSection={activeSection} setActiveSection={setActiveSection} />
-            </div>
+          <div className="bg-white rounded-lg w-full min-w-full md:min-w-screen">
 
-            {/* Secciones con actualización a la BD */}
-            <div className="flex-1 p-6 bg-white rounded-lg">
-              {activeSection === "personal" && (
-                <PersonalInfo
-                  firstName={firstName}
-                  lastName={lastName}
-                  degree={degree}
-                  yearsCompleted={yearsCompleted}
-                  endDate={endDate}
-                  birthDate={birthDate}
-                  gender={gender}
-                  setFirstName={setFirstName}
-                  setLastName={setLastName}
-                  setBirthDate={setBirthDate}
-                  setGender={setGender}
-                  setEndDate={setEndDate}
-                  onSave={handleSavePersonalInfo}
-                />
-              )}
-              {activeSection === "languages" && (
-                <Languages
-                  languages={languages}
-                  setLanguages={setLanguages}
-                  onSave={handleSavePersonalInfo}
-                  onDelete={handleDeleteLanguage}
-                />
-              )}
-              {activeSection === "programming" && 
-                <ProgrammingLanguages 
-                  programmingLanguages={programmingLanguages} 
-                  setProgrammingLanguages={setProgrammingLanguages} 
-                  onSave={handleSavePersonalInfo}
-                  onDelete={handleSavePersonalInfo}
-                />
-              }
-              {activeSection === "certifications" && 
-                <Certifications 
-                  certifications={certifications} 
-                  setCertifications={setCertifications} 
-                  onSave={handleSavePersonalInfo}
-                  onDelete={handleSavePersonalInfo}
-                 />
-              }
-              {activeSection === "employee" && 
-                <WorkExperience 
-                  workExperience={workExperience} 
-                  setWorkExperience={setWorkExperience} 
-                  onSave={handleSavePersonalInfo}
-                  onDelete={handleSavePersonalInfo}
-                />
-              }
+            {/* Diseño responsive */}
+            <div className="w-full max-w-8xl flex flex-col md:flex-row">
+              <div className="w-full md:w-64 overflow-x-auto md:overflow-visible">
+                <SidebarNavigation activeSection={activeSection} setActiveSection={setActiveSection} />
+              </div>
+
+              {/* Secciones con actualización a la BD */}
+              <div className="flex-1 p-6">
+                {activeSection === "personal" && (
+                  <PersonalInfo
+                    firstName={firstName}
+                    lastName={lastName}
+                    degree={degree}
+                    yearsCompleted={yearsCompleted}
+                    endDate={endDate}
+                    birthDate={birthDate}
+                    gender={gender}
+                    setFirstName={setFirstName}
+                    setLastName={setLastName}
+                    setBirthDate={setBirthDate}
+                    setGender={setGender}
+                    setEndDate={setEndDate}
+                    onSave={handleSavePersonalInfo}
+                  />
+                )}
+                {activeSection === "languages" && (
+                  <Languages
+                    languages={languages}
+                    setLanguages={setLanguages}
+                    onSave={handleSavePersonalInfo}
+                    onDelete={handleDeleteLanguage}
+                  />
+                )}
+                {activeSection === "programming" &&
+                  <ProgrammingLanguages
+                    programmingLanguages={programmingLanguages}
+                    setProgrammingLanguages={setProgrammingLanguages}
+                    onSave={handleSavePersonalInfo}
+                    onDelete={handleSavePersonalInfo}
+                  />
+                }
+                {activeSection === "certifications" &&
+                  <Certifications
+                    certifications={certifications}
+                    setCertifications={setCertifications}
+                    onSave={handleSavePersonalInfo}
+                    onDelete={handleSavePersonalInfo}
+                  />
+                }
+                {activeSection === "employee" &&
+                  <WorkExperience
+                    workExperience={workExperience}
+                    setWorkExperience={setWorkExperience}
+                    onSave={handleSavePersonalInfo}
+                    onDelete={handleSavePersonalInfo}
+                  />
+                }
+              </div>
             </div>
           </div>
+
+
         </div>
       )}
     </>
