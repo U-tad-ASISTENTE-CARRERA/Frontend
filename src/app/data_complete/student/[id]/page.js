@@ -1,18 +1,18 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { theme } from "../../../constants/theme";
+import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import LoadingModal from "../../../components/LoadingModal";
+import LoadingModal from "@/components/LoadingModal";
+import { nameRegex, dateRegex } from "@/utils/ValidatorRegex";
 
 const StudentInitForm = () => {
   const [errors, setErrors] = useState({});
   const [languages, setLanguages] = useState([]);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [dni, setDni] = useState("");
   const [degree, setDegree] = useState(""); // Por defecto a INSO_DATA
   const [gender, setGender] = useState("");
   const [endDate, setEndDate] = useState("2022-01-01");
@@ -67,19 +67,6 @@ const StudentInitForm = () => {
     setLanguages([...languages, { language: "", level: "low" }]);
   };
 
-  const dniRegex = (dni) => /^\d{8}[A-Z]$/.test(dni);
-
-  const languageRegex = (language) => {
-    const languagePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+$/;
-    return languagePattern.test(language);
-  };
-
-  const dateRegex = (dateString) => {
-    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-    return (
-      datePattern.test(dateString) && !isNaN(new Date(dateString).getTime())
-    );
-  };
 
   // TODO: ARREGLAR ESTA FUNCIÓN PARA QUE ESTÉ COMPLETA
   const isFormValid = () => {
@@ -87,8 +74,6 @@ const StudentInitForm = () => {
       Object.values(errors).every((error) => !error) &&
       firstName.trim() &&
       lastName.trim() &&
-      dni.trim() &&
-      dniRegex(dni) &&
       gender.trim()
     );
   };
@@ -99,18 +84,13 @@ const StudentInitForm = () => {
     setErrors({
       firstName: !firstName?.trim() ? "El nombre es obligatorio." : undefined,
       lastName: !lastName.trim() ? "El apellido es obligatorio." : undefined,
-      dni: !dni.trim()
-        ? "El DNI es obligatorio."
-        : !dniRegex(dni)
-        ? "Formato incorrecto (8 dígitos + letra)."
-        : undefined,
       gender: !gender ? "El género es obligatorio." : undefined,
       endDate: !dateRegex(endDate) ? "Formato inválido." : undefined,
-      general: languages.some((lang) => !languageRegex(lang.language))
+      general: languages.some((lang) => !nameRegex(lang.language))
         ? "Uno o más idiomas tienen caracteres inválidos."
         : undefined,
       ...languages.reduce((acc, lang, index) => {
-        if (!languageRegex(lang.language)) {
+        if (!nameRegex(lang.language)) {
           acc[`language-${index}`] = "Solo se permiten caracteres latinos.";
         }
         return acc;
@@ -121,32 +101,26 @@ const StudentInitForm = () => {
       setErrors({
         firstName: !firstName?.trim()
           ? "El nombre es obligatorio."
-          : !languageRegex(firstName)
+          : !nameRegex(firstName)
           ? "Solo se permiten caracteres latinos en el nombre."
           : undefined,
 
         lastName: !lastName.trim()
           ? "El apellido es obligatorio."
-          : !languageRegex(lastName)
+          : !nameRegex(lastName)
           ? "Solo se permiten caracteres latinos en el apellido."
-          : undefined,
-
-        dni: !dni.trim()
-          ? "El DNI es obligatorio."
-          : !dniRegex(dni)
-          ? "Formato incorrecto (8 dígitos + letra)."
           : undefined,
 
         gender: !gender ? "El género es obligatorio." : undefined,
 
         endDate: !dateRegex(endDate) ? "Formato inválido." : undefined,
 
-        general: languages.some((lang) => !languageRegex(lang.language))
+        general: languages.some((lang) => !nameRegex(lang.language))
           ? "Uno o más idiomas tienen caracteres inválidos."
           : undefined,
 
         ...languages.reduce((acc, lang, index) => {
-          if (!languageRegex(lang.language)) {
+          if (!nameRegex(lang.language)) {
             acc[`language-${index}`] = "Solo se permiten caracteres latinos.";
           }
           return acc;
@@ -160,7 +134,6 @@ const StudentInitForm = () => {
     const requestBody = {
       firstName,
       lastName,
-      dni,
       gender,
       endDate,
       degree: "INSO_DATA",
@@ -178,7 +151,6 @@ const StudentInitForm = () => {
           firstName,
           lastName,
           endDate,
-          dni,
           degree: "INSO_DATA",
           languages,
           gender,
@@ -303,19 +275,6 @@ const StudentInitForm = () => {
             {errors.gender && (
               <p className="text-red-500 text-sm">{errors.gender}</p>
             )}
-
-            <input
-              type="text"
-              value={dni}
-              onChange={(e) => setDni(e.target.value)}
-              placeholder="DNI"
-              className="block w-full p-2 border rounded-md"
-              style={{
-                borderColor: theme.palette.light.hex,
-                color: theme.palette.text.hex,
-              }}
-            />
-            {errors.dni && <p className="text-red-500 text-sm">{errors.dni}</p>}
 
             <label className="block text-sm font-medium text-gray-700">
               Grado

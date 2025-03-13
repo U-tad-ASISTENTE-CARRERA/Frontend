@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { theme } from "../../constants/theme";
+import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
-import ErrorPopUp from "../../components/ErrorPopUp";
+import ErrorPopUp from "@/components/ErrorPopUp";
 
 const RoadmapGuide = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);

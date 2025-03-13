@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
-import { theme } from "../../../constants/theme";
+import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
-import ErrorPopUp from "../../../components/ErrorPopUp";
-import LoadingModal from "../../../components/LoadingModal";
+import ErrorPopUp from "@/components/ErrorPopUp";
+import LoadingModal from "@/components/LoadingModal";
 
 const Teacher = () => {
   const router = useRouter();

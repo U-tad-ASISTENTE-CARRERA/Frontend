@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { theme } from "../constants/theme";
+import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import "../../../src/app/globals.css";
 

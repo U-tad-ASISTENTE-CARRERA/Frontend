@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { theme } from "../../../constants/theme";
+import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import { useRouter, useParams } from "next/navigation";
-import LoadingModal from "../../../components/LoadingModal";
+import LoadingModal from "@/components/LoadingModal";
 
 const TeacherInitForm = () => {
   const [errors, setErrors] = useState({});

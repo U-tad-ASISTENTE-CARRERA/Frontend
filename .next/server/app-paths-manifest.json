@@ -1,5 +1,7 @@
 {
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js",
-  "/login/page": "app/login/page.js"
+  "/data_complete/student/[id]/page": "app/data_complete/student/[id]/page.js",
+  "/roadmap_guide/[id]/page": "app/roadmap_guide/[id]/page.js",
+  "/profile/student/[id]/page": "app/profile/student/[id]/page.js",
+  "/home/student/[id]/page": "app/home/student/[id]/page.js"
 }

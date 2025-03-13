@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import "@fontsource/montserrat";
-import ErrorPopUp from "../../../components/ErrorPopUp";
 import { useRouter, useParams } from "next/navigation";
-import { theme } from "../../../constants/theme";
+import { theme } from "@/constants/theme";
 import Image from "next/image";
 import "@fontsource/montserrat";
-import LoadingModal from "../../../components/LoadingModal";
-import ProgressBar from "../../../components/student_profile/ProgressBar";
+import ErrorPopUp from "@/components/ErrorPopUp";
+import LoadingModal from "@/components/LoadingModal";
+import ProgressBar from "@/components/student_profile/ProgressBar";
 
 const Home = () => {
   const router = useRouter();

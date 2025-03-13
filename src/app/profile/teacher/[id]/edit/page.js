@@ -4,9 +4,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { theme } from "../../../../constants/theme";
+import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
-import LoadingModal from "../../../../components/LoadingModal";
+import LoadingModal from "@/components/LoadingModal";
 
 const TeacherEdit = () => {
     const router = useRouter();

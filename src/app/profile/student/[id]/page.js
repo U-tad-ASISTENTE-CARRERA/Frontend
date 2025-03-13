@@ -1,20 +1,22 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation"; // 🔥 Importamos useRouter
-import { theme } from "../../../constants/theme";
+import { useParams, useRouter } from "next/navigation";
+import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
-import LoadingModal from "../../../components/LoadingModal"; // 🔥 Nuevo componente de carga
-import SidebarNavigation from "../../../components/student_profile/SidebarNavigation";
-import PersonalInfo from "../../../components/student_profile/PersonalInfo";
-import Languages from "../../../components/student_profile/Languages";
-import ProgrammingLanguages from "../../../components/student_profile/ProgrammingLanguages";
-import Certifications from "../../../components/student_profile/Certifications";
-import WorkExperience from "../../../components/student_profile/WorkExperience";
+import LoadingModal from "@/components/LoadingModal";
+import SidebarNavigation from "@/components/student_profile/SidebarNavigation";
+import PersonalInfo from "@/components/student_profile/PersonalInfo";
+import Languages from "@/components/student_profile/Languages";
+import ProgrammingLanguages from "@/components/student_profile/ProgrammingLanguages";
+import Certifications from "@/components/student_profile/Certifications";
+import WorkExperience from "@/components/student_profile/WorkExperience";
+
+import { convertTimestampToDate } from "@/utils/FirebaseDateUtils";
 
 const StudentProfile = () => {
   const { id } = useParams();
-  const router = useRouter(); // 🔥 Necesario para redirigir
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -24,7 +26,6 @@ const StudentProfile = () => {
   const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [dni, setDni] = useState("");
   const [degree, setDegree] = useState("");
   const [yearsCompleted, setYearsCompleted] = useState("");
   const [programmingLanguages, setProgrammingLanguages] = useState([{ language: "" }]);
@@ -34,14 +35,8 @@ const StudentProfile = () => {
   const [success, setSuccess] = useState(false);
   const [activeSection, setActiveSection] = useState("personal");
 
-  // 🔥 Función para convertir timestamps de Firebase a YYYY-MM-DD
-  const convertTimestampToDate = (timestamp) => {
-    return timestamp?._seconds
-      ? new Date(timestamp._seconds * 1000).toISOString().split("T")[0]
-      : "";
-  };
 
-  // 🔥 Cargar datos del usuario desde la BD
+  // Cargar datos del usuario desde la BD
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -60,7 +55,7 @@ const StudentProfile = () => {
 
         const data = await response.json();
 
-        // 🔥 Redirigir si no hay metadata
+        // Redirigir si no hay metadata
         if (!data.metadata) {
           router.push(`/data_complete/student/${id}`);
           return;
@@ -68,7 +63,6 @@ const StudentProfile = () => {
 
         setFirstName(data.metadata.firstName || "");
         setLastName(data.metadata.lastName || "");
-        setDni(data.metadata.dni || "");
         setDegree(data.metadata.degree || "");
         setYearsCompleted(data.metadata.yearsCompleted || "");
         setLanguages(data.metadata.languages || []);
@@ -92,7 +86,7 @@ const StudentProfile = () => {
     fetchData();
   }, []);
 
-  // 🔥 Función para actualizar la metadata en la BD con PATCH
+  // Función para actualizar la metadata en la BD con PATCH
   const handleUpdateMetadata = async (updates) => {
     try {
       const response = await fetch("http://localhost:3000/metadata", {
@@ -132,7 +126,7 @@ const StudentProfile = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
-          languages: [{ language: languageObj.language, level: languageObj.level }], // 🔥 Enviar como objeto
+          languages: [{ language: languageObj.language, level: languageObj.level }], // Enviar como objeto
         }),
       });
 
@@ -141,7 +135,7 @@ const StudentProfile = () => {
         throw new Error(data.errors?.[0] || "Error eliminando el idioma.");
       }
 
-      // 🔥 Eliminar del estado global si la petición fue exitosa
+      // Eliminar del estado global si la petición fue exitosa
       setLanguages((prevLanguages) =>
         prevLanguages.filter((lang) => lang.language !== languageObj.language)
       );
@@ -150,12 +144,12 @@ const StudentProfile = () => {
     }
   };
 
-  // 🔥 Función específica para actualizar los datos personales
+  // Función específica para actualizar los datos personales
   const handleSavePersonalInfo = (updatedData) => {
     handleUpdateMetadata(updatedData);
   };
 
-  // 🔥 Mensaje de bienvenida según el género
+  // Mensaje de bienvenida según el género
   const getWelcomeMessage = () => {
     if (gender === "male") return "Bienvenido";
     if (gender === "female") return "Bienvenida";
@@ -165,7 +159,7 @@ const StudentProfile = () => {
   return (
     <>
       {loading ? (
-        <LoadingModal /> // 🔥 Se muestra mientras se cargan los datos
+        <LoadingModal /> // Se muestra mientras se cargan los datos
       ) : (
         <div className="flex flex-col items-center min-h-screen p-6">
           <h1
@@ -187,7 +181,6 @@ const StudentProfile = () => {
                 <PersonalInfo
                   firstName={firstName}
                   lastName={lastName}
-                  dni={dni}
                   degree={degree}
                   yearsCompleted={yearsCompleted}
                   endDate={endDate}
@@ -195,7 +188,6 @@ const StudentProfile = () => {
                   gender={gender}
                   setFirstName={setFirstName}
                   setLastName={setLastName}
-                  setDni={setDni}
                   setBirthDate={setBirthDate}
                   setGender={setGender}
                   setEndDate={setEndDate}
