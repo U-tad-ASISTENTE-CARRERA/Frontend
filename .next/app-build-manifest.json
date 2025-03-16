@@ -17,41 +17,6 @@
       "static/chunks/main-app.js",
       "static/css/app/login/page.css",
       "static/chunks/app/login/page.js"
-    ],
-    "/register/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/register/page.css",
-      "static/chunks/app/register/page.js"
-    ],
-    "/data_complete/student/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/data_complete/student/[id]/page.css",
-      "static/chunks/app/data_complete/student/[id]/page.js"
-    ],
-    "/roadmap_guide/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/roadmap_guide/[id]/page.css",
-      "static/chunks/app/roadmap_guide/[id]/page.js"
-    ],
-    "/home/student/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/home/student/[id]/page.css",
-      "static/chunks/app/home/student/[id]/page.js"
-    ],
-    "/profile/student/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/profile/student/[id]/page.css",
-      "static/chunks/app/profile/student/[id]/page.js"
-    ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
     ]
   }
 }
