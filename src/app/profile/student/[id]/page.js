@@ -29,7 +29,7 @@ const StudentProfile = () => {
   const [endDate, setEndDate] = useState("");
   const [degree, setDegree] = useState("");
   const [yearsCompleted, setYearsCompleted] = useState("");
-  const [programmingLanguages, setProgrammingLanguages] = useState([{ language: "" }]);
+  const [skills, setSkills] = useState([{ language: "" }]);
   const [certifications, setCertifications] = useState([]);
   const [workExperience, setWorkExperience] = useState([]);
   const [gender, setGender] = useState("");
@@ -69,7 +69,7 @@ const StudentProfile = () => {
         setYearsCompleted(data.metadata.yearsCompleted || "");
         setLanguages(data.metadata.languages || []);
         setSpecialization(data.metadata.specialization || "");
-        setProgrammingLanguages(data.metadata.programmingLanguages || []);
+        setSkills(data.metadata.skills || []);
         setCertifications(data.metadata.certifications || []);
         setWorkExperience(data.metadata.workExperience || []);
         setGender(data.metadata.gender || "");
@@ -267,14 +267,14 @@ const StudentProfile = () => {
                     onDelete={handleDeleteLanguage}
                   />
                 )}
-                {activeSection === "programming" &&
+                {activeSection === "programming" &&(
                   <ProgrammingLanguages
-                    programmingLanguages={programmingLanguages}
-                    setProgrammingLanguages={setProgrammingLanguages}
+                    skills={skills}
+                    setSkills={setSkills}
                     onSave={handleSavePersonalInfo}
                     onDelete={handleSavePersonalInfo}
                   />
-                }
+                )}
                 {activeSection === "certifications" &&
                   <Certifications
                     certifications={certifications}
