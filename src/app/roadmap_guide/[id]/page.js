@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { theme } from "@/constants/theme";
+import { theme } from "@constants/theme";
 import "@fontsource/montserrat";
-import ErrorPopUp from "@/components/ErrorPopUp";
+import ErrorPopUp from "@components/ErrorPopUp";
+import LoadingModal from "@components/LoadingModal";
 
 const RoadmapGuide = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -14,7 +15,11 @@ const RoadmapGuide = () => {
   const params = useParams();
   const router = useRouter();
   const [user, setUser] = useState({});
-  const [specialization, setSpecialization] = useState("Data Analyst");
+  const [specialization, setSpecialization] = useState("");
+  const [recommendedSpecialization, setRecommendedSpecialization] =
+    useState("");
+  const [loading, setLoading] = useState(true);
+  const [showSpecializationModal, setShowSpecializationModal] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("user") && localStorage.getItem("token")) {
@@ -25,6 +30,8 @@ const RoadmapGuide = () => {
             path={`/home/student/${params.id}`}
           />
         );
+      } else {
+        setLoading(false);
       }
     } else {
       return (
@@ -34,7 +41,7 @@ const RoadmapGuide = () => {
         />
       );
     }
-  }, [params.id, user]);
+  }, []);
 
   const questions = [
     "¿Cuánto te apasiona trabajar con datos y descubrir patrones ocultos?",
@@ -43,6 +50,14 @@ const RoadmapGuide = () => {
     "¿Cuánto has trabajado con herramientas de análisis de datos como Excel, SQL o Tableau?",
     "¿Cómo de cómodo te sientes aprendiendo conceptos nuevos y complejos de manera autodidacta?",
   ];
+
+  const calculateSpecialization = (answers) => {
+    const total = answers.reduce((acc, val) => acc + val, 0);
+    if (total >= 15) return "AI";
+    if (total >= 10) return "Data Analyst";
+    if (total >= 5) return "Backend";
+    return "Frontend";
+  };
 
   const generateRoadmap = async () => {
     try {
@@ -78,8 +93,17 @@ const RoadmapGuide = () => {
       setCurrentQuestion(currentQuestion - 1);
     }
   };
+
   const handleSubmit = async () => {
     console.log("Todas las preguntas han sido respondidas:", answers);
+    const recommended = calculateSpecialization(answers);
+    setRecommendedSpecialization(recommended);
+    setSpecialization(recommended);
+    setShowSpecializationModal(true);
+  };
+
+  const confirmSpecialization = async () => {
+    setShowSpecializationModal(false);
     try {
       const response = await fetch("http://localhost:3000/metadata", {
         method: "PATCH",
@@ -116,6 +140,10 @@ const RoadmapGuide = () => {
       setError("Ha ocurrido un error inesperado");
     }
   };
+
+  if (loading) {
+    return <LoadingModal message="Cargando..." />;
+  }
 
   return (
     <div
@@ -160,7 +188,7 @@ const RoadmapGuide = () => {
               max="5"
               value={answers[currentQuestion] || 0}
               onChange={(e) => handleAnswer(parseInt(e.target.value))}
-              className="block w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
+              className="block w-full mt-1 p-3 border border-gray-300 rounded-md"
               style={{
                 borderColor: theme.palette.light.hex,
                 color: theme.palette.text.hex,
@@ -180,15 +208,17 @@ const RoadmapGuide = () => {
             </span>
           </div>
         ) : (
-          <p
+          {
+            /*<p
             className="text-center"
             style={{
               color: theme.palette.success.hex,
               fontFamily: "Montserrat, sans-serif",
             }}
           >
-            {/*¡Gracias por completar el test!*/}
-          </p>
+           ¡Gracias por completar el test!
+          </p>*/
+          }
         )}
         <div className="flex justify-evenly mt-6">
           {currentQuestion > 0 && (
@@ -238,6 +268,46 @@ const RoadmapGuide = () => {
           )}
         </div>
       </div>
+
+      {showSpecializationModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">
+              Especialización Recomendada
+            </h2>
+            <p className="mb-4">
+              Tu especialización recomendada es:{" "}
+              <strong style={{ color: theme.palette.primary.hex }}>
+                {recommendedSpecialization}
+              </strong>
+            </p>
+            <div className="mb-4">
+              <label className="block mb-2">
+                ¿Quieres cambiar tu especialización?
+              </label>
+              <select
+                value={specialization}
+                onChange={(e) => setSpecialization(e.target.value)}
+                className="block w-full p-4 pl-2 pr-4 ml-0 m-8"
+                style={{ borderRadius: theme.buttonRadios.m }}
+              >
+                <option value="Frontend Developer">Frontend</option>
+                <option value="Backend Development">Backend</option>
+                <option value="Artificial Intelligence">AI</option>
+                <option value="Data Analyst">Data Analyst</option>
+              </select>
+            </div>
+            <div className="flex justify-left">
+              <button
+                onClick={confirmSpecialization}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
