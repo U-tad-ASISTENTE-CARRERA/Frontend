@@ -15,7 +15,6 @@ const TeacherEdit = () => {
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [dni, setDni] = useState("");
     const [gender, setGender] = useState("");
     const [specialization, setSpecialization] = useState("");
     const [errors, setErrors] = useState({});
@@ -44,7 +43,6 @@ const TeacherEdit = () => {
                 // Cargar datos actuales en los campos
                 setFirstName(metadata.firstName || "");
                 setLastName(metadata.lastName || "");
-                setDni(metadata.dni || "");
                 setGender(metadata.gender || "");
                 setSpecialization(metadata.specialization || "");
                 setMetadata(metadata); // Guardar los datos en el estado
@@ -59,15 +57,11 @@ const TeacherEdit = () => {
         fetchUserData();
     }, [id]);
 
-    const dniRegex = (dni) => /^\d{8}[A-Z]$/.test(dni);
-
     const validateField = (field, value) => {
         let error = "";
         if (!value.trim()) {
             error = `El campo ${field} es obligatorio.`;
-        } else if (field === "DNI" && !dniRegex(value)) {
-            error = "Formato incorrecto (8 dígitos seguidos de una letra).";
-        }
+        } 
         setErrors((prevErrors) => ({
             ...prevErrors,
             [field]: error || undefined,
@@ -84,8 +78,6 @@ const TeacherEdit = () => {
             Object.values(errors).every((error) => !error) &&
             firstName.trim() &&
             lastName.trim() &&
-            dni.trim() &&
-            dniRegex(dni) &&
             gender.trim()
         );
     };
@@ -97,11 +89,6 @@ const TeacherEdit = () => {
             setErrors({
                 firstName: !firstName?.trim() ? "El nombre es obligatorio." : undefined,
                 lastName: !lastName.trim() ? "El apellido es obligatorio." : undefined,
-                dni: !dni.trim()
-                    ? "El DNI es obligatorio."
-                    : !dniRegex(dni)
-                        ? "Formato incorrecto (8 dígitos + letra)."
-                        : undefined,
                 gender: !gender ? "El género es obligatorio." : undefined,
             });
             return;
@@ -112,7 +99,6 @@ const TeacherEdit = () => {
         const requestBody = {
             firstName,
             lastName,
-            dni,
             gender,
             specialization: specialization.trim() ? specialization : null, // Usar null para eliminar la especialización
         };
@@ -208,18 +194,7 @@ const TeacherEdit = () => {
                             />
                             {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
 
-                            <p style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}>
-                                DNI:
-                            </p>
-                            <input
-                                type="text"
-                                value={dni}
-                                onChange={(e) => handleChange("DNI", e.target.value, setDni)}
-                                placeholder="DNI"
-                                className="block w-full p-2 border border-gray-300 rounded-md"
-                                style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
-                            />
-                            {errors.dni && <p className="text-red-500 text-sm">{errors.dni}</p>}
+                            
                         </div>
 
                         {/* Género y Especialización */}

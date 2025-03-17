@@ -12,6 +12,7 @@ import ProgrammingLanguages from "@/components/student_profile/ProgrammingLangua
 import Certifications from "@/components/student_profile/Certifications";
 import WorkExperience from "@/components/student_profile/WorkExperience";
 import ExpedienteAcademico from "@/components/student_profile/ExpedienteAcademico";
+import ShowTutor from "@/components/student_profile/ShowTutor";
 
 import { convertTimestampToDate } from "@/utils/FirebaseDateUtils";
 
@@ -127,7 +128,7 @@ const StudentProfile = () => {
   const handleDeleteLanguage = async (languageObj) => {
 
     console.log(languageObj)
-    
+
     try {
       const response = await fetch("http://localhost:3000/metadata", {
         method: "DELETE",
@@ -156,7 +157,7 @@ const StudentProfile = () => {
 
   const handleDeleteSkill = async (skillObj) => {
     const skillList = skillObj.skills.map(sk => sk.skill);
-  
+
     try {
       const response = await fetch("http://localhost:3000/metadata", {
         method: "DELETE",
@@ -168,12 +169,12 @@ const StudentProfile = () => {
           skills: skillList.map(skill => ({ skill })), // Enviar como array de objetos
         }),
       });
-  
+
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.errors?.[0] || "Error eliminando skill.");
       }
-  
+
       setSkills((prevSkills) =>
         prevSkills.filter((sk) => !skillList.includes(sk.skill))
       );
@@ -181,7 +182,7 @@ const StudentProfile = () => {
       console.log("Error al eliminar skill:", error.message);
     }
   };
-  
+
 
   const handleSaveGrades = async (updatedGrades) => {
     try {
@@ -193,22 +194,22 @@ const StudentProfile = () => {
         },
         body: JSON.stringify({ grades: updatedGrades }),
       });
-  
+
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.message || "Error actualizando expediente académico.");
       }
-  
+
       // 📌 Obtener los datos actualizados después de hacer el PATCH
       fetchAcademicRecord();
-  
+
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       setError(error.message);
     }
   };
-  
+
 
 
   const fetchAcademicRecord = async () => {
@@ -220,11 +221,11 @@ const StudentProfile = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-  
+
       if (!response.ok) {
         throw new Error("Error obteniendo expediente académico.");
       }
-  
+
       const data = await response.json();
       if (data.subjects) {
         setAcademicRecord(data.subjects);
@@ -233,11 +234,11 @@ const StudentProfile = () => {
       setError(error.message);
     }
   };
-  
+
   useEffect(() => {
     fetchAcademicRecord();
   }, []); // Se ejecuta solo una vez al cargar el componente
-  
+
 
   // Función específica para actualizar los datos personales
   const handleSavePersonalInfo = (updatedData) => {
@@ -299,7 +300,7 @@ const StudentProfile = () => {
                     onDelete={handleDeleteLanguage}
                   />
                 )}
-                {activeSection === "programming" &&(
+                {activeSection === "programming" && (
                   <ProgrammingLanguages
                     skills={skills}
                     setSkills={setSkills}
@@ -329,6 +330,12 @@ const StudentProfile = () => {
                     onSave={handleSaveGrades}
                   />
                 )}
+
+                {activeSection === "showTutor" && (
+                  <ShowTutor
+                  />
+                )}
+
               </div>
             </div>
           </div>

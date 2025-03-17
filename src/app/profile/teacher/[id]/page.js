@@ -15,7 +15,6 @@ const Teacher = () => {
 
   const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState(null);
-  const [dni, setDni] = useState("SIN COMPLETAR");
   const [gender, setGender] = useState("");
   const [specialization, setSpecialization] = useState("");
   const [error, setError] = useState("");
@@ -61,7 +60,6 @@ const Teacher = () => {
       // Guardar datos introducidos
       setFirstName(metadata.firstName);
       setLastName(metadata.lastName);
-      setDni(metadata.dni);
       setGender(metadata.gender);
       setSpecialization(metadata.specialization);
 
@@ -152,9 +150,6 @@ const Teacher = () => {
                 <strong>Apellidos:</strong> {lastName}
               </p>
               <p style={{ color: theme.palette.text.hex }}>
-                <strong>DNI:</strong> {dni}
-              </p>
-              <p style={{ color: theme.palette.text.hex }}>
                 <strong>Género:</strong> {gender ? (gender === "male" ? "Masculino" : gender === "female" ? "Femenino" : "Prefiero no decirlo") : "SIN COMPLETAR"}
               </p>
               <p style={{ color: theme.palette.text.hex }}>
@@ -191,7 +186,6 @@ const Teacher = () => {
                       <tr>
                         <th className="py-2 px-4 border-b text-left">Nombre</th>
                         <th className="py-2 px-4 border-b text-left">Apellidos</th>
-                        <th className="py-2 px-4 border-b text-left">DNI</th>
                         <th className="py-2 px-4 border-b text-left">Grupo</th>
                         <th className="py-2 px-4 border-b text-left">Grado</th>
                         <th className="py-2 px-4 border-b text-left">Email</th>
@@ -202,7 +196,6 @@ const Teacher = () => {
                         <tr key={student._id || index} className="hover:bg-gray-50 transition">
                           <td className="py-2 px-4 border-b">{student.firstName}</td>
                           <td className="py-2 px-4 border-b">{student.lastName}</td>
-                          <td className="py-2 px-4 border-b">{student.dni || "No disponible"}</td>
                           <td className="py-2 px-4 border-b">{student.degree || "No disponible"}</td>
                           <td className="py-2 px-4 border-b">{student.yearsCompleted || "No disponible"}</td>
                           <td className="py-2 px-4 border-b">{student.email}</td>

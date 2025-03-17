@@ -10,7 +10,6 @@ const TeacherInitForm = () => {
   const [errors, setErrors] = useState({});
   const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState("");
-  const [dni, setDni] = useState("");
   const [gender, setGender] = useState("");
   const [specialization, setSpecialization] = useState("");
   const [success, setSuccess] = useState(false);
@@ -54,7 +53,6 @@ const TeacherInitForm = () => {
         // Asignar valores a los estados
         setFirstName(metadata.firstName || "");
         setLastName(metadata.lastName || "");
-        setDni(metadata.dni || "");
         setGender(metadata.gender || "");
         setSpecialization(metadata.specialization || "");
       } catch (error) {
@@ -67,14 +65,10 @@ const TeacherInitForm = () => {
     fetchUserData();
   }, [params.id, router]);
 
-  const dniRegex = (dni) => /^\d{8}[A-Z]$/.test(dni);
-
   const validateField = (field, value) => {
     let error = "";
     if (!value.trim()) {
       error = `El campo ${field} es obligatorio.`;
-    } else if (field === "DNI" && !dniRegex(value)) {
-      error = "Formato incorrecto (8 dígitos seguidos de una letra).";
     }
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -92,8 +86,6 @@ const TeacherInitForm = () => {
       Object.values(errors).every((error) => !error) &&
       firstName &&
       lastName &&
-      dni &&
-      dniRegex(dni) &&
       gender
     );
   };
@@ -105,11 +97,6 @@ const TeacherInitForm = () => {
       setErrors({
         firstName: !firstName?.trim() ? "El nombre es obligatorio." : undefined,
         lastName: !lastName.trim() ? "El apellido es obligatorio." : undefined,
-        dni: !dni.trim()
-          ? "El DNI es obligatorio."
-          : !dniRegex(dni)
-          ? "Formato incorrecto (8 dígitos + letra)."
-          : undefined,
         gender: !gender ? "El género es obligatorio." : undefined,
       });
       return;
@@ -120,7 +107,6 @@ const TeacherInitForm = () => {
     const requestBody = {
       firstName,
       lastName,
-      dni,
       gender,
     };
 
@@ -226,20 +212,7 @@ const TeacherInitForm = () => {
                 <p className="text-red-500 text-sm">{errors.lastName}</p>
               )}
 
-              <input
-                type="text"
-                value={dni}
-                onChange={(e) => handleChange("DNI", e.target.value, setDni)}
-                placeholder="DNI"
-                className="block w-full p-2 border border-gray-300 rounded-md"
-                style={{
-                  borderColor: theme.palette.light.hex,
-                  color: theme.palette.text.hex,
-                }}
-              />
-              {errors.dni && (
-                <p className="text-red-500 text-sm">{errors.dni}</p>
-              )}
+              
             </div>
 
             {/* Género y Especialización */}
