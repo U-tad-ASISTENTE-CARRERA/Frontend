@@ -15,7 +15,7 @@ const StudentInitForm = () => {
   const [lastName, setLastName] = useState("");
   const [degree, setDegree] = useState(""); // Por defecto a INSO_DATA
   const [gender, setGender] = useState("");
-  const [endDate, setEndDate] = useState("2022-01-01");
+  const [endDate, setEndDate] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -74,59 +74,53 @@ const StudentInitForm = () => {
       Object.values(errors).every((error) => !error) &&
       firstName.trim() &&
       lastName.trim() &&
-      gender.trim()
+      gender.trim() &&
+      !errors.endDate
     );
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    setErrors({
-      firstName: !firstName?.trim() ? "El nombre es obligatorio." : undefined,
-      lastName: !lastName.trim() ? "El apellido es obligatorio." : undefined,
+    const today = new Date().toISOString().split("T")[0]; // Obtener la fecha actual en formato YYYY-MM-DD
+
+    const newErrors = {
+      firstName: !firstName?.trim()
+        ? "El nombre es obligatorio."
+        : !nameRegex(firstName)
+          ? "Solo se permiten caracteres latinos en el nombre."
+          : undefined,
+
+      lastName: !lastName.trim()
+        ? "El apellido es obligatorio."
+        : !nameRegex(lastName)
+          ? "Solo se permiten caracteres latinos en el apellido."
+          : undefined,
+
       gender: !gender ? "El género es obligatorio." : undefined,
-      endDate: !dateRegex(endDate) ? "Formato inválido." : undefined,
+
+      endDate: !dateRegex(endDate)
+        ? "Formato inválido."
+        : endDate < today
+          ? "La fecha de graduación no puede ser anterior a hoy."
+          : undefined,
+
       general: languages.some((lang) => !nameRegex(lang.language))
         ? "Uno o más idiomas tienen caracteres inválidos."
         : undefined,
+
       ...languages.reduce((acc, lang, index) => {
         if (!nameRegex(lang.language)) {
           acc[`language-${index}`] = "Solo se permiten caracteres latinos.";
         }
         return acc;
       }, {}),
-    });
+    };
 
-    if (!isFormValid()) {
-      setErrors({
-        firstName: !firstName?.trim()
-          ? "El nombre es obligatorio."
-          : !nameRegex(firstName)
-          ? "Solo se permiten caracteres latinos en el nombre."
-          : undefined,
+    setErrors(newErrors);
 
-        lastName: !lastName.trim()
-          ? "El apellido es obligatorio."
-          : !nameRegex(lastName)
-          ? "Solo se permiten caracteres latinos en el apellido."
-          : undefined,
-
-        gender: !gender ? "El género es obligatorio." : undefined,
-
-        endDate: !dateRegex(endDate) ? "Formato inválido." : undefined,
-
-        general: languages.some((lang) => !nameRegex(lang.language))
-          ? "Uno o más idiomas tienen caracteres inválidos."
-          : undefined,
-
-        ...languages.reduce((acc, lang, index) => {
-          if (!nameRegex(lang.language)) {
-            acc[`language-${index}`] = "Solo se permiten caracteres latinos.";
-          }
-          return acc;
-        }, {}),
-      });
-      return;
+    if (Object.values(newErrors).some((error) => error !== undefined)) {
+      return; // 🚫 Detiene el envío si hay errores
     }
 
     setSubmitting(true);
@@ -147,16 +141,7 @@ const StudentInitForm = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          endDate,
-          degree: "INSO_DATA",
-          languages,
-          gender,
-        }),
-
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify(requestBody), // ✅ Se eliminó la duplicación de `body`
       });
 
       const data = await response.json();
@@ -166,25 +151,21 @@ const StudentInitForm = () => {
         const errorMessages = {
           NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido.",
           INVALID_USER_ID: "El usuario no existe.",
-          INTERNAL_SERVER_ERROR:
-            "Error interno del servidor. Inténtalo más tarde.",
+          INTERNAL_SERVER_ERROR: "Error interno del servidor. Inténtalo más tarde.",
         };
-        setErrors({
-          general:
-            errorMessages[data?.error] || "Error al actualizar los metadatos.",
-        });
+        setErrors({ general: errorMessages[data?.error] || "Error al actualizar los metadatos." });
         return;
-      } else {
-        localStorage.setItem("metadata", JSON.stringify(data.updatedFields));
-        router.push(`/roadmap_guide/${id}`);
       }
 
-      router.push(`/roadmap_guide/${id}`);
+      localStorage.setItem("metadata", JSON.stringify(data.updatedFields));
+      router.push(`/roadmap_guide/${id}`); // ✅ Se ejecuta solo una vez
+
     } catch (error) {
       setSubmitting(false);
       setErrors({ general: "Ha ocurrido un error inesperado." });
     }
   };
+
 
   const removeLanguage = (index) => {
     setLanguages((prevLanguages) =>
@@ -283,7 +264,7 @@ const StudentInitForm = () => {
               disabled
               required
               value={"INSO_DATA"}
-              onChange={() => {}}
+              onChange={() => { }}
               className="block w-full p-2 border rounded-md"
               style={{
                 borderColor: theme.palette.light.hex,
@@ -303,7 +284,7 @@ const StudentInitForm = () => {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              min="2020-01-01"
+              min="today"
               className="block w-full p-2 border rounded-md"
               style={{
                 borderColor: theme.palette.light.hex,
