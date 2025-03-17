@@ -13,7 +13,7 @@ const StudentInitForm = () => {
   const [languages, setLanguages] = useState([]);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [degree, setDegree] = useState(""); // Por defecto a INSO_DATA
+  const [degree, setDegree] = useState("INSO_DATA");
   const [gender, setGender] = useState("");
   const [endDate, setEndDate] = useState("");
   const [error, setError] = useState("");
@@ -38,12 +38,10 @@ const StudentInitForm = () => {
           setError("Error en obteniendo los metadatos");
         }
 
-        // Extraer los metadatos del usuario
         const data = await response.json();
 
-        // Comprobar si el usuario ya ha completado los metadatos
         if (!data.metadata || Object.keys(data.metadata).length === 0) {
-          router.push(`/profile/student/${id}`);
+          router.push(`/data_complete/student/${id}`);
         }
       } catch (error) {
         setError(error.message);
@@ -52,13 +50,11 @@ const StudentInitForm = () => {
       }
     };
 
-    // Comprobar si el usuario es un profesor
     if (JSON.parse(localStorage.getItem("user")).role == "TEACHER") {
       router.push(`/data_complete/teacher/${id}`);
     } else {
       fetchData();
     }
-
   }, []);
 
   const handleLanguageChange = (index, event) => {
@@ -77,28 +73,28 @@ const StudentInitForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const today = new Date().toISOString().split("T")[0]; // Obtener la fecha actual en formato YYYY-MM-DD
+    const today = new Date().toISOString().split("T")[0];
 
     const newErrors = {
       firstName: !firstName?.trim()
         ? "El nombre es obligatorio."
         : !nameRegex(firstName)
-          ? "Solo se permiten caracteres latinos en el nombre."
-          : undefined,
+        ? "Solo se permiten caracteres latinos en el nombre."
+        : undefined,
 
       lastName: !lastName.trim()
         ? "El apellido es obligatorio."
         : !nameRegex(lastName)
-          ? "Solo se permiten caracteres latinos en el apellido."
-          : undefined,
+        ? "Solo se permiten caracteres latinos en el apellido."
+        : undefined,
 
       gender: !gender ? "El género es obligatorio." : undefined,
 
       endDate: !dateRegex(endDate)
         ? "Formato inválido."
         : endDate < today
-          ? "La fecha de graduación no puede ser anterior a hoy."
-          : undefined,
+        ? "La fecha de graduación no puede ser anterior a hoy."
+        : undefined,
 
       general: languages.some((lang) => !nameRegex(lang.language))
         ? "Uno o más idiomas tienen caracteres inválidos."
@@ -115,7 +111,7 @@ const StudentInitForm = () => {
     setErrors(newErrors);
 
     if (Object.values(newErrors).some((error) => error !== undefined)) {
-      return; // 🚫 Detiene el envío si hay errores
+      return;
     }
 
     setSubmitting(true);
@@ -136,7 +132,7 @@ const StudentInitForm = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify(requestBody), // ✅ Se eliminó la duplicación de `body`
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
@@ -146,21 +142,23 @@ const StudentInitForm = () => {
         const errorMessages = {
           NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido.",
           INVALID_USER_ID: "El usuario no existe.",
-          INTERNAL_SERVER_ERROR: "Error interno del servidor. Inténtalo más tarde.",
+          INTERNAL_SERVER_ERROR:
+            "Error interno del servidor. Inténtalo más tarde.",
         };
-        setErrors({ general: errorMessages[data?.error] || "Error al actualizar los metadatos." });
+        setErrors({
+          general:
+            errorMessages[data?.error] || "Error al actualizar los metadatos.",
+        });
         return;
       }
 
       localStorage.setItem("metadata", JSON.stringify(data.updatedFields));
-      router.push(`/roadmap_guide/${id}`); // ✅ Se ejecuta solo una vez
-
+      router.push(`/roadmap_guide/${id}`);
     } catch (error) {
       setSubmitting(false);
       setErrors({ general: "Ha ocurrido un error inesperado." });
     }
   };
-
 
   const removeLanguage = (index) => {
     setLanguages((prevLanguages) =>
@@ -259,7 +257,7 @@ const StudentInitForm = () => {
               disabled
               required
               value={"INSO_DATA"}
-              onChange={() => { }}
+              onChange={() => {}}
               className="block w-full p-2 border rounded-md"
               style={{
                 borderColor: theme.palette.light.hex,
