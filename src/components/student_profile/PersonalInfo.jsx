@@ -131,7 +131,7 @@ const PersonalInfo = ({
     setErrors({});
     setIsEditing(false);
   };
-  
+
 
   return (
     <div className="p-4 bg-white rounded-lg">
@@ -269,7 +269,7 @@ const PersonalInfo = ({
             <label className="block text-sm font-medium">Curso académico</label>
             <input
               type="text"
-              value={yearsCompleted ? `${yearsCompleted}º` : "SIN CALCULAR"}
+              value={yearsCompleted?.length > 0 ? `${yearsCompleted[yearsCompleted.length - 1]}º` : "SIN CALCULAR"}
               className="block w-full p-2 border rounded-md"
               disabled
             />
@@ -278,7 +278,7 @@ const PersonalInfo = ({
 
 
           <div>
-          <label className="block text-sm font-medium flex items-center gap-1">
+            <label className="block text-sm font-medium flex items-center gap-1">
               Grado
               {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
             </label>
