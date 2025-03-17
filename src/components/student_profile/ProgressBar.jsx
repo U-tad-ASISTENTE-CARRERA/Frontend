@@ -26,40 +26,16 @@ const ProgressBar = ({ progress }) => {
         <div
           className="absolute top-0 left-1/4 transform -translate-x-1/2"
           style={{ width: "2px", height: "100%", backgroundColor: "gray" }}
-        >
-          <span className="absolute top-4 left-1/2 transform -translate-x-1/2 text-xs text-gray-600">
-            25%
-          </span>
-        </div>
+        ></div>
         <div
           className="absolute top-0 left-1/2 transform -translate-x-1/2"
           style={{ width: "2px", height: "100%", backgroundColor: "gray" }}
-        >
-          <span className="absolute top-4 left-1/2 transform -translate-x-1/2 text-xs text-gray-600">
-            50%
-          </span>
-        </div>
+        ></div>
         <div
           className="absolute top-0 left-3/4 transform -translate-x-1/2"
           style={{ width: "2px", height: "100%", backgroundColor: "gray" }}
-        >
-          <span className="absolute top-4 left-1/2 transform -translate-x-1/2 text-xs text-gray-600">
-            75%
-          </span>
-        </div>
+        ></div>
       </div>
-
-      <h2
-        className="text-center mt-8"
-        style={{
-          color: theme.palette.purple.hex,
-          fontFamily: "Montserrat, sans-serif",
-          fontSize: theme.fontSizes.xxl,
-          fontWeight: theme.fontWeight.bold,
-        }}
-      >
-        {progress.toFixed(1)}%
-      </h2>
     </div>
   );
 };

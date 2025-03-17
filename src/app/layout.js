@@ -28,6 +28,10 @@ export default function RootLayout({ children }) {
           backgroundImage: "url(/fondo.jpg)",
           backgroundSize: "cover",
           backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+          backgroundRepeat: "no-repeat",
+          height: "100vh",
+          margin: 0,
           scrollBehavior: "smooth",
         }}
       >
