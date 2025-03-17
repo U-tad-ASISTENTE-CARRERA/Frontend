@@ -22,12 +22,15 @@ const ExpedienteAcademico = ({ academicRecord, onSave }) => {
     }
   }, [academicRecord]);
 
+  // Manejar cambios en la nota
   const handleGradeChange = (subjectName, value) => {
-    // Permitir borrar el campo, pero validar antes de guardar
-    if (value === "" || /^\d{1,2}(\.\d{1,2})?$/.test(value)) {
+    let normalizedValue = value.replace(",", "."); // Convertir comas en puntos
+
+    // Validar que el número tiene máximo un punto decimal y 2 decimales
+    if (/^\d{1,2}(\.\d{0,2})?$/.test(normalizedValue)) {
       setGrades((prevGrades) => ({
         ...prevGrades,
-        [subjectName]: value,
+        [subjectName]: normalizedValue.replace(/^0+(\d)/, "$1"), // Evita 08.5 → 8.5
       }));
     }
   };
@@ -35,7 +38,7 @@ const ExpedienteAcademico = ({ academicRecord, onSave }) => {
   const isFormValid = () => {
     const newErrors = {};
     Object.entries(grades).forEach(([subject, grade]) => {
-      if (grade !== "" && !gradeRegex(String(grade))) {
+      if (grade !== "" && !gradeRegex(grade)) {
         newErrors[subject] = "Nota inválida (debe ser entre 0 y 10, con hasta 2 decimales)";
       }
     });
@@ -133,7 +136,7 @@ const ExpedienteAcademico = ({ academicRecord, onSave }) => {
 
             {/* Campo editable */}
             <input
-              type="text"
+              type="number"
               value={grades[subjectName] || ""}
               onChange={(e) => handleGradeChange(subjectName, e.target.value)}
               className="block w-1/5 p-2 border rounded-md transition-all"
