@@ -37,8 +37,13 @@ const StudentInitForm = () => {
         if (!response.ok) {
           setError("Error en obteniendo los metadatos");
         }
+
+        // Extraer los metadatos del usuario
         const data = await response.json();
-        if (data.metadata) {
+
+        // Comprobar si el usuario ya ha completado los metadatos
+        if (!data.metadata || Object.keys(data.metadata).length === 0) {
+          router.push(`/profile/student/${id}`);
         }
       } catch (error) {
         setError(error.message);
@@ -47,11 +52,13 @@ const StudentInitForm = () => {
       }
     };
 
+    // Comprobar si el usuario es un profesor
     if (JSON.parse(localStorage.getItem("user")).role == "TEACHER") {
       router.push(`/data_complete/teacher/${id}`);
     } else {
       fetchData();
     }
+
   }, []);
 
   const handleLanguageChange = (index, event) => {
@@ -65,18 +72,6 @@ const StudentInitForm = () => {
 
   const addLanguage = () => {
     setLanguages([...languages, { language: "", level: "low" }]);
-  };
-
-
-  // TODO: ARREGLAR ESTA FUNCIÓN PARA QUE ESTÉ COMPLETA
-  const isFormValid = () => {
-    return (
-      Object.values(errors).every((error) => !error) &&
-      firstName.trim() &&
-      lastName.trim() &&
-      gender.trim() &&
-      !errors.endDate
-    );
   };
 
   const handleSubmit = async (event) => {
