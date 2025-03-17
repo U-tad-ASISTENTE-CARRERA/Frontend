@@ -7,6 +7,8 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
   const [tempLanguages, setTempLanguages] = useState([...languages]); // Clona los datos originales
   const [deletedLanguages, setDeletedLanguages] = useState([]); // Guarda los eliminados
 
+  const op_level = ["A1", "A2", "B1", "B2", "C1", "C2"]
+
   const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/; // Solo caracteres latinos
 
   // Editar directamente el idioma sin crear una nueva entrada
@@ -160,12 +162,12 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
               }}
               disabled={!isEditing}
             >
-              <option value="A1">A1</option>
-              <option value="A2">A2</option>
-              <option value="B1">B1</option>
-              <option value="B2">B2</option>
-              <option value="C1">C1</option>
-              <option value="C2">C2</option>
+             {op_level.map((op, index) =>(
+              <option key={index} value={op}>
+                {op}
+              </option>
+             ))
+             }
             </select>
           </div>
 

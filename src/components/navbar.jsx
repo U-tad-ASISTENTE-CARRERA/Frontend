@@ -26,6 +26,7 @@ export default function Navbar() {
   */
   useEffect(() => {
     setIsToken(localStorage.getItem("token"))  
+    
 
     if (isToken){
       setIsLoggedIn(true)

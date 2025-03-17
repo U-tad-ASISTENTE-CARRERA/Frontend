@@ -8,6 +8,11 @@ const Skill =({skills, setSkills, onSave, onDelete}) => {
     const [deletedSkills, setDeletedSkills] = useState([])
 
     const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/
+
+    const op_skill = ["C++", "C#", "C", "Python", "R", "React", "Next", "JavaScript",
+      "Java", "Scala", "HTML", "CSS", "Rust", "Bash", "Sql", "Ruby", "Keras", "Tableau",
+      "Spark", "Mongo", "MariaDb", "p5.js"
+     ]
      
     const handleSkillChange = (index, event) => {
         const updateSkill = [...tempSkills]
@@ -111,15 +116,21 @@ const Skill =({skills, setSkills, onSave, onDelete}) => {
           )}
         
           {/* Lista de lenguajes de Programación */}
-          {tempSkills.map((lang, index) => (
+          {tempSkills.map((sk, index) => (
             <div key={index} className="flex items-center gap-4">
-              <input
-                type="text"
-                value={lang.skills}
-                onChange={(e) => handleSkillChange(index, e)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              <select
+                name="skill"
+                value = {sk.skill}
+                onChange={(event) => handleSkillChange(index, event)}
+                className="w-full p-2 border rounded-md"
+                style={{
+                  borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                  color: theme.palette.text.hex,
+                }}
                 disabled={!isEditing}
-             />
+              >
+                
+              </select>
         
           {/* Botón de eliminar */}
           {isEditing && (

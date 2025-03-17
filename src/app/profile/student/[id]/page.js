@@ -125,6 +125,9 @@ const StudentProfile = () => {
   };
 
   const handleDeleteLanguage = async (languageObj) => {
+
+    console.log(languageObj)
+    
     try {
       const response = await fetch("http://localhost:3000/metadata", {
         method: "DELETE",
@@ -150,6 +153,35 @@ const StudentProfile = () => {
       console.error("Error al eliminar idioma:", error.message);
     }
   };
+
+  const handleDeleteSkill = async (skillObj) => {
+    const skillList = skillObj.skills.map(sk => sk.skill);
+  
+    try {
+      const response = await fetch("http://localhost:3000/metadata", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          skills: skillList.map(skill => ({ skill })), // Enviar como array de objetos
+        }),
+      });
+  
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.errors?.[0] || "Error eliminando skill.");
+      }
+  
+      setSkills((prevSkills) =>
+        prevSkills.filter((sk) => !skillList.includes(sk.skill))
+      );
+    } catch (error) {
+      console.log("Error al eliminar skill:", error.message);
+    }
+  };
+  
 
   const handleSaveGrades = async (updatedGrades) => {
     try {
@@ -272,7 +304,7 @@ const StudentProfile = () => {
                     skills={skills}
                     setSkills={setSkills}
                     onSave={handleSavePersonalInfo}
-                    onDelete={handleSavePersonalInfo}
+                    onDelete={handleDeleteSkill}
                   />
                 )}
                 {activeSection === "certifications" &&
