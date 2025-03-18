@@ -4,32 +4,43 @@ import { theme } from "@/constants/theme";
 const Certifications = ({ certifications, setCertifications, onSave, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
-  const [tempCertifications, setTempCertifications] = useState([...certifications]); // Clona los datos originales
-  const [deletedCertifications, setDeletedCertifications] = useState([]); // Guarda los eliminados
+  const [tempCertifications, setTempCertifications] = useState([...certifications]); 
+  const [deletedCertifications, setDeletedCertifications] = useState([]); 
 
   const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/; // Solo caracteres latinos
 
-  // Editar directamente la cerificación sin crear una nueva entrada
-  const handleCertificationChange = (index, e) => {
-    const updateCertification = [...tempCertifications];
-    updateCertification[index].certification = e.target.value.trim();
-    setTempCertifications(updateCertification);
+  const handleNameChange = (index, event) => {
+    const updatedCertifications = [...tempCertifications]
+    updatedCertifications[index].name = event.target.value.trim()
+    setTempCertifications(updatedCertifications)
   }
 
-  //Agregar una nueva certificación
-  const handleAddCertification = () => {
-    setTempCertifications([...tempCertifications, { certification: "" }]);
+  const handleDateChange = (index, event) => {
+    const updatedCertifications = [...tempCertifications]
+    updatedCertifications[index].date = event.target.value.trim()
+    setTempCertifications(updatedCertifications)
+  }
+  
+  const handleInstitutionChange = (index, event) => {
+    const updatedCertifications = [...tempCertifications]
+    updatedCertifications[index].institution = event.target.value.trim()
+    setTempCertifications(updatedCertifications)
   }
 
-  // Validar los datos
+  const addCertification = () => {
+    setTempCertifications([...tempCertifications, { name: "", date: "", institution: ""}]);
+  }
+
   const validateForm = () => {
     let newErrors = {}; 
     
-    tempCertifications.forEach((certification, index) => {
-      if (!certification.certification.trim()) {
+    tempCertifications.forEach((cert, index) => {
+      if (!cert.name.trim()) {
         newErrors[`certification-${index}`] = "El campo no puede estar vacío.";
-      } else if (!nameRegex.test(certification.certification)) {
+        console.log("Something wrong")
+      } else if (!nameRegex.test(cert.certification)) {
         newErrors[`certification-${index}`] = "La certificación solo puede contener caracteres latinos.";
+        console.log("Something wrong 2")
       }
     });
 
@@ -37,37 +48,38 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
     return Object.keys(newErrors).length === 0;
   }
 
-  // Marcar una certificación para eliminación
   const handleDelete = (index) => {
     const certificationToDelete = tempCertifications[index];
 
-    if (certifications.some((cert) => cert.certification === certificationToDelete.certification)) {
+    if (certifications.some((cert) => cert.name === certificationToDelete.name)) {
       setDeletedCertifications((prev) => [...prev, certificationToDelete]);
     }
 
     setTempCertifications(tempCertifications.filter((_, i) => i !== index));
   }
 
-  // Guardar cambios correctamente sin duplicar certificaciones
-  const handleSave = async () => {
+  const handleSave = async () => {    
     if (!validateForm()) return;
 
     try{
-      if(deletedCertifications > 0){
+      if(deletedCertifications.length > 0){
+        console.log("Eliminando certificaciones:", deletedCertifications)
         await onDelete({ certifications: deletedCertifications });
         setDeletedCertifications([]);
       }
 
-      if(deletedCertifications > 0){
+      if(tempCertifications.length > 0){
+        console.log("Enviando certificaciones:", tempCertifications)
         await onSave({ certifications: tempCertifications });
         setCertifications(tempCertifications);
       }
+
+      setIsEditing(false)
     } catch (error) {
       console.error("Error al actualizar las certificaciones", error.message);
     }
   };
 
-  // Cancelar cambios y restaurar valores originales
   const handleCancel = () => {
     setTempCertifications([...certifications]);
     setDeletedCertifications([]); 
@@ -119,7 +131,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                   type="text"
                   placeholder="Nombre de la certificación"
                   value={certification.name}
-                  onChange={(e) => handleCertificationChange(index, e)}
+                  onChange={(e) => handleNameChange(index, e)}
                   className="block w-full p-2 border rounded-md"
                   style={{
                     borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
@@ -139,7 +151,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                   type="text"
                   placeholder="Fecha de obtención"
                   value={certification.date}
-                  onChange={(e) => handleCertificationChange(index, e)}
+                  onChange={(e) => handleDateChange(index, e)}
                   className="block w-full p-2 border rounded-md"
                   style={{
                     borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
@@ -159,7 +171,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                   type="text"
                   placeholder="Nombre de la institución"
                   value={certification.institution}
-                  onChange={(e) => handleCertificationChange(index, e)}
+                  onChange={(e) => handleInstitutionChange(index, e)}
                   className="block w-full p-2 border rounded-md"
                   style={{
                     borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
@@ -194,7 +206,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
             {isEditing && (
               <button
                 type="button"
-                onClick={handleAddCertification}
+                onClick={addCertification}
                 className="w-full px-4 py-2 text-white rounded-md transition duration-200"
                 style={{
                   backgroundColor: theme.palette.primary.hex,

@@ -183,6 +183,42 @@ const StudentProfile = () => {
     }
   };
 
+  const handleDeleteCertifications = async (certObj) => {  
+    const certificationList = certObj.certifications.map(cert => ({
+      name: cert.name,
+      date: cert.date,
+      institution: cert.institution
+    }));
+  
+    try {
+      const response = await fetch("http://localhost:3000/metadata", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          certifications: certificationList,
+        }),
+      });
+  
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.errors?.[0] || "Error eliminando certificaciones.");
+      }
+  
+      setCertifications((prevCertifications) =>
+        prevCertifications.filter((cert) =>
+          !certificationList.some(
+            (c) => c.name === cert.name && c.date === cert.date && c.institution === cert.institution
+          )
+        )
+      );
+    } catch (error) {
+      console.log("Error al eliminar certificaciones:", error.message);
+    }
+  };
+  
 
   const handleSaveGrades = async (updatedGrades) => {
     try {
@@ -313,7 +349,7 @@ const StudentProfile = () => {
                     certifications={certifications}
                     setCertifications={setCertifications}
                     onSave={handleSavePersonalInfo}
-                    onDelete={handleSavePersonalInfo}
+                    onDelete={handleDeleteCertifications}
                   />
                 }
                 {activeSection === "employee" &&
