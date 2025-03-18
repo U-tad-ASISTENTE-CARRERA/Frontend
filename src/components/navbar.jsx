@@ -131,13 +131,21 @@ export default function Navbar() {
                       </button>
                     </div>
                   ) : (
-                    <button
-                      style={styles.dropdownButton}
-                      onClick={() => (router.push("/login"),
-                        setIsDropdownOpen(false))}
-                    >
-                      Iniciar sesión
+                    <div className="flex flex-col">
+                      <button
+                        style={styles.dropdownButton}
+                        onClick={() => (router.push("/login"), setIsDropdownOpen(false))}
+                      >
+                        Iniciar sesión
+                      </button>
+                      <hr className="my-2 border-s border-gray-300" /> 
+                      <button
+                        style={styles.dropdownButton}
+                        onClick={() => (router.push("/register"), setIsDropdownOpen(false))}
+                      >
+                      Registrate
                     </button>
+                    </div>
                   )}
                 </div>
               )}
@@ -149,12 +157,11 @@ export default function Navbar() {
       {/* Sidebar lateral derecho */}
       {isMenuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity ease-in-out duration-300 ${isMenuOpen ? "opacity-100" : "opacity-0"}`}
           onClick={() => setIsMenuOpen(false)}
         >
           <div
-            className={`fixed top-0 right-0 w-64 h-full bg-blue-700 shadow-lg transform ${ isMenuOpen ? "translate-x-0" : "translate-x-full"} 
-            transition-transform duration-600 flex flex-col p-6 space-y-6`}
+            className={`fixed top-0 right-0 w-64 h-full bg-blue-700 shadow-lg flex flex-col p-6 space-y-6 transform transition-transform duration-500 ease-in-out ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Botón para cerrar la navbar lateral */}
@@ -201,12 +208,21 @@ export default function Navbar() {
                       </button>
                     </>
                   ) : (
-                    <button
-                      className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                      onClick={() => (router.push("/login"), setIsDropdownOpen(false))}
-                    >
-                      Iniciar sesión
-                    </button>
+                    <div className="flex flex-col">
+                      <button
+                        className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
+                        onClick={() => (router.push("/login"), setIsDropdownOpen(false))}
+                      >
+                        Iniciar sesión
+                      </button>
+                      <hr className="my-2 border-s border-gray-300" />  
+                      <button
+                        className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
+                        onClick={() => (router.push("/register"), setIsDropdownOpen(false))}
+                      >
+                        Registrate
+                      </button>
+                    </div>
                   )}
                 </div>
               )}
