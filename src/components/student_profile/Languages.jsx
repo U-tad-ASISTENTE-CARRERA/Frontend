@@ -27,7 +27,7 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
 
   // Agregar un nuevo idioma sin duplicar
   const addLanguage = () => {
-    setTempLanguages([...tempLanguages, { language: "", level: "low" }]);
+    setTempLanguages([...tempLanguages, { language: "", level: "A1" }]);
   };
 
   // Marcar un idioma para eliminación

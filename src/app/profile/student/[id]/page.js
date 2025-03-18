@@ -126,8 +126,10 @@ const StudentProfile = () => {
   };
 
   const handleDeleteLanguage = async (languageObj) => {
-
-    console.log(languageObj)
+    const languageList = languageObj.languages.map(lang => ({
+      language: lang.language,
+      level: lang.level
+    }));
 
     try {
       const response = await fetch("http://localhost:3000/metadata", {
@@ -137,7 +139,7 @@ const StudentProfile = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
-          languages: [{ language: languageObj.language, level: languageObj.level }], // Enviar como objeto
+          languages: languageList
         }),
       });
 
@@ -148,7 +150,11 @@ const StudentProfile = () => {
 
       // Eliminar del estado global si la petición fue exitosa
       setLanguages((prevLanguages) =>
-        prevLanguages.filter((lang) => lang.language !== languageObj.language)
+        prevLanguages.filter( (lang) => (
+          !languageList.some(
+            (l) => l.language === lang.language && l.level === lang.level
+          )
+        ))
       );
     } catch (error) {
       console.error("Error al eliminar idioma:", error.message);
