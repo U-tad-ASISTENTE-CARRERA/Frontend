@@ -6,6 +6,7 @@ import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import ErrorPopUp from "@/components/ErrorPopUp";
 import LoadingModal from "@/components/LoadingModal";
+import { FaDownload } from "react-icons/fa";
 
 const Teacher = () => {
   const router = useRouter();
@@ -23,6 +24,7 @@ const Teacher = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [students, setStudents] = useState([]);
   const [studentsError, setStudentsError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -52,17 +54,14 @@ const Teacher = () => {
         throw new Error("Error al obtener metadatos del profesor");
       }
       const data = await response.json();
-      const metadata = data.metadata || {}; // Evitar undefined
+      const metadata = data.metadata || {};
 
-      // Activar modal si no hay metadatos
       setShowModal(Object.keys(metadata).length === 0);
 
-      // Guardar datos introducidos
       setFirstName(metadata.firstName);
       setLastName(metadata.lastName);
       setGender(metadata.gender);
       setSpecialization(metadata.specialization);
-
     } catch (error) {
       setError(error.message);
     } finally {
@@ -70,7 +69,6 @@ const Teacher = () => {
     }
   };
 
-  // Función para obtener la lista de estudiantes tutelados
   const fetchStudents = async () => {
     if (!token || !id) return;
     try {
@@ -88,12 +86,7 @@ const Teacher = () => {
 
       const data = await response.json();
 
-      if (data.message === "No students found") {
-        setStudents([]);
-      } else {
-        setStudents(data);
-      }
-
+      setStudents(data.message === "No students found" ? [] : data);
     } catch (error) {
       setStudentsError(error.message);
     }
@@ -104,108 +97,110 @@ const Teacher = () => {
     fetchStudents();
   }, [token, id]);
 
-  // Determinar el mensaje de bienvenida según el género
   const getWelcomeMessage = () => {
     if (gender === "male") return "Bienvenido";
     if (gender === "female") return "Bienvenida";
     return "Bienvenid@";
   };
 
+  const handleDownloadReport = async (studentId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/student/report/${studentId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al descargar el informe");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.download = `reporte_estudiante_${studentId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error al descargar el informe:", error);
+    }
+  };
+
+  const filteredStudents = students.filter((student) =>
+    `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
-      {/* Mensaje de carga */}
       {isLoading && <LoadingModal message="Cargando perfil..." />}
 
-      {/* Mostrar modal si no hay datos en metadata */}
       {!isLoading && showModal && (
-        <ErrorPopUp
-          message={"Debes completar tus datos básicos"}
-          path={`/data_complete/teacher/${id}`}
-        />
+        <ErrorPopUp message={"Debes completar tus datos básicos"} path={`/data_complete/teacher/${id}`} />
       )}
 
-      {/* Mostrar el perfil si no se está redirigiendo */}
       {!isLoading && !showModal && (
         <div className="flex flex-col items-center min-h-screen p-6">
-
           <h1 className="text-3xl font-bold text-center pt-20 pb-10" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
             {getWelcomeMessage()} {firstName || "Usuario"}
           </h1>
 
           <div className="w-full max-w-6xl flex flex-col items-start pt-6 leading-relaxed">
+            
+            <h2 className="text-xl font-semibold mb-4" style={{ color: theme.palette.dark.hex }}>
+              Detalles del perfil
+            </h2>
+            <p style={{ color: theme.palette.text.hex }}><strong>Nombre:</strong> {firstName}</p>
+            <p style={{ color: theme.palette.text.hex }}><strong>Apellidos:</strong> {lastName}</p>
+            <p style={{ color: theme.palette.text.hex }}><strong>Género:</strong> {gender ? (gender === "male" ? "Masculino" : gender === "female" ? "Femenino" : "Prefiero no decirlo") : "SIN COMPLETAR"}</p>
+            <p style={{ color: theme.palette.text.hex }}><strong>Especialización:</strong> {specialization || "No especificado"}</p>
+            
+            <h2 className="text-xl font-semibold mt-10" style={{ color: theme.palette.dark.hex }}>
+              Alumnos tutelados
+            </h2>
 
-            <div className="w-full">
+            <div className="mt-4 w-full flex items-center">
+              <input
+                type="text"
+                placeholder="Buscar alumno por nombre o apellido..."
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
 
-              {/* DATOS PERSONALES */}
-              <h2
-                className="text-xl font-semibold mb-4"
-                style={{ color: theme.palette.dark.hex }}
-              >
-                Detalles del perfil
-              </h2>
-              <p style={{ color: theme.palette.text.hex }}>
-                <strong>Nombre:</strong> {firstName}
-              </p>
-              <p style={{ color: theme.palette.text.hex }}>
-                <strong>Apellidos:</strong> {lastName}
-              </p>
-              <p style={{ color: theme.palette.text.hex }}>
-                <strong>Género:</strong> {gender ? (gender === "male" ? "Masculino" : gender === "female" ? "Femenino" : "Prefiero no decirlo") : "SIN COMPLETAR"}
-              </p>
-              <p style={{ color: theme.palette.text.hex }}>
-                <strong>Especialización:</strong> {specialization || "No especificado"}
-              </p>
-
-              <button
-                onClick={() => router.push(`/profile/teacher/${id}/edit`)}
-                className="mt-4 px-6 py-2 rounded-lg text-white"
-                style={{ backgroundColor: theme.palette.primary.hex }}
-              >
-                Modificar
-              </button>
-
-
-              {/* ALUMNOS ASOCIADOS AL PROFESOR */}
-              <h2
-                className="text-xl font-semibold mt-20"
-                style={{ color: theme.palette.dark.hex }}
-              >
-                Alumnos tutelados
-              </h2>
-
-              {/* TODO: Añadir barra de búsqueda */}
-
-              <div className="w-full overflow-x-auto mt-6 mb-20">
-                {studentsError ? (
-                  <p className="text-red-500">{studentsError}</p>
-                ) : students.length === 0 ? (
-                  <p className="text-gray-500">No hay estudiantes asignados.</p>
-                ) : (
-                  <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-                    <thead className="bg-gray-100">
-                      <tr>
-                        <th className="py-2 px-4 border-b text-left">Nombre</th>
-                        <th className="py-2 px-4 border-b text-left">Apellidos</th>
-                        <th className="py-2 px-4 border-b text-left">Grupo</th>
-                        <th className="py-2 px-4 border-b text-left">Grado</th>
-                        <th className="py-2 px-4 border-b text-left">Email</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {students.map((student, index) => (
-                        <tr key={student._id || index} className="hover:bg-gray-50 transition">
-                          <td className="py-2 px-4 border-b">{student.firstName}</td>
-                          <td className="py-2 px-4 border-b">{student.lastName}</td>
-                          <td className="py-2 px-4 border-b">{student.degree || "No disponible"}</td>
-                          <td className="py-2 px-4 border-b">{student.yearsCompleted || "No disponible"}</td>
-                          <td className="py-2 px-4 border-b">{student.email}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-
+            <div className="w-full bg-white rounded-lg shadow-md border border-gray-200 mt-6 overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Apellidos</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grupo</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grado</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descargar informe</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredStudents.map((student, index) => (
+                    <tr key={student._id || index} className="hover:bg-gray-50 transition">
+                      <td className="px-6 py-4 text-sm text-gray-900">{student.firstName}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900">{student.lastName}</td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">{student.degree || "No disponible"}</span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">{student.yearsCompleted || "No disponible"}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        <FaDownload className="text-blue-500 cursor-pointer" title="Descargar informe" onClick={() => handleDownloadReport(student._id)} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

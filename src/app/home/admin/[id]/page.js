@@ -348,7 +348,7 @@ const AdminDashboard = () => {
           <div className="p-6 bg-white border rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
-                Nuevos Registros por Mes
+                Nuevos registros por mes
               </h3>
               <div className="flex space-x-2">
                 <div className="px-2 py-1 text-xs bg-gray-100 rounded">Últimos 6 meses</div>
@@ -380,7 +380,7 @@ const AdminDashboard = () => {
           <div className="p-6 bg-white border rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
-                Estudiantes por Titulación
+                Estudiantes por titulación
               </h3>
             </div>
             <div className="h-64">
@@ -413,7 +413,7 @@ const AdminDashboard = () => {
           <div className="p-6 bg-white border rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
-                Distribución de Usuarios
+                Distribución de usuarios
               </h3>
             </div>
             <div className="h-64">
@@ -444,7 +444,7 @@ const AdminDashboard = () => {
           <div className="p-6 bg-white border rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
-                Especialización de Profesores
+                Especialización de profesores
               </h3>
             </div>
             <div className="h-64">
