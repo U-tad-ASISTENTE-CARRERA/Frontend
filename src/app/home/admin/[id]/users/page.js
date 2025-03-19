@@ -6,6 +6,7 @@ import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 
 import LoadingModal from "@/components/LoadingModal";
+
 const UserList = () => {
   const router = useRouter();
   const params = useParams();
@@ -85,6 +86,50 @@ const UserList = () => {
     }
   };
 
+  const handleDownloadProfile = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No se encontró el token de autenticación");
+      }
+
+      const response = await fetch(`http://localhost:3000/admin/student?studentId=${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al obtener el perfil del estudiante");
+      }
+
+      const userData = await response.json();
+      
+      // Crear un archivo JSON y descargarlo
+      const blob = new Blob([JSON.stringify(userData, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `student_profile_${userId}.json`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+    } catch (error) {
+      console.error("Error:", error);
+      setError(error.message);
+    }
+  };
+
+  const handleEditUser = (userId) => {
+    router.push(`/home/admin/${id}/users/edit/${userId}`);
+  };
+
   const filteredUsers = users.filter(user => {
     if (!user || !user.email) return false;
     
@@ -97,10 +142,6 @@ const UserList = () => {
     
     return matchesSearch && matchesRole;
   });
-
-  const handleEditUser = (userId) => {
-    router.push(`/home/admin/${id}/users/edit/${userId}`);
-  };
 
   if (loading) {
     return <LoadingModal message="Cargando usuarios..." />;
@@ -127,32 +168,60 @@ const UserList = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="p-4 border-b flex flex-col md:flex-row gap-4">
-          <div className="flex-grow">
-            <input
-              type="text"
-              placeholder="Buscar usuarios..."
-              className="w-full px-4 py-2 border rounded-md"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ borderColor: theme.palette.light.hex }}
-            />
+        <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+          <div 
+            className="p-4 border-b border-gray-200 flex flex-col md:flex-row gap-4 items-center"
+            style={{ 
+              backgroundColor: theme.palette.neutral.hex, 
+              borderBottomColor: theme.palette.light.hex 
+            }}
+          >
+            <div className="flex-grow w-full md:w-auto">
+              <input
+                type="text"
+                placeholder="Buscar usuarios..."
+                className="w-full px-4 py-2 border rounded-md transition-all duration-300 
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ 
+                  borderColor: theme.palette.light.hex,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                }}
+              />
+            </div>
+            <div className="relative w-full md:w-64">
+              <select
+                className="appearance-none w-full px-4 py-2 pr-8 border rounded-md 
+                transition-all duration-300 focus:outline-none focus:ring-2 
+                focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                style={{
+                  borderColor: theme.palette.light.hex,
+                  backgroundColor: 'white',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                }}
+              >
+                <option value="all">Todos los roles</option>
+                <option value="STUDENT">Estudiantes</option>
+                <option value="TEACHER">Profesores</option>
+                <option value="ADMIN">Administradores</option>
+              </select>
+              <div
+                className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3"
+                style={{ 
+                  top: '50%', 
+                  transform: 'translateY(-50%)',
+                  color: theme.palette.primary.hex 
+                }}
+              >
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
+              </div>
+            </div>
           </div>
-          <div>
-            <select
-              className="w-full px-4 py-2 border rounded-md"
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              style={{ borderColor: theme.palette.light.hex }}
-            >
-              <option value="all">Todos los roles</option>
-              <option value="STUDENT">Estudiantes</option>
-              <option value="TEACHER">Profesores</option>
-              <option value="ADMIN">Administradores</option>
-            </select>
-          </div>
-        </div>
 
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -204,13 +273,24 @@ const UserList = () => {
                         <button
                           className="text-blue-600 hover:text-blue-900"
                           onClick={() => handleEditUser(user.id)}
+                          title="Editar usuario"
                         >
                           <i className="bi bi-pencil-square"></i>
                         </button>
+                        {(user.role === "STUDENT" || user.role === "TEACHER" )&& (
+                          <button
+                            className="text-green-600 hover:text-green-900"
+                            onClick={() => handleDownloadProfile(user.id)}
+                            title="Descargar perfil"
+                          >
+                            <i className="bi bi-download"></i>
+                          </button>
+                        )}
                         {user.role !== "ADMIN" && (
                           <button
                             className="text-red-600 hover:text-red-900"
                             onClick={() => handleDelete(user.id)}
+                            title="Eliminar usuario"
                           >
                             <i className="bi bi-trash"></i>
                           </button>
