@@ -176,12 +176,16 @@ const Section = ({ sectionName, sectionData, onClick }) => {
       }}
       onClick={onClick}
     >
-      <Image
-        src={`/assets/${sectionData[Object.keys(sectionData)[0]].skill}.png`}
-        alt={sectionName}
-        width={40}
-        height={40}
-      />
+      {sectionData[Object.keys(sectionData)[0]].status == "doing" ? (
+        <Image
+          src={`/assets/${sectionData[Object.keys(sectionData)[0]].skill}.png`}
+          alt={sectionName}
+          width={40}
+          height={40}
+        />
+      ) : (
+        <Image src={`/si.png`} alt={sectionName} width={40} height={40} />
+      )}
     </div>
   );
 };
@@ -263,12 +267,16 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
   return (
     <div className="flex flex-col items-center">
       <div className="cursor-pointer" onClick={toggleTask}>
-        <Image
-          src={`/assets/${taskData.skill}.png`}
-          alt={taskName}
-          width={60}
-          height={60}
-        />
+        {taskData.status == "doing" ? (
+          <Image
+            src={`/assets/${taskData.skill}.png`}
+            alt={taskName}
+            width={60}
+            height={60}
+          />
+        ) : (
+          <Image src={`/si.png`} alt={taskName} width={60} height={60} />
+        )}
       </div>
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${
@@ -316,22 +324,40 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
             ))}
           </div>
           <div className="flex items-center justify-center">
-            <button
-              type="button"
-              onClick={handleMarkAsDone}
-              className="w-2/3 items-center px-3 py-2 mt-8 rounded-md transition duration-200 text-white"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(44,69,228,1) 0%, rgba(96,169,255,1) 100%)",
-                borderRadius: theme.buttonRadios.xl,
-                fontWeight: theme.fontWeight.bold,
-                fontFamily: "Montserrat, sans-serif",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                fontSize: theme.fontSizes.xl,
-              }}
-            >
-              Finalizar
-            </button>
+            {taskData.status == "doing" ? (
+              <button
+                type="button"
+                onClick={handleMarkAsDone}
+                className="w-2/3 items-center px-3 py-2 mt-8 rounded-md transition duration-200 text-white"
+                style={{
+                  background:
+                    "radial-gradient(circle, rgba(44,69,228,1) 0%, rgba(96,169,255,1) 100%)",
+                  borderRadius: theme.buttonRadios.xl,
+                  fontWeight: theme.fontWeight.bold,
+                  fontFamily: "Montserrat, sans-serif",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                  fontSize: theme.fontSizes.xl,
+                }}
+              >
+                Finalizar
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="w-2/3 items-center px-3 py-2 mt-8 rounded-md transition duration-200 text-white"
+                style={{
+                  background:
+                    "radial-gradient(circle, rgb(0, 112, 24) 0%, rgb(15, 211, 64) 100%)",
+                  borderRadius: theme.buttonRadios.xl,
+                  fontWeight: theme.fontWeight.bold,
+                  fontFamily: "Montserrat, sans-serif",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                  fontSize: theme.fontSizes.xl,
+                }}
+              >
+                Finalizado
+              </button>
+            )}
           </div>
         </div>
       </div>
