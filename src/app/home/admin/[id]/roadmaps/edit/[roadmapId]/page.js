@@ -158,7 +158,7 @@ const RoadmapViewer = () => {
                             </div>
 
                             <div>
-                              <div className="mb-3">
+                              {/* <div className="mb-3">
                                 <label className="block text-sm font-medium mb-1">Estado</label>
                                 <input
                                   type="text"
@@ -166,7 +166,7 @@ const RoadmapViewer = () => {
                                   readOnly
                                   className="w-full px-3 py-2 border rounded-md bg-gray-100"
                                 />
-                              </div>
+                              </div> */}
 
                               <div className="mb-3">
                                 <label className="block text-sm font-medium mb-1">Habilidad</label>

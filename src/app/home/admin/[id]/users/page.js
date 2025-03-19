@@ -277,7 +277,7 @@ const UserList = () => {
                         >
                           <i className="bi bi-pencil-square"></i>
                         </button>
-                        {(user.role === "STUDENT" || user.role === "TEACHER" )&& (
+                        {/* {(user.role === "STUDENT" || user.role === "TEACHER" )&& (
                           <button
                             className="text-green-600 hover:text-green-900"
                             onClick={() => handleDownloadProfile(user.id)}
@@ -285,7 +285,7 @@ const UserList = () => {
                           >
                             <i className="bi bi-download"></i>
                           </button>
-                        )}
+                        )} */}
                         {user.role !== "ADMIN" && (
                           <button
                             className="text-red-600 hover:text-red-900"
