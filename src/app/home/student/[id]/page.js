@@ -120,7 +120,7 @@ const Home = () => {
               fontWeight: theme.fontWeight.semibold,
             }}
           >
-            {metadata.gender == "male" ? "Hombre" : "Mujer"}
+            Alumn{metadata.gender == "male" ? "o" : "a"} de {metadata.degree}
           </h3>
         </div>
       </div>
