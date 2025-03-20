@@ -35,14 +35,16 @@ const Home = () => {
     localStorage.setItem("metadata", JSON.stringify(data.metadata));
     setMetadata(data.metadata);
     setRoadmap(data.metadata.roadmap);
-    setProgress(calculateProgress(data.metadata.roadmap));
+    setProgress(
+      calculateProgress(JSON.parse(localStorage.getItem("metadata")).roadmap)
+    );
   };
 
-  const calculateProgress = () => {
+  function calculateProgress(_roadmap) {
     let totalTasks = 0;
     let completedTasks = 0;
 
-    Object.values(roadmap.body).forEach((section) => {
+    Object.values(_roadmap.body).forEach((section) => {
       Object.values(section).forEach((task) => {
         totalTasks++;
         if (task.status === "done") {
@@ -52,7 +54,7 @@ const Home = () => {
     });
 
     return (completedTasks / totalTasks) * 100;
-  };
+  }
 
   const openSectionPopup = (sectionName, sectionData) => {
     setSelectedSection({ sectionName, sectionData });
@@ -82,6 +84,7 @@ const Home = () => {
         />
       );
     }
+    console.log(progress);
   }, []);
 
   if (!roadmap || Object.keys(roadmap).length === 0) return <LoadingModal />;
@@ -160,7 +163,13 @@ const Home = () => {
           sectionName={selectedSection.sectionName}
           sectionData={selectedSection.sectionData}
           onClose={closeSectionPopup}
-          updateProgress={() => setProgress(calculateProgress(roadmap))}
+          updateProgress={() =>
+            setProgress(
+              calculateProgress(
+                JSON.parse(localStorage.getItem("metadata")).roadmap
+              )
+            )
+          }
         />
       )}
     </div>
@@ -275,7 +284,6 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
 
   return (
     <div className="flex flex-col items-center">
-      <h1>{taskData.status}</h1>
       <div className="cursor-pointer" onClick={toggleTask}>
         {taskData.status == "doing" ? (
           <Image
