@@ -83,7 +83,6 @@ const AdminDashboard = () => {
 
   const fetchAllStats = async () => {
     try {
-      // Fetch all users
       const usersResponse = await fetch("http://localhost:3000/admin", {
         method: "GET",
         headers: {
@@ -92,17 +91,11 @@ const AdminDashboard = () => {
         },
       });
       
-      if (!usersResponse.ok) {
-        throw new Error("Error al obtener datos de usuarios");
-      }
-      
+      if (!usersResponse.ok) throw new Error("Error al obtener datos de usuarios");
       const usersData = await usersResponse.json();
-      
-      // Count students and teachers
       const students = usersData.filter(user => user.role === "STUDENT");
       const teachers = usersData.filter(user => user.role === "TEACHER");
       
-      // Calculate active users (login in the last 7 days)
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       const activeUsers = usersData.filter(user => {
@@ -110,16 +103,10 @@ const AdminDashboard = () => {
         return updatedAt > oneWeekAgo;
       });
 
-      // Group users by registration month (based on createdAt)
       const usersByMonth = processUsersByMonth(usersData);
-      
-      // Group students by degree
-      const studentsByDegree = processStudentsByDegree(students);
-      
-      // Get teacher specializations
+      const studentsByDegree = processStudentsByDegree(students);      
       const specializations = processSpecializations(teachers);
       
-      // Fetch all roadmaps
       const roadmapsResponse = await fetch("http://localhost:3000/roadmaps", {
         method: "GET",
         headers: {
@@ -134,7 +121,6 @@ const AdminDashboard = () => {
       
       const roadmapsData = await roadmapsResponse.json();
       
-      // Fetch all degrees
       const degreesResponse = await fetch("http://localhost:3000/degrees", {
         method: "GET",
         headers: {
@@ -171,13 +157,9 @@ const AdminDashboard = () => {
   };
 
   const processUsersByMonth = (usersData) => {
-    // Define month names in Spanish
-    const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-    
-    // Create a map to count users by month and role
+    const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];    
     const usersByMonthMap = new Map();
     
-    // Initialize all months with 0 count for both students and teachers (for the last 6 months)
     const today = new Date();
     for (let i = 5; i >= 0; i--) {
       const month = new Date(today.getFullYear(), today.getMonth() - i, 1);
@@ -191,7 +173,6 @@ const AdminDashboard = () => {
       });
     }
     
-    // Count users by registration month and role
     usersData.forEach(user => {
       if (user.createdAt) {
         const createdAt = new Date(user.createdAt);
@@ -210,7 +191,6 @@ const AdminDashboard = () => {
       }
     });
     
-    // Convert map to array and sort by date
     return Array.from(usersByMonthMap.values())
       .sort((a, b) => a.date - b.date);
   };
@@ -229,10 +209,9 @@ const AdminDashboard = () => {
       }
     });
     
-    // Convert map to array
     return Array.from(degreeMap.entries())
       .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value); // Sort by count descending
+      .sort((a, b) => b.value - a.value);
   };
 
   const processSpecializations = (teachers) => {
@@ -249,10 +228,9 @@ const AdminDashboard = () => {
       }
     });
     
-    // Convert map to array
     return Array.from(specializationMap.entries())
       .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value); // Sort by count descending
+      .sort((a, b) => b.value - a.value);
   };
 
   const COLORS = [
@@ -268,29 +246,20 @@ const AdminDashboard = () => {
 
   return (
     <div
-      style={{
-        background: "white",
-        minHeight: "100vh",
-        padding: "20px"
+      style={{ 
+        backgroundImage: "url('/assets/fondo.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed"
       }}
     >
-      <div className="flex items-center justify-between p-5 mb-3 bg-white border-b border-gray-200">
-        <div>
-          <h1
-            style={{
-              color: theme.palette.text.hex,
-              fontFamily: "Montserrat",
-              fontSize: "32px",
-              fontWeight: "bold"
-            }}
-          >
+      <div className="flex items-center justify-center p-5">
+          <h1 className="text-4xl font-bold text-blue-800">
             Panel de Administración
           </h1>
-        </div>
       </div>
 
       <div className="container p-4 mx-auto">
-        {/* Main Statistics */}
         <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-4">
           <div className="p-6 bg-white border rounded-lg shadow-sm" style={{ borderLeft: `4px solid ${theme.palette.primary.hex}` }}>
             <div className="flex items-center justify-between">
@@ -342,9 +311,7 @@ const AdminDashboard = () => {
           </div>
         </div>
         
-        {/* Charts Row 1 */}
         <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
-          {/* User Growth Chart - Bar Chart */}
           <div className="p-6 bg-white border rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
@@ -376,7 +343,6 @@ const AdminDashboard = () => {
             </div>
           </div>
           
-          {/* Student Distribution by Degree */}
           <div className="p-6 bg-white border rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
@@ -407,9 +373,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Charts Row 2 */}
         <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2">
-          {/* User Type Distribution */}
           <div className="p-6 bg-white border rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
@@ -440,7 +404,6 @@ const AdminDashboard = () => {
             </div>
           </div>
           
-          {/* Teacher Specializations */}
           <div className="p-6 bg-white border rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
@@ -465,7 +428,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Admin Actions */}
         <h3 className="mb-4 text-base font-medium">Acciones Rápidas</h3>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <button

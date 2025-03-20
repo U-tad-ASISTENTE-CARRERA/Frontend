@@ -149,17 +149,20 @@ const UserList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold" style={{ color: theme.palette.primary.hex }}>
-          Gestión de Usuarios
-        </h1>
-        <button
-          onClick={() => router.push(`/home/admin/${id}`)}
-          className="px-4 py-2 text-white rounded-md"
-          style={{ backgroundColor: theme.palette.primary.hex }}
-        >
-          Volver
-        </button>
+      <div className="container mx-auto mb-6">
+        <div className="bg-white bg-opacity-95 rounded-lg shadow-md p-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-blue-800">
+            Gestión de Usuarios
+          </h1>
+          <div className="flex gap-2">
+            <button
+              onClick={() => router.push(`/home/admin/${id}`)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Volver
+            </button>
+          </div>
+        </div>
       </div>
 
       {error && (
@@ -270,13 +273,16 @@ const UserList = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex space-x-2">
-                        <button
-                          className="text-blue-600 hover:text-blue-900"
-                          onClick={() => handleEditUser(user.id)}
-                          title="Editar usuario"
-                        >
-                          <i className="bi bi-pencil-square"></i>
-                        </button>
+                        {user.role !== "ADMIN" && (
+                          <button
+                            className="text-blue-600 hover:text-blue-900"
+                            onClick={() => handleEditUser(user.id)}
+                            title="Editar usuario"
+                          >
+                            <i className="bi bi-pencil-square"></i>
+                          </button>
+                        )}
+
                         {/* {(user.role === "STUDENT" || user.role === "TEACHER" )&& (
                           <button
                             className="text-green-600 hover:text-green-900"
@@ -286,6 +292,7 @@ const UserList = () => {
                             <i className="bi bi-download"></i>
                           </button>
                         )} */}
+                        
                         {user.role !== "ADMIN" && (
                           <button
                             className="text-red-600 hover:text-red-900"
