@@ -14,7 +14,7 @@ const Home = () => {
   const router = useRouter();
   const params = useParams();
   const id = params.id;
-  const [roadmap, setRoadmap] = useState({});
+  const [roadmap, setRoadmap] = useState({ body: {} });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
@@ -31,17 +31,18 @@ const Home = () => {
       },
     });
     const data = await response.json();
-    console.log("fetched metadata", data);
+    console.log("Metadata", data);
+    localStorage.setItem("metadata", JSON.stringify(data.metadata));
     setMetadata(data.metadata);
     setRoadmap(data.metadata.roadmap);
     setProgress(calculateProgress(data.metadata.roadmap));
   };
 
-  const calculateProgress = (_roadmap) => {
+  const calculateProgress = () => {
     let totalTasks = 0;
     let completedTasks = 0;
 
-    Object.values(_roadmap.body).forEach((section) => {
+    Object.values(roadmap.body).forEach((section) => {
       Object.values(section).forEach((task) => {
         totalTasks++;
         if (task.status === "done") {
@@ -167,6 +168,12 @@ const Home = () => {
 };
 
 const Section = ({ sectionName, sectionData, onClick }) => {
+  const allTasksDone = Object.values(sectionData)
+    .slice(1)
+    .every((task) => task.status === "done");
+
+  console.log(Object.values(sectionData).every((task) => task.status));
+
   return (
     <div
       className="flex flex-col items-center bg-white p-6 rounded-lg shadow-md cursor-pointer"
@@ -176,15 +183,15 @@ const Section = ({ sectionName, sectionData, onClick }) => {
       }}
       onClick={onClick}
     >
-      {sectionData[Object.keys(sectionData)[0]].status == "doing" ? (
+      {allTasksDone ? (
+        <Image src={`/si.png`} alt={sectionName} width={40} height={40} />
+      ) : (
         <Image
-          src={`/assets/${sectionData[Object.keys(sectionData)[0]].skill}.png`}
+          src={`/assets/${sectionData[Object.keys(sectionData)[1]].skill}.png`}
           alt={sectionName}
           width={40}
           height={40}
         />
-      ) : (
-        <Image src={`/si.png`} alt={sectionName} width={40} height={40} />
       )}
     </div>
   );
@@ -199,7 +206,7 @@ const SectionPopup = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 fade-fast">
       <div
-        className="bg-white p-8 rounded-lg shadow-lg w-11/12 max-w-2xl relative"
+        className="bg-white p-8 rounded-lg shadow-lg w-11/12 max-w-4xl relative"
         style={{ fontFamily: "Montserrat, sans-serif" }}
       >
         <button
@@ -222,16 +229,18 @@ const SectionPopup = ({
         >
           {sectionName}
         </h2>
-        <div className="space-y-4">
-          {Object.entries(sectionData).map(([taskName, taskData]) => (
-            <Task
-              key={taskName}
-              taskName={taskName}
-              taskData={taskData}
-              sectionName={sectionName}
-              updateProgress={updateProgress}
-            />
-          ))}
+        <div className="flex gap-x-6 mt-12">
+          {Object.entries(sectionData)
+            .slice(1)
+            .map(([taskName, taskData]) => (
+              <Task
+                key={taskName}
+                taskName={taskName}
+                taskData={taskData}
+                sectionName={sectionName}
+                updateProgress={updateProgress}
+              />
+            ))}
         </div>
       </div>
     </div>
@@ -266,6 +275,7 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
 
   return (
     <div className="flex flex-col items-center">
+      <h1>{taskData.status}</h1>
       <div className="cursor-pointer" onClick={toggleTask}>
         {taskData.status == "doing" ? (
           <Image
@@ -319,9 +329,10 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
             </button>
           </div>
           <div className="space-y-2 mt-2">
-            {taskData.resources.map((resource, index) => (
-              <Resource key={index} resource={resource} />
-            ))}
+            {taskData.resources &&
+              taskData.resources.map((resource, index) => (
+                <Resource key={index} resource={resource} />
+              ))}
           </div>
           <div className="flex items-center justify-center">
             {taskData.status == "doing" ? (

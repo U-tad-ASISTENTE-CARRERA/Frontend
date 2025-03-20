@@ -53,10 +53,10 @@ const RoadmapGuide = () => {
 
   const calculateSpecialization = (answers) => {
     const total = answers.reduce((acc, val) => acc + val, 0);
-    if (total >= 15) return "AI";
+    if (total >= 15) return "Artificial Intelligence";
     if (total >= 10) return "Data Analyst";
-    if (total >= 5) return "Backend";
-    return "Frontend";
+    if (total >= 5) return "Backend Development";
+    return "Frontend Developer";
   };
 
   const generateRoadmap = async () => {
