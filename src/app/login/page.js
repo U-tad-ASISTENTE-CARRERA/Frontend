@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { theme } from "../constants/theme";
+import { theme } from "@/constants/theme";
 import { useRouter } from "next/navigation";
 import "@fontsource/montserrat";
 
@@ -60,6 +60,8 @@ const Login = () => {
         router.push(`/profile/student/${data.user.id}`);
       } else if (data.user.role == "TEACHER") {
         router.push(`/profile/teacher/${data.user.id}`);
+      } else if (data.user.role == "ADMIN") {
+        router.push(`/home/admin/${data.user.id}`);
       }
     } catch (error) {
       setError("Ha ocurrido un error inesperado");

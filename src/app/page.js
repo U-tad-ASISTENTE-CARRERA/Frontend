@@ -1,6 +1,6 @@
 "use client";
 
-import { theme } from "./constants/theme";
+import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 
 export default function Home() {
