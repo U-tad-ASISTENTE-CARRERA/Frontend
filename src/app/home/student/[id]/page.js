@@ -120,7 +120,8 @@ const Home = () => {
               fontWeight: theme.fontWeight.semibold,
             }}
           >
-            Alumn{metadata.gender == "male" ? "o" : "a"} de {metadata.yearsCompleted[yearsCompleted.length - 1]}º {metadata.degree}
+            Alumn{metadata.gender == "male" ? "o" : "a"} de {metadata.degree}
+            {/* Alumn{metadata.gender == "male" ? "o" : "a"} de {metadata.yearsCompleted[yearsCompleted.length - 1]}º {metadata.degree} */}
           </h3>
         </div>
       </div>

@@ -254,7 +254,7 @@ const AdminDashboard = () => {
       }}
     >
       <div className="flex items-center justify-center p-5">
-          <h1 className="text-4xl font-bold text-blue-800">
+          <h1 className="text-4xl font-bold text-blue-800 mt-5">
             Panel de Administración
           </h1>
       </div>
