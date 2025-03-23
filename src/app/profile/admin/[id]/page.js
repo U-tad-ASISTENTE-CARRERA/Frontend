@@ -9,13 +9,13 @@ import ErrorPopUp from "@/components/ErrorPopUp";
 const AdminActionCard = ({ icon, title, description, onClick }) => (
   <div 
     onClick={onClick}
-    className="flex flex-col items-center p-6 transition-all bg-white border rounded-lg cursor-pointer hover:shadow-lg hover:bg-gray-50"
+    className="flex flex-col items-center p-8 transition-all bg-white border rounded-lg cursor-pointer hover:shadow-lg hover:bg-gray-50"
     style={{ borderColor: theme.palette.light.hex }}
   >
     <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full" style={{ backgroundColor: theme.palette.primary.hex }}>
       <i className={`text-2xl bi bi-${icon} text-white`}></i>
     </div>
-    <h3 className="mb-2 text-lg font-semibold" style={{ color: theme.palette.dark.hex }}>
+    <h3 className="mb-12 text-lg font-semibold" style={{ color: theme.palette.dark.hex }}>
       {title}
     </h3>
     <p className="text-sm text-center text-gray-600">{description}</p>
@@ -78,45 +78,42 @@ const AdminProfile = () => {
   const adminActions = [
     {
       icon: "people-fill",
-      title: "Gestionar Usuarios",
-      description: "Administrar usuarios, roles y permisos del sistema",
+      title: "Usuarios",
+      description: "Administrar los usuarios de la plataforma, editar roles y permisos",
       path: `/home/admin/${id}/users`
     },
     {
       icon: "map",
-      title: "Gestionar Roadmaps",
-      description: "Crear y editar rutas de aprendizaje personalizadas",
+      title: "Roadmaps",
+      description: "Crear y visualizar las rutas de aprendizaje personalizadas de los estudiantes",
       path: `/home/admin/${id}/roadmaps`
     },
     {
       icon: "mortarboard-fill",
-      title: "Gestionar Titulaciones",
+      title: "Titulaciones",
       description: "Configurar grados, asignaturas y planes académicos",
       path: `/home/admin/${id}/degrees`
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container px-4 py-12 mx-auto max-w-6xl">
-        <header className="flex items-center justify-between mb-10">
-          <h1 
-            className="text-3xl font-bold"
-            style={{ fontFamily: "Montserrat", color: theme.palette.primary.hex }}
-          >
-            Panel de Administrador
-          </h1>
-          <button
-            onClick={() => router.push(`/home/admin/${id}`)}
-            className="px-5 py-2 text-white rounded-md shadow-md transition-colors hover:bg-opacity-90"
-            style={{ backgroundColor: theme.palette.primary.hex, fontFamily: "Montserrat" }}
-          >
-            Dashboard
-          </button>
-        </header>
+    <div
+      style={{ 
+        backgroundImage: "url('/assets/fondo.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed"
+      }}
+    >
+      <div className="flex items-center justify-center p-5">
+        <h1 className="text-4xl font-bold text-blue-800 mt-5">
+          Perfil de Administrador
+        </h1>
+      </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-          <div className="p-6 bg-white border rounded-lg shadow-md md:col-span-1">
+      <div className="container px-4 py-6 mx-auto max-w-6xl">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+          <div className="p-4 bg-white border rounded-lg shadow-sm md:col-span-1" style={{ borderLeft: `4px solid ${theme.palette.primary.hex}` }}>
             <h2 
               className="pb-4 mb-4 text-xl font-semibold border-b"
               style={{ color: theme.palette.dark.hex, borderColor: theme.palette.light.hex }}
@@ -152,7 +149,7 @@ const AdminProfile = () => {
               Acciones de Administración
             </h2>
             
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-1 lg:grid-cols-3">
               {adminActions.map((action, index) => (
                 <AdminActionCard
                   key={index}

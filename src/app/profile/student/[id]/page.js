@@ -13,6 +13,7 @@ import Certifications from "@/components/student_profile/Certifications";
 import WorkExperience from "@/components/student_profile/WorkExperience";
 import ExpedienteAcademico from "@/components/student_profile/ExpedienteAcademico";
 import ShowTutor from "@/components/student_profile/ShowTutor";
+import CareerOpportunityComponent from "@/components/student_profile/CareerOpportunityComponent";
 
 import { convertTimestampToDate } from "@/utils/FirebaseDateUtils";
 
@@ -376,6 +377,10 @@ const StudentProfile = () => {
                 {activeSection === "showTutor" && (
                   <ShowTutor
                   />
+                )}
+
+                {activeSection === "career" && (
+                  <CareerOpportunityComponent />
                 )}
 
               </div>
