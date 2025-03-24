@@ -14,6 +14,7 @@ import WorkExperience from "@/components/student_profile/WorkExperience";
 import ExpedienteAcademico from "@/components/student_profile/ExpedienteAcademico";
 import ShowTutor from "@/components/student_profile/ShowTutor";
 import CareerOpportunityComponent from "@/components/student_profile/CareerOpportunityComponent";
+import AlertSystem from "@/components/student_profile/AlertSystem";
 
 import { convertTimestampToDate } from "@/utils/FirebaseDateUtils";
 
@@ -36,7 +37,7 @@ const StudentProfile = () => {
   const [workExperience, setWorkExperience] = useState([]);
   const [gender, setGender] = useState("");
   const [success, setSuccess] = useState(false);
-  const [activeSection, setActiveSection] = useState("personal");
+  const [activeSection, setActiveSection] = useState("personal"); 
   const [academicRecord, setAcademicRecord] = useState([]);
 
 
@@ -306,10 +307,23 @@ const StudentProfile = () => {
             style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
           >
             {getWelcomeMessage()} {firstName || "Usuario"}
+
+            {/* * testin'!!! sistema de alertas del estudiante sashVqz
+            <AlertSystem
+              academicRecord={academicRecord}
+              yearsCompleted={yearsCompleted}
+              firstName={firstName}
+              lastName={lastName}
+              languages={languages}
+              skills={skills}
+              certifications={certifications}
+              workExperience={workExperience}
+              gender={gender}
+            />  */}
           </h1>
 
           <div className="bg-white rounded-lg w-full min-w-full md:min-w-screen">
-
+            
             {/* Diseño responsive */}
             <div className="w-full max-w-8xl flex flex-col md:flex-row">
               <div className="w-full md:w-64 overflow-x-auto md:overflow-visible">
