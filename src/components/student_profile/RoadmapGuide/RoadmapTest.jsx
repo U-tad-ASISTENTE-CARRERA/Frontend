@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import { theme } from "@constants/theme";
 import "@fontsource/montserrat";
+import { testQuestions } from "@/constants/testQuestions";
+import { FaArrowLeft, FaArrowRight, FaCheck } from "react-icons/fa";
+
 
 const RoadmapTest = ({
   onSubmit,
@@ -16,21 +19,36 @@ const RoadmapTest = ({
     useState("");
   const [specialization, setSpecialization] = useState(initialSpecialization);
 
-  const questions = [
-    "¿Cuánto te apasiona trabajar con datos y descubrir patrones ocultos?",
-    "¿Cuánta experiencia o conocimientos tienes en programación (especialmente Python o R)?",
-    "¿Cómo de bien te sientes con las matemáticas y la estadística?",
-    "¿Cuánto has trabajado con herramientas de análisis de datos como Excel, SQL o Tableau?",
-    "¿Cómo de cómodo te sientes aprendiendo conceptos nuevos y complejos de manera autodidacta?",
-  ];
-
   const calculateSpecialization = (answers) => {
-    const total = answers.reduce((acc, val) => acc + val, 0);
-    if (total >= 15) return "Artificial Intelligence";
-    if (total >= 10) return "Data Analyst";
-    if (total >= 5) return "Backend Development";
-    return "Frontend Developer";
+    const scoreMap = {
+      frontend: 0,
+      backend: 0,
+      data: 0,
+      ai: 0
+    };
+
+    answers.forEach((value, i) => {
+      const tag = testQuestions[i].tag;
+      scoreMap[tag] += value;
+    });
+
+    const sorted = Object.entries(scoreMap).sort((a, b) => b[1] - a[1]);
+    const top = sorted[0][0];
+
+    switch (top) {
+      case "frontend":
+        return "Frontend Developer";
+      case "backend":
+        return "Backend Development";
+      case "data":
+        return "Data Analyst";
+      case "ai":
+        return "Artificial Intelligence";
+      default:
+        return "Frontend Developer";
+    }
   };
+
 
   const handleAnswer = (value) => {
     const newAnswers = [...answers];
@@ -39,7 +57,7 @@ const RoadmapTest = ({
   };
 
   const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
+    if (currentQuestion < testQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     }
   };
@@ -73,7 +91,7 @@ const RoadmapTest = ({
       }}
     >
       <h1
-        className="text-3xl m-24 font-bold text-center"
+        className="text-3xl m-20 font-bold text-center"
         style={{
           color: theme.palette.primary.hex,
           fontFamily: "Montserrat",
@@ -81,78 +99,91 @@ const RoadmapTest = ({
       >
         Test para ruta de aprendizaje
       </h1>
-      <div className="w-full max-w-4xl p-8 bg-white rounded-lg shadow-lg">
-        <h2
-          className="text-2xl font-bold text-center pb-8"
-          style={{
-            color: theme.palette.primary.hex,
-            fontFamily: "Montserrat",
-          }}
-        >
-          Responde para recibir recomendaciones
-        </h2>
-        {currentQuestion < questions.length && (
-          <div className="space-y-6">
+      <div className="w-full max-w-4xl p-8 bg-white rounded-lg shadow-lg mb-20">
+
+        {currentQuestion < testQuestions.length && (
+          <div
+            className="space-y-6 p-6 "
+            style={{ minHeight: "300px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="px-3 py-1 text-sm font-medium rounded-full shadow-sm bg-blue-100 text-blue-700">
+                Pregunta {currentQuestion + 1} de {testQuestions.length}
+              </span>
+            </div>
+
             <p
-              className="text-center"
-              style={{
-                color: theme.palette.text.hex,
-                fontFamily: "Montserrat, sans-serif",
-              }}
+              className="text-center text-lg font-semibold leading-relaxed flex-1 flex items-center justify-center text-wrap text-balance text-ellipsis"
+              style={{ color: theme.palette.text.hex }}
             >
-              {questions[currentQuestion]}
+              {testQuestions[currentQuestion].text}
             </p>
-            <input
-              type="range"
-              min="0"
-              max="5"
-              value={answers[currentQuestion] || 0}
-              onChange={(e) => handleAnswer(parseInt(e.target.value))}
-              className="block w-full mt-1 p-3 border border-gray-300 rounded-md"
-              style={{
-                borderColor: theme.palette.light.hex,
-                color: theme.palette.text.hex,
-                fontFamily: "Montserrat, sans-serif",
-                borderRadius: theme.buttonRadios.m,
-              }}
-            />
-            <span
-              className="block font-bold text-center"
-              style={{
-                color: theme.palette.primary.hex,
-                fontSize: "25px",
-                fontFamily: "Montserrat, sans-serif",
-              }}
-            >
-              {answers[currentQuestion] || 0}
-            </span>
+
+            <div className="flex flex-col items-center gap-3 pt-2 w-full">
+              <div className="flex justify-between w-full text-sm text-gray-500 px-1">
+                <span>0</span>
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="5"
+                step="1"
+                value={answers[currentQuestion] || 0}
+                onChange={(e) => handleAnswer(parseInt(e.target.value))}
+                className="w-full accent-blue-500"
+                style={{ borderRadius: theme.buttonRadios.m }}
+              />
+              <div
+                className="text-xl font-bold"
+                style={{ color: theme.palette.primary.hex }}
+              >
+                {answers[currentQuestion] || 0}
+              </div>
+            </div>
           </div>
         )}
-        <div className="flex justify-evenly mt-6">
-          {currentQuestion > 0 && (
+
+
+
+        <div className="flex justify-between items-center mt-6">
+          {currentQuestion > 0 ? (
             <button
               onClick={handlePrevious}
-              className="px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 transition"
             >
-              Anterior
+              <FaArrowLeft />
+              <span>Anterior</span>
             </button>
+          ) : (
+            <div></div>
           )}
-          {currentQuestion < questions.length - 1 ? (
+
+          {currentQuestion < testQuestions.length - 1 ? (
             <button
               onClick={handleNext}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition"
             >
-              Siguiente
+              <span>Siguiente</span>
+              <FaArrowRight />
             </button>
           ) : (
             <button
               onClick={handleSubmit}
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+              className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 transition"
             >
-              Enviar
+              <span>Enviar</span>
+              <FaCheck />
             </button>
           )}
         </div>
+
+
+
       </div>
 
       {showSpecializationModal && (
