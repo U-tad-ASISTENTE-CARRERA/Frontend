@@ -24,17 +24,19 @@ const RoadmapTest = ({
       frontend: 0,
       backend: 0,
       data: 0,
-      ai: 0
+      ai: 0,
     };
-
+  
     answers.forEach((value, i) => {
-      const tag = testQuestions[i].tag;
-      scoreMap[tag] += value;
+      const tag = testQuestions[i]?.tag;
+      if (tag && scoreMap.hasOwnProperty(tag)) {
+        scoreMap[tag] += Number.isFinite(value) ? value : 0;
+      }
     });
-
+  
     const sorted = Object.entries(scoreMap).sort((a, b) => b[1] - a[1]);
     const top = sorted[0][0];
-
+  
     switch (top) {
       case "frontend":
         return "Frontend Developer";
@@ -48,6 +50,8 @@ const RoadmapTest = ({
         return "Frontend Developer";
     }
   };
+  
+  
 
 
   const handleAnswer = (value) => {
@@ -188,36 +192,54 @@ const RoadmapTest = ({
 
       {showSpecializationModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">
-              Especialización Recomendada
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+            <h2 className="text-2xl font-bold mb-4 text-center">
+              Especialización recomendada
             </h2>
-            <p className="mb-4">
-              Tu especialización recomendada es:{" "}
-              <strong style={{ color: theme.palette.primary.hex }}>
+
+            <p className="text-center text-gray-700 mb-6">
+              Según tus respuestas, te recomendamos:
+              <br />
+              <strong
+                className="block mt-2 text-xl"
+                style={{ color: theme.palette.primary.hex }}
+              >
                 {recommendedSpecialization}
               </strong>
             </p>
-            <div className="mb-4">
-              <label className="block mb-2">
-                ¿Quieres cambiar tu especialización?
-              </label>
-              <select
-                value={specialization}
-                onChange={(e) => setSpecialization(e.target.value)}
-                className="block w-full p-4 pl-2 pr-4 ml-0 m-8"
-                style={{ borderRadius: theme.buttonRadios.m }}
-              >
-                <option value="Frontend Developer">Frontend</option>
-                <option value="Backend Development">Backend</option>
-                <option value="Artificial Intelligence">AI</option>
-                <option value="Data Analyst">Data Analyst</option>
-              </select>
+
+            <div className="mb-6">
+              <p className="font-medium mb-2 text-sm text-gray-600">
+                Puedes confirmar o elegir otra especialización:
+              </p>
+              <ul className="space-y-2">
+                {[
+                  "Frontend Developer",
+                  "Backend Development",
+                  "Artificial Intelligence",
+                  "Data Analyst",
+                ].map((spec) => (
+                  <li key={spec}>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="specialization"
+                        value={spec}
+                        checked={specialization === spec}
+                        onChange={(e) => setSpecialization(e.target.value)}
+                        className="accent-blue-600"
+                      />
+                      <span className="text-gray-800">{spec}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="flex justify-left">
+
+            <div className="flex justify-center">
               <button
                 onClick={confirmSpecialization}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                className="flex items-center gap-2 px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
               >
                 Confirmar
               </button>
@@ -225,6 +247,7 @@ const RoadmapTest = ({
           </div>
         </div>
       )}
+
     </div>
   );
 };
