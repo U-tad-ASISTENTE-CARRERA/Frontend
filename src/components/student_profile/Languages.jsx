@@ -80,7 +80,7 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
   };
 
   return (
-    <div className="space-y-4 p-4 bg-white rounded-lg">
+    <div className="space-y-4 p-4">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>
           Añadir idiomas
@@ -111,114 +111,129 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
         <p className="text-gray-500 text-sm text-center">No hay idiomas guardados.</p>
       )}
 
-      {tempLanguages.length > 0 && (
-        <div
-          className="flex items-center gap-3 font-medium text-sm"
-          style={{ color: theme.palette.text.hex }}
-        >
-          <div className="w-3/4">Idioma</div>
-          <div className="w-1/4">Nivel</div>
-          <div className="w-8"></div>
-        </div>
-      )}
+
 
 
       {tempLanguages.map((lang, index) => {
         const filtered = filterOptions(languageSearch[index] || "");
+        const hasError = errors[`language-${index}`];
+
         return (
-          <div key={index} className="space-y-1">
-  {isEditing && errors[`language-${index}`] && (
-    <p className="text-xs" style={{ color: theme.palette.error.hex }}>
-      {errors[`language-${index}`]}
-    </p>
-  )}
-  <div className="flex items-center gap-3">
-    <div className="w-3/4 relative">
-      {isEditing ? (
-        <div>
-          <input
-            type="text"
-            placeholder="Buscar idioma..."
-            value={languageSearch[index] || ""}
-            onChange={(e) => {
-              const value = e.target.value;
-              setLanguageSearch({ ...languageSearch, [index]: value });
-              handleLanguageChange(index, "");
-              setDropdownOpen({ ...dropdownOpen, [index]: true });
-            }}
-            onFocus={() => setDropdownOpen({ ...dropdownOpen, [index]: true })}
-            onBlur={() =>
-              setTimeout(() => setDropdownOpen((prev) => ({ ...prev, [index]: false })), 150)
-            }
-            className="block w-full p-2 border rounded-md"
+          <div
+            key={index}
+            className="rounded-md border p-4 space-y-3 bg-white"
             style={{
-              borderColor: errors[`language-${index}`]
-                ? theme.palette.error.hex
-                : theme.palette.primary.hex,
-              color: theme.palette.text.hex,
+              borderColor: theme.palette.lightGray.hex,
             }}
-          />
-          {dropdownOpen[index] && filtered.length > 0 && (
-            <ul className="absolute z-10 w-full border rounded-md mt-1 max-h-32 overflow-auto bg-white shadow">
-              {filtered.map((option) => (
-                <li
-                  key={option}
-                  onMouseDown={() => {
-                    handleLanguageChange(index, option);
-                    setLanguageSearch({ ...languageSearch, [index]: option });
-                    setDropdownOpen({ ...dropdownOpen, [index]: false });
+          >
+
+
+            <div className="flex items-start gap-3">
+              {/* Campo de idioma */}
+              <div className="w-3/4 relative space-y-1">
+                <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
+                  Idioma
+                </label>
+
+                {isEditing ? (
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Buscar idioma..."
+                      value={languageSearch[index] || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setLanguageSearch({ ...languageSearch, [index]: value });
+                        handleLanguageChange(index, "");
+                        setDropdownOpen({ ...dropdownOpen, [index]: true });
+                      }}
+                      onFocus={() => setDropdownOpen({ ...dropdownOpen, [index]: true })}
+                      onBlur={() =>
+                        setTimeout(() => setDropdownOpen((prev) => ({ ...prev, [index]: false })), 150)
+                      }
+                      className="block w-full p-2 border rounded-md"
+                      style={{
+                        borderColor: hasError
+                          ? theme.palette.error.hex
+                          : theme.palette.primary.hex,
+                        color: theme.palette.text.hex,
+                      }}
+                    />
+                    {dropdownOpen[index] && filtered.length > 0 && (
+                      <ul className="absolute z-10 w-full border rounded-md mt-1 max-h-32 overflow-auto bg-white shadow">
+                        {filtered.map((option) => (
+                          <li
+                            key={option}
+                            onMouseDown={() => {
+                              handleLanguageChange(index, option);
+                              setLanguageSearch({ ...languageSearch, [index]: option });
+                              setDropdownOpen({ ...dropdownOpen, [index]: false });
+                            }}
+                            className="px-2 py-1 hover:bg-gray-100 cursor-pointer text-sm"
+                          >
+                            {option}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ) : (
+                  <input
+                    type="text"
+                    value={lang.language}
+                    disabled
+                    className="block w-full p-2 border rounded-md bg-gray-100"
+                    style={{ color: theme.palette.text.hex }}
+                  />
+                )}
+                {hasError && (
+                  <p className="text-xs" style={{ color: theme.palette.error.hex }}>
+                    {errors[`language-${index}`]}
+                  </p>
+                )}
+              </div>
+
+              {/* Campo de nivel */}
+              <div className="w-1/4 space-y-1">
+                <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
+                  Nivel
+                </label>
+                <select
+                  name="level"
+                  value={lang.level}
+                  onChange={(event) => handleLevelChange(index, event)}
+                  className="w-full p-2 border rounded-md"
+                  style={{
+                    borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                    color: theme.palette.text.hex,
                   }}
-                  className="px-2 py-1 hover:bg-gray-100 cursor-pointer text-sm"
+                  disabled={!isEditing}
                 >
-                  {option}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ) : (
-        <input
-          type="text"
-          value={lang.language}
-          disabled
-          className="block w-full p-2 border rounded-md bg-gray-100"
-          style={{ color: theme.palette.text.hex }}
-        />
-      )}
-    </div>
-    <div className="w-1/4">
-      <select
-        name="level"
-        value={lang.level}
-        onChange={(event) => handleLevelChange(index, event)}
-        className="w-full p-2 border rounded-md"
-        style={{
-          borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-          color: theme.palette.text.hex,
-        }}
-        disabled={!isEditing}
-      >
-        {op_level.map((op, i) => (
-          <option key={i} value={op}>{op}</option>
-        ))}
-      </select>
-    </div>
+                  {op_level.map((op, i) => (
+                    <option key={i} value={op}>{op}</option>
+                  ))}
+                </select>
+              </div>
 
-    {isEditing && (
-      <button
-        type="button"
-        onClick={() => markLanguageForDeletion(index)}
-        className="text-white p-2 rounded-md transition duration-200"
-        style={{ backgroundColor: theme.palette.error.hex }}
-      >
-        <FaTrash className="text-sm" />
-      </button>
-    )}
-  </div>
-</div>
-
+              {/* Botón de eliminar */}
+              {isEditing && (
+                <div className="pt-6">
+                  <button
+                    type="button"
+                    onClick={() => markLanguageForDeletion(index)}
+                    className="text-white p-2 rounded-md transition duration-200"
+                    style={{ backgroundColor: theme.palette.error.hex }}
+                  >
+                    <FaTrash className="text-sm" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         );
       })}
+
+
 
       {isEditing && (
         <button
