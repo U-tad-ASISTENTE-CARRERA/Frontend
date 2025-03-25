@@ -150,7 +150,9 @@ export default function Navbar() {
                       >
                         Iniciar sesión
                       </button>
-                      <hr className="my-2 border-s border-gray-300" />
+
+                      <div style={{ height: "1px", backgroundColor: "gray", margin: "8px 0" }}></div>
+
                       <button
                         style={styles.dropdownButton}
                         onClick={() => (
@@ -191,40 +193,48 @@ export default function Navbar() {
             </button>
 
             {/* Enlaces a las distintas partes de la web */}
-            <Link
-              href="/"
+            <div
               className="text-white text-lg hover:text-gray-300 transition-colors duration-200"
+              onClick={() => (handleTypeUserHome(), setIsMenuOpen(false))}
             >
-              <i className="bi bi-house-door-fill text-2xl"></i> Inicio
-            </Link>
+              <div className="flex flex-row items-center">
+                <i className="bi bi-house-door-fill text-2xl"></i> 
+                <p className="ml-2">Inicio</p>
+              </div>
+            </div>
 
             <div
               className="text-white text-lg hover:text-gray-300 transition-colors duration-200"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <i className="bi bi-person-fill text-2xl"></i> Usuario
-              <i
-                className={`${
-                  isDropdownOpen
-                    ? "bi bi-chevron-down ml-3"
-                    : "bi bi-chevron-left ml-3"
-                }`}
-              ></i>
+              <div className="flex flex-row items-center">
+                <i className="bi bi-person-fill text-2xl"></i> 
+                <p className="ml-2">Usuario</p>
+                <i
+                  className={`${
+                    isDropdownOpen
+                      ? "bi bi-chevron-down ml-3"
+                      : "bi bi-chevron-left ml-3"
+                  }`}
+                ></i>
+              </div>
+
               {isDropdownOpen && (
                 <div className="bg-blue-600 p-2 rounded-lg mt-2 shadow-md">
                   {isLoggedIn ? (
                     <>
                       <button
                         className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={handleTypeUserProfile()}
+                        onClick={() => (handleTypeUserProfile(), setIsDropdownOpen(false), setIsMenuOpen(false))}
                       >
                         Mi perfil
                       </button>
+
+                      <div style={{ height: "1px", backgroundColor: "blue", margin: "8px 0" }}></div>
+
                       <button
                         className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={() => (
-                          router.push("/logout"), setIsDropdownOpen(false)
-                        )}
+                        onClick={() => (router.push("/logout"), setIsDropdownOpen(false), setIsMenuOpen(false))}
                       >
                         Cerrar sesión
                       </button>
@@ -233,18 +243,16 @@ export default function Navbar() {
                     <div className="flex flex-col">
                       <button
                         className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={() => (
-                          router.push("/login"), setIsDropdownOpen(false)
-                        )}
+                        onClick={() => (router.push("/login"), setIsDropdownOpen(false), setIsMenuOpen(false))}
                       >
                         Iniciar sesión
                       </button>
-                      <hr className="my-2 border-s border-gray-300" />
+
+                      <div style={{ height: "1px", backgroundColor: "blue", margin: "8px 0" }}></div>
+
                       <button
                         className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={() => (
-                          router.push("/register"), setIsDropdownOpen(false)
-                        )}
+                        onClick={() => (router.push("/register"), setIsDropdownOpen(false), setIsMenuOpen(false))}
                       >
                         Registrate
                       </button>
