@@ -148,7 +148,7 @@ const Home = () => {
           <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8">
             <ProgressBar progress={progress} />
           </div>
-          <div className="flex flex-wrap justify-evenly gap-4 mt-8">
+          <div className="flex flex-wrap justify-evenly gap-4 mt-12">
             {roadmap.body &&
               Object.entries(roadmap.body).map(([sectionName, sectionData]) => (
                 <Section
@@ -217,9 +217,9 @@ const SectionPopup = ({
   updateProgress,
 }) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 fade-fast ">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 fade-fast">
       <div
-        className="bg-white p-8 rounded-lg shadow-lg w-11/12 max-w-4xl relative pb-20"
+        className="bg-white p-8 rounded-lg shadow-lg w-11/12 max-w-4xl relative pb-12"
         style={{ fontFamily: "Montserrat, sans-serif" }}
       >
         <button
@@ -242,7 +242,7 @@ const SectionPopup = ({
         >
           {sectionName}
         </h2>
-        <div className="flex gap-x-6 mt-12">
+        <div className="flex justify-center gap-x-6 mt-12">
           {Object.entries(sectionData)
             .slice(1)
             .map(([taskName, taskData]) => (
@@ -390,14 +390,14 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
 
 const Resource = ({ resource }) => {
   return (
-    <div className="flex justify-center items-center mt-4 min-h-full">
+    <div className="flex justify-center items-center mt-4">
       <a
         href={resource.link}
         target="_blank"
         rel="noopener noreferrer"
         style={{
           color: theme.palette.primary.hex,
-          fontSize: theme.fontSizes.s,
+          fontSize: theme.fontSizes.m,
         }}
         className="hover:underline text-center"
       >

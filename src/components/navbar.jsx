@@ -5,9 +5,9 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import React, { useState, useEffect } from "react";
 import { styles } from "@/constants/theme";
 import { useRouter } from "next/navigation";
+import "@fontsource/montserrat";
 
 export default function Navbar() {
-
   /* 
    isLoggedIn --> variable que permite saber si un usario ha iniciado sesión
    isDropdownOpen --> variable que cambia la opción Iniciar sesión por Mi perfil y Log Out
@@ -16,22 +16,21 @@ export default function Navbar() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isToken, setIsToken] = useState("")
-  const router = useRouter()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isToken, setIsToken] = useState("");
+  const router = useRouter();
 
   /* 
     Comrobamos que exista el token del usuario para poder activar las opciones
     de Mi perfil y Log Out
   */
   useEffect(() => {
-    setIsToken(localStorage.getItem("token"))
-
+    setIsToken(localStorage.getItem("token"));
 
     if (isToken) {
-      setIsLoggedIn(true)
+      setIsLoggedIn(true);
     } else {
-      setIsLoggedIn(false)
+      setIsLoggedIn(false);
     }
   });
 
@@ -41,55 +40,59 @@ export default function Navbar() {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
-    })
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
 
-    console.log(response)
+    console.log(response);
 
     if (!response.ok) {
-      throw new error("Error al captar al usuario")
+      throw new error("Error al captar al usuario");
     }
 
-    const data = await response.json()
+    const data = await response.json();
 
-    setIsDropdownOpen(false)
+    setIsDropdownOpen(false);
 
-    router.push(`/profile/${data.user.role.toLowerCase()}/${data.user.id}`)
-  }
+    router.push(`/profile/${data.user.role.toLowerCase()}/${data.user.id}`);
+  };
 
   const handleTypeUserHome = async (e) => {
     if (!localStorage.getItem("token")) {
-      router.push("/")
+      router.push("/");
     } else {
       const response = await fetch("http://localhost:3000/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      })
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       if (!response.ok) {
-        throw new error("Error al captar al usuario")
+        throw new error("Error al captar al usuario");
       }
 
-      const data = await response.json()
+      const data = await response.json();
 
-      router.push(`/home/${data.user.role.toLowerCase()}/${data.user.id}`)
+      router.push(`/home/${data.user.role.toLowerCase()}/${data.user.id}`);
     }
-  }
+  };
 
   return (
     <>
       {/* Navbar principal */}
       <nav className="bg-blue-600 p-4 flex items-center justify-between shadow-lg">
-
-        <div
-          className="flex col-span-2">
-          <img src="/logo.png" title="Logo" className="h-10 w-10" onClick={() => (router.push("/"))}></img>
+        <div className="flex col-span-2">
+          <img
+            src="/logo.png"
+            title="Logo"
+            className="h-10 w-10"
+            onClick={() => router.push("/")}
+          ></img>
           <p
-            className="text-white font-bold ml-3 mt-2"
+            className="text-white ml-3 mt-2"
+            style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 500 }}
           >
             Asistente de Carrera Profesional
           </p>
@@ -107,9 +110,8 @@ export default function Navbar() {
           <li className="md:ml-auto">
             <i
               className="bi bi-house-door-fill text-4xl hover:text-gray-300 transition-colors duration-200 text-nowrap"
-              onClick={() => (handleTypeUserHome())}
-            >
-            </i>
+              onClick={() => handleTypeUserHome()}
+            ></i>
           </li>
 
           <li className="md:ml-auto">
@@ -122,18 +124,17 @@ export default function Navbar() {
               {isDropdownOpen && (
                 <div style={styles.dropdown}>
                   {isLoggedIn ? (
-                    <div style={styles.submenu} >
+                    <div style={styles.submenu}>
                       <button
                         style={styles.dropdownButton}
-                        onClick={() => (handleTypeUserProfile())}
+                        onClick={() => handleTypeUserProfile()}
                       >
                         Mi perfil
                       </button>
                       <button
                         style={styles.dropdownButton}
                         onClick={() => (
-                          router.push("/logout"),
-                          setIsDropdownOpen(false)
+                          router.push("/logout"), setIsDropdownOpen(false)
                         )}
                       >
                         Cerrar sesión
@@ -143,14 +144,18 @@ export default function Navbar() {
                     <div className="flex flex-col">
                       <button
                         style={styles.dropdownButton}
-                        onClick={() => (router.push("/login"), setIsDropdownOpen(false))}
+                        onClick={() => (
+                          router.push("/login"), setIsDropdownOpen(false)
+                        )}
                       >
                         Iniciar sesión
                       </button>
                       <hr className="my-2 border-s border-gray-300" />
                       <button
                         style={styles.dropdownButton}
-                        onClick={() => (router.push("/register"), setIsDropdownOpen(false))}
+                        onClick={() => (
+                          router.push("/register"), setIsDropdownOpen(false)
+                        )}
                       >
                         Registrate
                       </button>
@@ -166,11 +171,15 @@ export default function Navbar() {
       {/* Sidebar lateral derecho */}
       {isMenuOpen && (
         <div
-          className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity ease-in-out duration-300 ${isMenuOpen ? "opacity-100" : "opacity-0"}`}
+          className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity ease-in-out duration-300 ${
+            isMenuOpen ? "opacity-100" : "opacity-0"
+          }`}
           onClick={() => setIsMenuOpen(false)}
         >
           <div
-            className={`fixed top-0 right-0 w-64 h-full bg-blue-700 shadow-lg flex flex-col p-6 space-y-6 transform transition-transform duration-500 ease-in-out ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+            className={`fixed top-0 right-0 w-64 h-full bg-blue-700 shadow-lg flex flex-col p-6 space-y-6 transform transition-transform duration-500 ease-in-out ${
+              isMenuOpen ? "translate-x-0" : "translate-x-full"
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Botón para cerrar la navbar lateral */}
@@ -194,11 +203,13 @@ export default function Navbar() {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               <i className="bi bi-person-fill text-2xl"></i> Usuario
-
               <i
-                className={`${isDropdownOpen ? "bi bi-chevron-down ml-3" : "bi bi-chevron-left ml-3"}`}
+                className={`${
+                  isDropdownOpen
+                    ? "bi bi-chevron-down ml-3"
+                    : "bi bi-chevron-left ml-3"
+                }`}
               ></i>
-
               {isDropdownOpen && (
                 <div className="bg-blue-600 p-2 rounded-lg mt-2 shadow-md">
                   {isLoggedIn ? (
@@ -211,7 +222,9 @@ export default function Navbar() {
                       </button>
                       <button
                         className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={() => (router.push("/logout"), setIsDropdownOpen(false))}
+                        onClick={() => (
+                          router.push("/logout"), setIsDropdownOpen(false)
+                        )}
                       >
                         Cerrar sesión
                       </button>
@@ -220,14 +233,18 @@ export default function Navbar() {
                     <div className="flex flex-col">
                       <button
                         className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={() => (router.push("/login"), setIsDropdownOpen(false))}
+                        onClick={() => (
+                          router.push("/login"), setIsDropdownOpen(false)
+                        )}
                       >
                         Iniciar sesión
                       </button>
                       <hr className="my-2 border-s border-gray-300" />
                       <button
                         className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={() => (router.push("/register"), setIsDropdownOpen(false))}
+                        onClick={() => (
+                          router.push("/register"), setIsDropdownOpen(false)
+                        )}
                       >
                         Registrate
                       </button>
@@ -237,7 +254,8 @@ export default function Navbar() {
               )}
             </div>
           </div>
-        </div>)}
+        </div>
+      )}
     </>
   );
 }

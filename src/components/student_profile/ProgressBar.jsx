@@ -9,20 +9,22 @@ const ProgressBar = ({ progress }) => {
     const timer = setTimeout(() => {
       setAnimatedProgress(progress);
     }, 100);
+
+    console.log(progress);
     return () => clearTimeout(timer);
   }, [progress]);
 
   return (
-    <div className="w-full bg-gray-200 rounded-full h-4 mb-8 relative">
+    <div className="w-full bg-gray-200 rounded-full h-6 relative">
       <div
-        className="h-4 rounded-full transition-all duration-500"
+        className="h-6 rounded-full transition-all duration-500"
         style={{
           width: `${animatedProgress}%`,
           background:
-            "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(62,9,121,1) 37%, rgba(86,0,255,1) 100%)",
+            "linear-gradient(90deg, rgb(5, 0, 105) 0%, rgb(16, 9, 121) 37%, rgb(4, 0, 221) 100%)",
         }}
       ></div>
-      <div className="absolute top-0 left-0 w-full h-4">
+      <div className="absolute top-0 left-0 w-full h-6">
         <div
           className="absolute top-0 left-1/4 transform -translate-x-1/2"
           style={{ width: "2px", height: "100%", backgroundColor: "gray" }}
