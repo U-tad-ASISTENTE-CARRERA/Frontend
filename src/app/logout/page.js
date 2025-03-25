@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { styles } from "@/constants/theme";
 import { theme } from "@/constants/theme";
+import { BiLogOut } from "react-icons/bi";
+import { MdCancel } from "react-icons/md";
 
 const LogOut = () => {
   const [error, setError] = useState("");
 
-  const handleLogOut = async (e) => {
+  const handleLogOut = async () => {
     setError("");
 
     try {
@@ -22,68 +23,69 @@ const LogOut = () => {
       if (!response.ok) {
         setError("Error al cerrar sesión");
         return;
-      } else {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("metadata");
-        window.location.href = "/";
       }
-    } catch (error) {}
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("metadata");
+      window.location.href = "/";
+    } catch (error) { }
   };
 
   return (
-    <div style={{ ...styles.overlay, fontFamily: "Montserrat" }}>
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-30 flex items-center justify-center font-[Montserrat]">
       <div
-        style={{
-          ...styles.modal,
-          background: theme.palette.background.hex,
-          color: theme.palette.text.hex,
-          borderRadius: theme.buttonRadios.m,
-        }}
+        className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm max-w-sm w-full"
+        style={{ borderLeft: `4px solid ${theme.palette.primary.hex}` }}
       >
-        <h2
-          style={{
-            fontSize: theme.fontSizes.xl,
-            fontWeight: theme.fontWeight.bold,
-          }}
-        >
-          ¿Estás seguro de que quieres cerrar sesión?
-        </h2>
+        <div className="flex items-center justify-center">
+          <div>
 
-        {/* Mostrar error si existe */}
-        {error && (
-          <p
+            <p className="text-sm font-medium text-gray-500 uppercase">
+              Confirmar acción
+            </p>
+
+            {error && (
+              <p className="text-sm text-red-600 mt-2">
+                {error}
+              </p>
+            )}
+
+          </div>
+
+        </div>
+
+        <div className="mt-6 flex flex-col gap-3">
+
+          {/* Botón para cerrar sesión */}
+          <button
+            className="w-full px-4 py-2 text-white rounded-md font-semibold flex items-center justify-center gap-2"
+            style={{ backgroundColor: theme.palette.error.hex }}
+            onClick={handleLogOut}
+          >
+            <BiLogOut className="text-lg" /> Cerrar sesión
+          </button>
+
+          {/* Botón para cancelar y cerrar el "pop-up" */}
+          <button
+            className="w-full px-4 py-2 rounded-md font-semibold flex items-center justify-center gap-2"
             style={{
-              color: theme.palette.error.hex,
-              fontSize: theme.fontSizes.m,
+              backgroundColor: theme.palette.gray.hex,
+              color: theme.palette.text.hex,
+            }}
+            onClick={() => {
+              const user = JSON.parse(localStorage.getItem("user"));
+              if (user?.role && user?.id) {
+                window.location.href = `/home/${user.role.toLowerCase()}/${user.id}`;
+              } else {
+                window.location.href = "/";
+              }
             }}
           >
-            {error}
-          </p>
-        )}
+            <MdCancel className="text-lg" /> Cancelar
+          </button>
 
-        <button
-          style={{
-            ...styles.modalButton,
-            backgroundColor: theme.palette.error.hex,
-            color: theme.palette.background.hex,
-            borderRadius: theme.buttonRadios.m,
-          }}
-          onClick={handleLogOut}
-        >
-          Salir
-        </button>
-        <button
-          style={{
-            ...styles.modalButton,
-            backgroundColor: theme.palette.gray.hex,
-            color: theme.palette.text.hex,
-            borderRadius: theme.buttonRadios.m,
-          }}
-          onClick={() => (window.location.href = "/")}
-        >
-          Cancelar
-        </button>
+        </div>
       </div>
     </div>
   );
