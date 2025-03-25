@@ -1,99 +1,86 @@
 import React, { useState } from "react";
 import { theme } from "@/constants/theme";
+import { op_level } from "@/constants/opLevel";
+import { availableLanguages } from "@/constants/availableLanguages";
+import { FaTrash } from "react-icons/fa";
 
 const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
-  const [tempLanguages, setTempLanguages] = useState([...languages]); // Clona los datos originales
-  const [deletedLanguages, setDeletedLanguages] = useState([]); // Guarda los eliminados
+  const [tempLanguages, setTempLanguages] = useState([...languages]);
+  const [deletedLanguages, setDeletedLanguages] = useState([]);
+  const [languageSearch, setLanguageSearch] = useState({});
+  const [dropdownOpen, setDropdownOpen] = useState({});
 
-  const op_level = ["A1", "A2", "B1", "B2", "C1", "C2"]
-
-  const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/; // Solo caracteres latinos
-
-  // Editar directamente el idioma sin crear una nueva entrada
-  const handleLanguageChange = (index, event) => {
-    const updatedLanguages = [...tempLanguages];
-    updatedLanguages[index].language = event.target.value.trim(); // Edita directamente
-    setTempLanguages(updatedLanguages);
+  const handleLanguageChange = (index, value) => {
+    const updated = [...tempLanguages];
+    updated[index].language = value;
+    setTempLanguages(updated);
   };
 
-  // Editar el nivel del idioma
   const handleLevelChange = (index, event) => {
-    const updatedLanguages = [...tempLanguages];
-    updatedLanguages[index].level = event.target.value;
-    setTempLanguages(updatedLanguages);
+    const updated = [...tempLanguages];
+    updated[index].level = event.target.value;
+    setTempLanguages(updated);
   };
 
-  // Agregar un nuevo idioma sin duplicar
   const addLanguage = () => {
     setTempLanguages([...tempLanguages, { language: "", level: "A1" }]);
   };
 
-  // Marcar un idioma para eliminación
   const markLanguageForDeletion = (index) => {
     const languageToDelete = tempLanguages[index];
-
-    // Si el idioma ya estaba en la BD, marcarlo para eliminarlo
     if (languages.some((lang) => lang.language === languageToDelete.language)) {
       setDeletedLanguages((prev) => [...prev, languageToDelete]);
     }
-
-    // Removerlo de la UI temporalmente
     setTempLanguages(tempLanguages.filter((_, i) => i !== index));
   };
 
-  // Validar que los datos sean correctos antes de enviarlos
   const validateForm = () => {
     let newErrors = {};
     tempLanguages.forEach((lang, index) => {
       if (!lang.language.trim()) {
         newErrors[`language-${index}`] = "El campo no puede estar vacío.";
-      } else if (!nameRegex.test(lang.language)) {
-        newErrors[`language-${index}`] = "El idioma solo puede contener caracteres latinos.";
+      } else if (!availableLanguages.includes(lang.language)) {
+        newErrors[`language-${index}`] = "Selecciona un idioma válido de la lista.";
       }
     });
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Guardar cambios correctamente sin duplicar idiomas
   const handleSave = async () => {
     if (!validateForm()) return;
-
     try {
-      // Si se eliminaron idiomas, hacer DELETE primero
       if (deletedLanguages.length > 0) {
-        console.log("📤 Eliminando idiomas:", deletedLanguages);
         await onDelete({ languages: deletedLanguages });
         setDeletedLanguages([]);
       }
-
-      // Si hay idiomas para actualizar, hacer PATCH
       if (tempLanguages.length > 0) {
-        console.log("📤 Enviando PATCH con:", tempLanguages);
         await onSave({ languages: tempLanguages });
         setLanguages(tempLanguages);
       }
-
       setIsEditing(false);
     } catch (error) {
       console.error("Error al actualizar idiomas:", error.message);
     }
   };
 
-  // Cancelar cambios y restaurar valores originales
   const handleCancel = () => {
     setTempLanguages([...languages]);
-    setDeletedLanguages([]); // Restaurar eliminados
+    setDeletedLanguages([]);
     setErrors({});
     setIsEditing(false);
   };
 
+  const filterOptions = (input) => {
+    return availableLanguages.filter((lang) =>
+      lang.toLowerCase().includes(input.toLowerCase())
+    );
+  };
+
   return (
     <div className="space-y-4 p-4 bg-white rounded-lg">
-      {/* Header con botón de edición */}
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>
           Añadir idiomas
@@ -120,84 +107,125 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
         </div>
       </div>
 
-      {/* Mensaje cuando no hay idiomas */}
       {tempLanguages.length === 0 && deletedLanguages.length === 0 && (
         <p className="text-gray-500 text-sm text-center">No hay idiomas guardados.</p>
       )}
 
-      {/* Lista de idiomas */}
-      {tempLanguages.map((lang, index) => (
-        <div key={index} className="flex items-center gap-3">
-          {/* Idioma */}
-          <div className="w-3/4">
-            <label className="block text-sm font-medium">Idioma</label>
-            <input
-              type="text"
-              placeholder="Idioma"
-              value={lang.language}
-              onChange={(event) => handleLanguageChange(index, event)}
-              className="block w-full p-2 border rounded-md"
-              style={{
-                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-                color: theme.palette.text.hex,
-              }}
-              disabled={!isEditing}
-            />
-            {errors[`language-${index}`] && (
-              <p className="text-red-500 text-xs mt-1">{errors[`language-${index}`]}</p>
-            )}
-          </div>
+      {tempLanguages.length > 0 && (
+        <div
+          className="flex items-center gap-3 font-medium text-sm"
+          style={{ color: theme.palette.text.hex }}
+        >
+          <div className="w-3/4">Idioma</div>
+          <div className="w-1/4">Nivel</div>
+          <div className="w-8"></div>
+        </div>
+      )}
 
-          {/* Nivel */}
-          <div className="w-1/4">
-            <label className="block text-sm font-medium">Nivel</label>
-            <select
-              name="level"
-              value={lang.level}
-              onChange={(event) => handleLevelChange(index, event)}
-              className="w-full p-2 border rounded-md"
-              style={{
-                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-                color: theme.palette.text.hex,
-              }}
-              disabled={!isEditing}
-            >
-             {op_level.map((op, index) =>(
-              <option key={index} value={op}>
-                {op}
-              </option>
-             ))
-             }
-            </select>
-          </div>
 
-          {/* Botón de eliminar */}
-          {isEditing && (
-            <button
-              type="button"
-              onClick={() => markLanguageForDeletion(index)}
-              className="px-3 py-2 text-sm text-white rounded-md transition duration-200"
-              style={{
-                backgroundColor: theme.palette.error.hex,
-                fontWeight: "bold",
-              }}
-            >
-              ✕
-            </button>
+      {tempLanguages.map((lang, index) => {
+        const filtered = filterOptions(languageSearch[index] || "");
+        return (
+          <div key={index} className="space-y-1">
+  {isEditing && errors[`language-${index}`] && (
+    <p className="text-xs" style={{ color: theme.palette.error.hex }}>
+      {errors[`language-${index}`]}
+    </p>
+  )}
+  <div className="flex items-center gap-3">
+    <div className="w-3/4 relative">
+      {isEditing ? (
+        <div>
+          <input
+            type="text"
+            placeholder="Buscar idioma..."
+            value={languageSearch[index] || ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              setLanguageSearch({ ...languageSearch, [index]: value });
+              handleLanguageChange(index, "");
+              setDropdownOpen({ ...dropdownOpen, [index]: true });
+            }}
+            onFocus={() => setDropdownOpen({ ...dropdownOpen, [index]: true })}
+            onBlur={() =>
+              setTimeout(() => setDropdownOpen((prev) => ({ ...prev, [index]: false })), 150)
+            }
+            className="block w-full p-2 border rounded-md"
+            style={{
+              borderColor: errors[`language-${index}`]
+                ? theme.palette.error.hex
+                : theme.palette.primary.hex,
+              color: theme.palette.text.hex,
+            }}
+          />
+          {dropdownOpen[index] && filtered.length > 0 && (
+            <ul className="absolute z-10 w-full border rounded-md mt-1 max-h-32 overflow-auto bg-white shadow">
+              {filtered.map((option) => (
+                <li
+                  key={option}
+                  onMouseDown={() => {
+                    handleLanguageChange(index, option);
+                    setLanguageSearch({ ...languageSearch, [index]: option });
+                    setDropdownOpen({ ...dropdownOpen, [index]: false });
+                  }}
+                  className="px-2 py-1 hover:bg-gray-100 cursor-pointer text-sm"
+                >
+                  {option}
+                </li>
+              ))}
+            </ul>
           )}
         </div>
-      ))}
+      ) : (
+        <input
+          type="text"
+          value={lang.language}
+          disabled
+          className="block w-full p-2 border rounded-md bg-gray-100"
+          style={{ color: theme.palette.text.hex }}
+        />
+      )}
+    </div>
+    <div className="w-1/4">
+      <select
+        name="level"
+        value={lang.level}
+        onChange={(event) => handleLevelChange(index, event)}
+        className="w-full p-2 border rounded-md"
+        style={{
+          borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+          color: theme.palette.text.hex,
+        }}
+        disabled={!isEditing}
+      >
+        {op_level.map((op, i) => (
+          <option key={i} value={op}>{op}</option>
+        ))}
+      </select>
+    </div>
 
-      {/* Botón para añadir nuevos idiomas */}
+    {isEditing && (
+      <button
+        type="button"
+        onClick={() => markLanguageForDeletion(index)}
+        className="text-white p-2 rounded-md transition duration-200"
+        style={{ backgroundColor: theme.palette.error.hex }}
+      >
+        <FaTrash className="text-sm" />
+      </button>
+    )}
+  </div>
+</div>
+
+        );
+      })}
+
       {isEditing && (
         <button
           type="button"
           onClick={addLanguage}
           className="w-full px-4 py-2 text-white rounded-md transition duration-200"
-          style={{
-            backgroundColor: theme.palette.primary.hex,
-            fontWeight: "bold",
-          }}
+          style={{ backgroundColor: theme.palette.primary.hex, fontWeight: "bold" }}
         >
           Añadir idioma
         </button>

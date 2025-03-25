@@ -145,6 +145,16 @@ const ShowTutor = () => {
           </div>
         )}
 
+        {tutors.length == 0 && (
+          <p
+            style={{
+              color: theme.palette.text.hex,
+            }}
+          >
+            No hay ningún tutor asignado.
+          </p>
+        )}
+
         {loading ? (
           <LoadingModal />
         ) : (
@@ -198,7 +208,14 @@ const ShowTutor = () => {
       {tutors.length < 3 && (
         <div className="mt-6">
           <div className="p-6 bg-white rounded-lg border border-gray-200">
-            <h2 className="text-sm font-semibold text-gray-500 mb-4">SELECCIONAR UN TUTOR</h2>
+            <h2
+              className="text-sm font-semibold mb-4"
+              style={{
+                color: theme.palette.text.hex,
+              }}
+            >
+              SELECCIONAR UN TUTOR
+            </h2>
             <div className="flex flex-col md:flex-row gap-3 w-full mb-4">
               <div className="flex-grow">
                 <input

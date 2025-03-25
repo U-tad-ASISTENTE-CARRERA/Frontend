@@ -74,7 +74,7 @@ export const useJobOffers = () => {
         
         let message = "";
         if (!isEligible) {
-            message = "Debes completar al menos el segundo año para buscar prácticas.";
+            message = "Debes haber completado segundo de carrera para buscar prácticas.";
         } else if (canSearchJobs) {
             message = "Puedes buscar tanto empleos como prácticas.";
         } else if (canSearchInternships) {
