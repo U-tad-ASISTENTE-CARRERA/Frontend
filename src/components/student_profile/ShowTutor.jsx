@@ -3,11 +3,13 @@ import { FaUserPlus, FaTrash, FaFileAlt } from "react-icons/fa";
 import ConfirmPopup from "../ConfirmPopUp";
 import LoadingModal from "../LoadingModal";
 import { theme } from "@/constants/theme";
+import { teacherSpecializations } from "@/constants/teacherSpecializations";
 
 const ShowTutor = () => {
   const [tutors, setTutors] = useState([]);
+  const [allAvailableTutors, setAllAvailableTutors] = useState([]);
   const [filteredTutors, setFilteredTutors] = useState([]);
-  const [specializations, setSpecializations] = useState([]);
+  const [specializations, setSpecializations] = useState(teacherSpecializations);
   const [selectedSpecialization, setSelectedSpecialization] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -52,10 +54,8 @@ const ShowTutor = () => {
       if (!response.ok) throw new Error("Error al obtener los tutores.");
       const data = await response.json();
       const available = data.filter(t => !assignedIds.includes(t.id));
-
-      const uniqueSpecializations = [...new Set(data.map((t) => t.metadata?.specialization || "Otra"))];
-      setSpecializations(uniqueSpecializations);
-      filterTutors(available, searchTerm, selectedSpecialization);
+      setAllAvailableTutors(available);
+      applyFilters(available, searchTerm, selectedSpecialization);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -63,10 +63,10 @@ const ShowTutor = () => {
     }
   };
 
-  const filterTutors = (baseList, search, specialization) => {
+  const applyFilters = (baseList, search, specialization) => {
     let filtered = [...baseList];
 
-    if (specialization) {
+    if (specialization && specialization !== "") {
       filtered = filtered.filter((tutor) => tutor.metadata?.specialization === specialization);
     }
 
@@ -81,8 +81,8 @@ const ShowTutor = () => {
   };
 
   useEffect(() => {
-    filterTutors(filteredTutors, searchTerm, selectedSpecialization);
-  }, [searchTerm, selectedSpecialization]);
+    applyFilters(allAvailableTutors, searchTerm, selectedSpecialization);
+  }, [searchTerm, selectedSpecialization, allAvailableTutors]);
 
   const handleSelect = async (tutorId) => {
     try {
@@ -132,6 +132,7 @@ const ShowTutor = () => {
 
         <h2 className="text-lg font-semibold mb-5">Tutores asignados</h2>
 
+        {/* Mensaje de aviso */}
         {tutors.length >= 3 && (
           <div
             className="flex items-center gap-3 p-4 text-sm mt-4 mb-5"
@@ -145,7 +146,8 @@ const ShowTutor = () => {
           </div>
         )}
 
-        {tutors.length == 0 && (
+        {/* Mensaje de aviso por no tener ningún tutor asignado */}
+        {tutors.length === 0 && (
           <p
             style={{
               color: theme.palette.text.hex,
@@ -155,6 +157,7 @@ const ShowTutor = () => {
           </p>
         )}
 
+        {/* Listado de tutores asignados */}
         {loading ? (
           <LoadingModal />
         ) : (
@@ -174,7 +177,6 @@ const ShowTutor = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
-
                   <button
                     className="flex items-center gap-2 px-3 py-1 rounded-full hover:opacity-80 transition"
                     onClick={() => confirmRemoveTutor(tutor.id)}
@@ -205,6 +207,7 @@ const ShowTutor = () => {
         {error && <p className="text-red-500 mt-2">{error}</p>}
       </div>
 
+      {/* Listado de tutores por asignar */}
       {tutors.length < 3 && (
         <div className="mt-6">
           <div className="p-6 bg-white rounded-lg border border-gray-200">
@@ -241,7 +244,6 @@ const ShowTutor = () => {
                 </select>
               </div>
             </div>
-
 
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
