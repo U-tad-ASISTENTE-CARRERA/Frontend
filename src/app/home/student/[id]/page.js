@@ -120,7 +120,10 @@ const Home = () => {
               fontWeight: theme.fontWeight.semibold,
             }}
           >
-            Alumn{metadata.gender == "male" ? "o" : "a"} de {metadata.degree}
+            Alumn{metadata.gender == "male" ? "o" : "a"} de{" "}
+            {metadata.degree == "INSO_DATA"
+              ? "INSO con mención en DATA"
+              : metadata.degree}
             {/* Alumn{metadata.gender == "male" ? "o" : "a"} de {metadata.yearsCompleted[yearsCompleted.length - 1]}º {metadata.degree} */}
           </h3>
         </div>
@@ -214,9 +217,9 @@ const SectionPopup = ({
   updateProgress,
 }) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 fade-fast">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 fade-fast ">
       <div
-        className="bg-white p-8 rounded-lg shadow-lg w-11/12 max-w-4xl relative"
+        className="bg-white p-8 rounded-lg shadow-lg w-11/12 max-w-4xl relative pb-20"
         style={{ fontFamily: "Montserrat, sans-serif" }}
       >
         <button
@@ -387,12 +390,15 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
 
 const Resource = ({ resource }) => {
   return (
-    <div className="flex justify-center items-center mt-4">
+    <div className="flex justify-center items-center mt-4 min-h-full">
       <a
         href={resource.link}
         target="_blank"
         rel="noopener noreferrer"
-        style={{ color: theme.palette.primary.hex }}
+        style={{
+          color: theme.palette.primary.hex,
+          fontSize: theme.fontSizes.s,
+        }}
         className="hover:underline text-center"
       >
         {resource.description}
