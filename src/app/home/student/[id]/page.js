@@ -197,7 +197,7 @@ const Section = ({ sectionName, sectionData, onClick }) => {
         <Image src={`/si.png`} alt={sectionName} width={40} height={40} />
       ) : (
         <Image
-          src={`/assets/${sectionData[Object.keys(sectionData)[1]].skill}.png`}
+          src={`/icons/${sectionData[Object.keys(sectionData)[1]].skill}.png`}
           alt={sectionName}
           width={40}
           height={40}
@@ -288,7 +288,7 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
       <div className="cursor-pointer" onClick={toggleTask}>
         {taskData.status == "doing" ? (
           <Image
-            src={`/assets/${taskData.skill}.png`}
+            src={`/icons/${taskData.skill}.png`}
             alt={taskName}
             width={60}
             height={60}
