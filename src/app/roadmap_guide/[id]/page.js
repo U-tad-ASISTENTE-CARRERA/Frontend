@@ -6,7 +6,7 @@ import { theme } from "@constants/theme";
 import "@fontsource/montserrat";
 import ErrorPopUp from "@components/ErrorPopUp";
 import LoadingModal from "@components/LoadingModal";
-import RoadmapTest from "@components/student_profile/RoadMapGuide/RoadMapTest";
+import RoadmapTest from "@/components/student_profile/RoadmapGuide/RoadmapTest";
 
 const RoadmapGuide = () => {
   const [error, setError] = useState("");
@@ -99,6 +99,7 @@ const RoadmapGuide = () => {
   return (
     <div>
       <RoadmapTest onSubmit={handleSubmit} />
+
       {error && (
         <p
           style={{
