@@ -1,0 +1,25 @@
+
+export const op_skill = [
+    "C++", 
+    "C#", 
+    "C", 
+    "Python", 
+    "R", 
+    "React", 
+    "Next", 
+    "JavaScript",
+    "Java", 
+    "Scala", 
+    "HTML", 
+    "CSS", 
+    "Rust", 
+    "Bash", 
+    "Sql", 
+    "Ruby", 
+    "Keras", 
+    "Tableau",
+    "Spark", 
+    "Mongo", 
+    "MariaDb", 
+    "p5.js"
+]

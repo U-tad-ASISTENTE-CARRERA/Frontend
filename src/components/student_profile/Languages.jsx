@@ -43,6 +43,8 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
         newErrors[`language-${index}`] = "El campo no puede estar vacío.";
       } else if (!availableLanguages.includes(lang.language)) {
         newErrors[`language-${index}`] = "Selecciona un idioma válido de la lista.";
+      } else if (tempLanguages.filter((l) => (l.language === lang.language)).length > 1) {
+        newErrors[`language-${index}`] = "El idioma ya ha sido añadido.";
       }
     });
     setErrors(newErrors);
@@ -140,7 +142,7 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
                     <input
                       type="text"
                       placeholder="Buscar idioma..."
-                      value={languageSearch[index] || ""}
+                      value={languageSearch[index] || lang.language}
                       onChange={(e) => {
                         const value = e.target.value;
                         setLanguageSearch({ ...languageSearch, [index]: value });
@@ -217,7 +219,7 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
 
               {/* Botón de eliminar */}
               {isEditing && (
-                <div className="pt-6">
+                <div className="pt-6 mt-2">
                   <button
                     type="button"
                     onClick={() => markLanguageForDeletion(index)}
