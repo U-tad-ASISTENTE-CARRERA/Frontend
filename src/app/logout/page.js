@@ -25,10 +25,14 @@ const LogOut = () => {
         return;
       }
 
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("metadata");
+      // localStorage.removeItem("token");
+      // localStorage.removeItem("user");
+      // localStorage.removeItem("metadata");
+      
+      localStorage.clear();
+
       window.location.href = "/";
+
     } catch (error) { }
   };
 
