@@ -156,8 +156,8 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
                       className="block w-full p-2 border rounded-md"
                       style={{
                         borderColor: hasError
-                          ? theme.palette.error.hex
-                          : theme.palette.primary.hex,
+                        ? theme.palette.error.hex
+                        : theme.palette.primary.hex,
                         color: theme.palette.text.hex,
                       }}
                     />

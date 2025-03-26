@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { styles } from "@/constants/theme";
 import { useRouter } from "next/navigation";
 import "@fontsource/montserrat";
@@ -19,6 +19,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isToken, setIsToken] = useState("");
   const router = useRouter();
+  const dropdownRef = useRef(null);
 
   /* 
     Comrobamos que exista el token del usuario para poder activar las opciones
@@ -33,6 +34,19 @@ export default function Navbar() {
       setIsLoggedIn(false);
     }
   });
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   /* Recogemos los datos del usuario iniciado para enviarlo a la ruta correcta */
   const handleTypeUserProfile = async (e) => {
@@ -114,7 +128,7 @@ export default function Navbar() {
             ></i>
           </li>
 
-          <li className="md:ml-auto">
+          <li className="md:ml-auto" ref={dropdownRef}>
             <div
               className="hover:text-gray-300 transition-colors duration-200 text-nowrap"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -131,6 +145,9 @@ export default function Navbar() {
                       >
                         Mi perfil
                       </button>
+
+                      <div style={{ height: "1px", backgroundColor: "gray", margin: "8px 0" }}></div>
+
                       <button
                         style={styles.dropdownButton}
                         onClick={() => (
