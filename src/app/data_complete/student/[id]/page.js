@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import LoadingModal from "@/components/LoadingModal";
 import { nameRegex, dateRegex } from "@/utils/ValidatorRegex";
+import ErrorPopUp from "@/components/ErrorPopUp";
+import { FaLongArrowAltRight } from "react-icons/fa";
 
 const StudentInitForm = () => {
   const [errors, setErrors] = useState({});
@@ -22,6 +24,7 @@ const StudentInitForm = () => {
   const params = useParams();
   const id = params.id;
   const [submitting, setSubmitting] = useState(false);
+  const [metadataError, setMetadataError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,16 +40,16 @@ const StudentInitForm = () => {
         if (!response.ok) {
           setError("Error en obteniendo los metadatos");
         }
-
         const data = await response.json();
 
-        if (!data.metadata || Object.keys(data.metadata).length === 0) {
-          router.push(`/data_complete/student/${id}`);
+        console.log(data);
+        if (data.metadata) {
+          setMetadataError(true);
         }
       } catch (error) {
         setError(error.message);
       } finally {
-        setLoading(false);
+        setTimeout(() => setLoading(false), 3000);
       }
     };
 
@@ -167,7 +170,20 @@ const StudentInitForm = () => {
   };
 
   if (loading) {
-    return <LoadingModal message="Cargando..." />;
+    return <LoadingModal />;
+  }
+
+  if (metadataError) {
+    return (
+      <ErrorPopUp
+        message={"No tienes acceso a esta página"}
+        path={`/profile/${
+          JSON.parse(localStorage.getItem("user")).role == "STUDENT"
+            ? "student"
+            : "teacher"
+        }/${id}`}
+      />
+    );
   }
 
   return (
@@ -186,7 +202,7 @@ const StudentInitForm = () => {
       </h1>
 
       {/* Formulario */}
-      <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-md">
+      <div className="w-full max-w-4xl bg-white p-8 mt-12 rounded-lg shadow-md">
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-10"
@@ -292,8 +308,11 @@ const StudentInitForm = () => {
           {/* Sección de Añadir Idiomas */}
           <div className="space-y-4">
             <h2
-              className="text-lg font-semibold"
-              style={{ color: theme.palette.text.hex }}
+              className="text-lg"
+              style={{
+                color: theme.palette.text.hex,
+                fontWeight: theme.fontWeight.regular,
+              }}
             >
               Añadir idiomas
             </h2>
@@ -357,7 +376,7 @@ const StudentInitForm = () => {
               style={{
                 backgroundColor: theme.palette.primary.hex,
                 borderRadius: theme.buttonRadios.m,
-                fontWeight: theme.fontWeight.bold,
+                fontWeight: theme.fontWeight.semibold,
               }}
             >
               Añadir idioma
@@ -376,18 +395,19 @@ const StudentInitForm = () => {
           </div>
 
           {/* Botón de enviar */}
-          <div className="col-span-1 md:col-span-2 flex flex-col items-center space-y-4">
+          <div className="col-span-1 md:col-span-2 flex flex-col justify-left space-y-4">
             <button
               type="submit"
-              className="w-full md:w-auto px-6 py-3 text-white rounded-md transition duration-200"
+              className="flex items-center justify-center w-64 px-6 py-3 text-white rounded-md transition duration-200"
               style={{
                 backgroundColor: theme.palette.primary.hex,
                 borderRadius: theme.buttonRadios.m,
-                fontWeight: theme.fontWeight.bold,
+                fontWeight: theme.fontWeight.semibold,
               }}
               disabled={submitting}
             >
-              Enviar y comenzar test
+              Comenzar test
+              <FaLongArrowAltRight className="ml-4" />
             </button>
 
             {/* Mensajes de error y éxito */}

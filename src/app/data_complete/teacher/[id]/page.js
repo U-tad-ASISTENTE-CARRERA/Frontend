@@ -5,6 +5,7 @@ import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import { useRouter, useParams } from "next/navigation";
 import LoadingModal from "@/components/LoadingModal";
+import { nameRegex, dateRegex } from "@/utils/ValidatorRegex";
 
 const TeacherInitForm = () => {
   const [errors, setErrors] = useState({});
@@ -95,8 +96,14 @@ const TeacherInitForm = () => {
 
     if (!isFormValid()) {
       setErrors({
-        firstName: !firstName?.trim() ? "El nombre es obligatorio." : undefined,
-        lastName: !lastName.trim() ? "El apellido es obligatorio." : undefined,
+        firstName:
+          !firstName?.trim() && !nameRegex(firstName)
+            ? "El nombre es obligatorio."
+            : undefined,
+        lastName:
+          !lastName.trim() && !nameRegex(lastName)
+            ? "El apellido es obligatorio."
+            : undefined,
         gender: !gender ? "El género es obligatorio." : undefined,
       });
       return;
@@ -211,8 +218,6 @@ const TeacherInitForm = () => {
               {errors.lastName && (
                 <p className="text-red-500 text-sm">{errors.lastName}</p>
               )}
-
-              
             </div>
 
             {/* Género y Especialización */}

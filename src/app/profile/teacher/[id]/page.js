@@ -54,6 +54,10 @@ const Teacher = () => {
         throw new Error("Error al obtener metadatos del profesor");
       }
       const data = await response.json();
+      if (!data.metadata) {
+        router.push(`/data_complete/teacher/${id}`);
+        return;
+      }
       const metadata = data.metadata || {};
 
       setShowModal(Object.keys(metadata).length === 0);
@@ -72,13 +76,16 @@ const Teacher = () => {
   const fetchStudents = async () => {
     if (!token || !id) return;
     try {
-      const response = await fetch("http://localhost:3000/student/teacher/getAllStudents", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        "http://localhost:3000/student/teacher/getAllStudents",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error al obtener la lista de estudiantes");
@@ -105,13 +112,16 @@ const Teacher = () => {
 
   const handleDownloadReport = async (studentId) => {
     try {
-      const response = await fetch(`http://localhost:3000/student/report/${studentId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:3000/student/report/${studentId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error al descargar el informe");
@@ -133,7 +143,9 @@ const Teacher = () => {
   };
 
   const filteredStudents = students.filter((student) =>
-    `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+    `${student.firstName} ${student.lastName}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -141,26 +153,56 @@ const Teacher = () => {
       {isLoading && <LoadingModal message="Cargando perfil..." />}
 
       {!isLoading && showModal && (
-        <ErrorPopUp message={"Debes completar tus datos básicos"} path={`/data_complete/teacher/${id}`} />
+        <ErrorPopUp
+          message={"Debes completar tus datos básicos"}
+          path={`/data_complete/teacher/${id}`}
+        />
       )}
 
       {!isLoading && !showModal && (
         <div className="flex flex-col items-center min-h-screen p-6">
-          <h1 className="text-3xl font-bold text-center pt-20 pb-10" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
+          <h1
+            className="text-3xl font-bold text-center pt-20 pb-10"
+            style={{
+              color: theme.palette.primary.hex,
+              fontFamily: "Montserrat",
+            }}
+          >
             {getWelcomeMessage()} {firstName || "Usuario"}
           </h1>
 
           <div className="w-full max-w-6xl flex flex-col items-start pt-6 leading-relaxed">
-            
-            <h2 className="text-xl font-semibold mb-4" style={{ color: theme.palette.dark.hex }}>
+            <h2
+              className="text-xl font-semibold mb-4"
+              style={{ color: theme.palette.dark.hex }}
+            >
               Detalles del perfil
             </h2>
-            <p style={{ color: theme.palette.text.hex }}><strong>Nombre:</strong> {firstName}</p>
-            <p style={{ color: theme.palette.text.hex }}><strong>Apellidos:</strong> {lastName}</p>
-            <p style={{ color: theme.palette.text.hex }}><strong>Género:</strong> {gender ? (gender === "male" ? "Masculino" : gender === "female" ? "Femenino" : "Prefiero no decirlo") : "SIN COMPLETAR"}</p>
-            <p style={{ color: theme.palette.text.hex }}><strong>Especialización:</strong> {specialization || "No especificado"}</p>
-            
-            <h2 className="text-xl font-semibold mt-10" style={{ color: theme.palette.dark.hex }}>
+            <p style={{ color: theme.palette.text.hex }}>
+              <strong>Nombre:</strong> {firstName}
+            </p>
+            <p style={{ color: theme.palette.text.hex }}>
+              <strong>Apellidos:</strong> {lastName}
+            </p>
+            <p style={{ color: theme.palette.text.hex }}>
+              <strong>Género:</strong>{" "}
+              {gender
+                ? gender === "male"
+                  ? "Masculino"
+                  : gender === "female"
+                  ? "Femenino"
+                  : "Prefiero no decirlo"
+                : "SIN COMPLETAR"}
+            </p>
+            <p style={{ color: theme.palette.text.hex }}>
+              <strong>Especialización:</strong>{" "}
+              {specialization || "No especificado"}
+            </p>
+
+            <h2
+              className="text-xl font-semibold mt-10"
+              style={{ color: theme.palette.dark.hex }}
+            >
               Alumnos tutelados
             </h2>
 
@@ -178,24 +220,49 @@ const Teacher = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Apellidos</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grupo</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grado</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descargar informe</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Nombre
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Apellidos
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Grupo
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Grado
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Descargar informe
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredStudents.map((student, index) => (
-                    <tr key={student._id || index} className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-4 text-sm text-gray-900">{student.firstName}</td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{student.lastName}</td>
-                      <td className="px-6 py-4 text-sm">
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">{student.degree || "No disponible"}</span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{student.yearsCompleted || "No disponible"}</td>
+                    <tr
+                      key={student._id || index}
+                      className="hover:bg-gray-50 transition"
+                    >
                       <td className="px-6 py-4 text-sm text-gray-900">
-                        <FaDownload className="text-blue-500 cursor-pointer" title="Descargar informe" onClick={() => handleDownloadReport(student._id)} />
+                        {student.firstName}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {student.lastName}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                          {student.degree || "No disponible"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {student.yearsCompleted || "No disponible"}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        <FaDownload
+                          className="text-blue-500 cursor-pointer"
+                          title="Descargar informe"
+                          onClick={() => handleDownloadReport(student._id)}
+                        />
                       </td>
                     </tr>
                   ))}

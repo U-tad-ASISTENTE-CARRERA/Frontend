@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import "../../../src/app/globals.css";
+import ErrorPopUp from "@/components/ErrorPopUp";
+import { useEffect } from "react";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +15,16 @@ const Register = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const [tokenError, setTokenError] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      let storedToken = localStorage.getItem("token");
+      if (storedToken) {
+        setTokenError(true);
+      }
+    }
+  }, []);
 
   const validateForm = async (e) => {
     e.preventDefault();
@@ -83,6 +95,10 @@ const Register = () => {
       setError("Ocurrió un error inesperado. Inténtalo de nuevo.");
     }
   };
+
+  if (tokenError) {
+    return <ErrorPopUp message={"No tienes acceso a esta página"} path="" />;
+  }
 
   return (
     <>

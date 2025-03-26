@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
+import ErrorPopUp from "@/components/ErrorPopUp";
+import { useEffect } from "react";
 
 const Reset = () => {
   const [email, setEmail] = useState("");
@@ -12,6 +14,20 @@ const Reset = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const [tokenError, setTokenError] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      let storedToken = localStorage.getItem("token");
+      if (storedToken) {
+        setTokenError(true);
+      }
+    }
+  }, []);
+
+  if (tokenError) {
+    return <ErrorPopUp message={"No tienes acceso a esta página"} path="" />;
+  }
 
   const validateForm = async (e) => {
     e.preventDefault();

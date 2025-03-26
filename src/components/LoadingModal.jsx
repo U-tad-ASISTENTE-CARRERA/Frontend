@@ -1,6 +1,6 @@
 import React from "react";
 import Lottie from "lottie-react";
-import animationData from "../lotties/loading_v3.json";
+import animationData from "../lotties/loading_v4.json";
 import { theme } from "@/constants/theme";
 
 const LoadingModal = () => {
@@ -12,11 +12,11 @@ const LoadingModal = () => {
         style={{
           width: "300px",
           height: "300px",
-          backgroundColor: "white",
           opacity: 0.8,
           borderRadius: theme.buttonRadios.l,
         }}
         loop={true}
+        speed={2}
       />
     </div>
   );
