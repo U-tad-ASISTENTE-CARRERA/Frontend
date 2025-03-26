@@ -1,40 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { theme } from "@/constants/theme";
 import { nameRegex } from "@/utils/ValidatorRegex";
 import { FaTrash } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
 
 const Certifications = ({ certifications, setCertifications, onSave, onDelete }) => {
-  const [activeTab, setActiveTab] = useState("recent");
-
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
   const [tempCertifications, setTempCertifications] = useState([...certifications]);
   const [deletedCertifications, setDeletedCertifications] = useState([]);
 
-  useEffect(() => {
-    document.title = activeTab === "recent"
-      ? "Certificaciones de estudiante | Asistente de Carrera Profesional"
-      : "Asistente de Carrera Profesional";
-  }, [activeTab]);
-
   const handleNameChange = (index, event) => {
-    const updatedCertifications = [...tempCertifications]
-    updatedCertifications[index].name = event.target.value.trim()
-    setTempCertifications(updatedCertifications)
-  }
+    const updatedCertifications = [...tempCertifications];
+    updatedCertifications[index].name = event.target.value.trim();
+    setTempCertifications(updatedCertifications);
+  };
 
   const handleDateChange = (index, event) => {
-    const updatedCertifications = [...tempCertifications]
-    updatedCertifications[index].date = event.target.value.trim()
-    setTempCertifications(updatedCertifications)
-  }
+    const updatedCertifications = [...tempCertifications];
+    updatedCertifications[index].date = event.target.value.trim();
+    setTempCertifications(updatedCertifications);
+  };
 
   const handleInstitutionChange = (index, event) => {
-    const updatedCertifications = [...tempCertifications]
-    updatedCertifications[index].institution = event.target.value.trim()
-    setTempCertifications(updatedCertifications)
-  }
+    const updatedCertifications = [...tempCertifications];
+    updatedCertifications[index].institution = event.target.value.trim();
+    setTempCertifications(updatedCertifications);
+  };
 
   const addCertification = () => {
     setTempCertifications([
@@ -64,7 +56,6 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
     return Object.keys(newErrors).length === 0;
   };
 
-
   const handleDelete = (index) => {
     const certificationToDelete = tempCertifications[index];
 
@@ -73,14 +64,14 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
     }
 
     setTempCertifications(tempCertifications.filter((_, i) => i !== index));
-  }
+  };
 
   const handleSave = async () => {
     if (!validateForm()) return;
 
     try {
       if (deletedCertifications.length > 0) {
-        console.log("Eliminando certificaciones:", deletedCertifications)
+        console.log("Eliminando certificaciones:", deletedCertifications);
         await onDelete({ certifications: deletedCertifications });
         setDeletedCertifications([]);
       }
@@ -98,8 +89,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
         setCertifications(tempCertifications);
       }
 
-
-      setIsEditing(false)
+      setIsEditing(false);
     } catch (error) {
       console.error("Error al actualizar las certificaciones", error.message);
     }
@@ -148,113 +138,103 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
       )}
 
       {/* Lista de certificaciones */}
-      {tempCertifications.map((certification, index) => (
-        <div key={index} className="flex items-center gap-4">
+      {tempCertifications.map((certification, index) => {
+        const hasError = errors[`certification-${index}`] || errors[`certification-date-${index}`];
 
-          {/* Nombre */}
-          <div className="w-2/5">
-            <label
-              className="block text-sm font-medium mb-1"
-              style={{ color: theme.palette.text.hex }}
-            >
-              Nombre
-            </label>
-            <input
-              type="text"
-              placeholder="Nombre de la certificación"
-              value={certification.name}
-              onChange={(e) => handleNameChange(index, e)}
-              className="block w-full p-2 border rounded-md"
-              style={{
-                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-                color: theme.palette.text.hex,
-              }}
-              disabled={!isEditing}
-            />
+        return (
+          <div 
+            key={index} 
+            className="rounded-md p-4 border space-y-3"
+            style={{ borderColor: theme.palette.lightGray.hex }}
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-1/3 space-y-1">
+                <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
+                  Nombre
+                </label>
+                <input
+                  type="text"
+                  placeholder="Nombre de la certificación"
+                  value={certification.name}
+                  onChange={(e) => handleNameChange(index, e)}
+                  className="block w-full p-2 border rounded-md"
+                  style={{
+                    borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
+                    color: theme.palette.text.hex,
+                  }}
+                  disabled={!isEditing}
+                />
+                {errors[`certification-${index}`] && (
+                  <p className="text-xs" style={{ color: theme.palette.error.hex }}>
+                    {errors[`certification-${index}`]}
+                  </p>
+                )}
+              </div>
 
-            {errors[`certification-${index}`] && (
-              <p className="text-red-500 text-xs mt-1">{errors[`certification-${index}`]}</p>
-            )}
-          </div>
+              <div className="w-1/3 space-y-1">
+                <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
+                  Institución
+                </label>
+                <input
+                  type="text"
+                  placeholder="Nombre de la institución"
+                  value={certification.institution}
+                  onChange={(e) => handleInstitutionChange(index, e)}
+                  className="block w-full p-2 border rounded-md"
+                  style={{
+                    borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                    color: theme.palette.text.hex,
+                  }}
+                  disabled={!isEditing}
+                />
+              </div>
 
-          {/* Institución */}
-          <div className="w-2/5">
-            <label
-              className="block text-sm font-medium mb-1"
-              style={{ color: theme.palette.text.hex }}
-            >
-              Institución
-            </label>
-            <input
-              type="text"
-              placeholder="Nombre de la institución"
-              value={certification.institution}
-              onChange={(e) => handleInstitutionChange(index, e)}
-              className="block w-full p-2 border rounded-md"
-              style={{
-                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-                color: theme.palette.text.hex,
-              }}
-              disabled={!isEditing}
-            />
+              <div className="w-1/3 space-y-1">
+                <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
+                  Fecha de obtención
+                </label>
+                <input
+                  type="date"
+                  value={certification.date}
+                  onChange={(e) => handleDateChange(index, e)}
+                  className="block w-full p-2 border rounded-md"
+                  style={{
+                    borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
+                    color: theme.palette.text.hex,
+                  }}
+                  disabled={!isEditing}
+                />
+                {errors[`certification-date-${index}`] && (
+                  <p className="text-xs" style={{ color: theme.palette.error.hex }}>
+                    {errors[`certification-date-${index}`]}
+                  </p>
+                )}
+              </div>
 
-            {errors[`certification-${index}`] && (
-              <p className="text-red-500 text-xs mt-1">{errors[`certification-${index}`]}</p>
-            )}
-          </div>
-
-          {/* Fecha */}
-          <div className="w-1/5">
-            <label
-              className="block text-sm font-medium mb-1"
-              style={{ color: theme.palette.text.hex }}
-            >
-              Fecha de obtención
-            </label>
-            <input
-              type="date"
-              value={certification.date}
-              onChange={(e) => handleDateChange(index, e)}
-              className="block w-full p-2 border rounded-md"
-              style={{
-                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-                color: theme.palette.text.hex,
-              }}
-              disabled={!isEditing}
-            />
-
-            {errors[`certification-date-${index}`] && (
-              <p className="text-red-500 text-xs mt-1">{errors[`certification-date-${index}`]}</p>
-            )}
-
-          </div>
-
-          {/* Botón de eliminar */}
-          {isEditing && (
-            <div className="pt-6 mt-2">
-              <button
-                type="button"
-                onClick={() => handleDelete(index)}
-                className="text-white p-2 rounded-md transition duration-200"
-                style={{ backgroundColor: theme.palette.error.hex }}
-              >
-                <FaTrash className="text-sm" />
-              </button>
+              {isEditing && (
+                <div className="pt-6 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(index)}
+                    className="text-white p-2 rounded-md transition duration-200"
+                    style={{ backgroundColor: theme.palette.error.hex }}
+                  >
+                    <FaTrash className="text-sm" />
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      ))}
+          </div>
+        );
+      })}
 
-      {/* Botón para añadir nuevos idiomas */}
+      {/* Botón para añadir nuevas certificaciones */}
       {isEditing && (
         <button
           type="button"
           onClick={addCertification}
           className="w-full px-4 py-2 text-white rounded-md transition duration-200"
-          style={{
-            backgroundColor: theme.palette.primary.hex,
-            fontWeight: "bold",
-          }}
+          style={{ backgroundColor: theme.palette.primary.hex, fontWeight: "bold" }}
         >
           Añadir Certificación
         </button>

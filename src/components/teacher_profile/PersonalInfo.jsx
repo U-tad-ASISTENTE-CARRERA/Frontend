@@ -13,6 +13,7 @@ const PersonalInfo = ({firstName, lastName, gender, specialization, setFirstName
     const [tempSpecialization, setTempSpecialization] = useState(specialization);
 
     const [deletionReason, setDeletionReason] = useState("");
+    const [deletionRequested, setDeletionRequested] = useState(false);
     const [deletionMessage, setDeletionMessage] = useState("");
 
     const [errors, setErrors] = useState({});
@@ -260,6 +261,93 @@ const PersonalInfo = ({firstName, lastName, gender, specialization, setFirstName
                         {isEditing && errors.specialization && <p className="text-red-500 text-xs mt-1">{errors.specialization}</p>}        
                     </div>
                 </form>
+            </div>
+
+            <div>
+                <h3
+                    className="text-md font-semibold mb-3"
+                    style={{ color: theme.palette.dark.hex }}
+                >
+                    Configuración de la cuenta</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+                    <div className="col-span-2 space-y-4 mt-2">
+                        {deletionRequested ? (
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <div
+                                    className="flex items-center gap-3 p-4 text-sm"
+                                    style={{
+                                        backgroundColor: `${theme.palette.warning.hex}20`,
+                                        borderLeft: `4px solid ${theme.palette.warning.hex}`
+                                    }}
+                                >
+                                    <i className="bi bi-exclamation-triangle-fill" style={{ color: theme.palette.warning.hex }}></i>
+                                    <p className="">
+                                        Ya has solicitado la baja de la cuenta. Si cambiaste de opinión, puedes cancelarla.
+                                    </p>
+                                </div>
+
+                                <button
+                                    onClick={onCancel}
+                                    className="px-4 py-2 rounded-full font-semibold text-white"
+                                    style={{ backgroundColor: theme.palette.secondary.hex }}
+                                >
+                                    Cancelar solicitud de baja
+                                </button>
+                            </div>
+                        ) : (
+                          <>
+                            {!deletionReason && (
+                              <div>
+                                <button
+                                  onClick={() => setDeletionReason(" ")} // activa el formulario
+                                  className="px-4 py-2 rounded-full text-white font-semibold"
+                                  style={{ backgroundColor: theme.palette.secondary.hex }}
+                                >
+                                  Solicitar baja de la cuenta
+                                </button>
+                              </div>
+                            )}
+            
+                            {deletionReason && (
+                              <div className="p-4 border rounded-md bg-gray-50 space-y-3 mt-2">
+                                <label className="text-sm font-medium block">
+                                  ¿Por qué deseas darte de baja?
+                                </label>
+                                <textarea
+                                  value={deletionReason}
+                                  onChange={(e) => setDeletionReason(e.target.value)}
+                                  rows={3}
+                                  className="w-full p-2 border rounded-md resize-none"
+                                  style={{
+                                    borderColor: theme.palette.primary.hex,
+                                    color: theme.palette.text.hex,
+                                  }}
+                                  placeholder="Explica brevemente el motivo..."
+                                />
+                                <div className="flex justify-end gap-2">
+                                  <button
+                                    onClick={() => setDeletionReason("")}
+                                    className="px-4 py-2 rounded-full text-gray-700 font-semibold border"
+                                    style={{ borderColor: theme.palette.lightGray.hex }}
+                                  >
+                                    Cancelar
+                                  </button>
+                                  <button
+                                    onClick={onRequest}
+                                    disabled={!deletionReason.trim()}
+                                    className="px-4 py-2 rounded-full text-white font-semibold transition disabled:opacity-50"
+                                    style={{ backgroundColor: theme.palette.error.hex }}
+                                  >
+                                    Confirmar baja
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     )
