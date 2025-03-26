@@ -13,7 +13,6 @@ import Certifications from "@/components/student_profile/Certifications";
 import WorkExperience from "@/components/student_profile/WorkExperience";
 import ExpedienteAcademico from "@/components/student_profile/ExpedienteAcademico";
 import ShowTutor from "@/components/student_profile/ShowTutor";
-import CareerOpportunityComponent from "@/components/student_profile/CareerOpportunityComponent";
 
 import { convertTimestampToDate } from "@/utils/FirebaseDateUtils";
 
@@ -40,7 +39,6 @@ const StudentProfile = () => {
   const [deletionRequested, setDeletionRequested] = useState(false);
 
 
-  // Cargar datos del usuario desde la BD
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -77,11 +75,9 @@ const StudentProfile = () => {
         setGender(data.metadata.gender || "");
         setDeletionRequested(!!data.metadata?.deletionRequested);
 
-        // Aplicar conversión de fechas
         setEndDate(convertTimestampToDate(data.metadata.endDate));
         setBirthDate(convertTimestampToDate(data.metadata.birthDate));
 
-        // Cargar Expediente Académico
         if (data.metadata.AH?.subjects) {
           setAcademicRecord(data.metadata.AH.subjects);
         }
@@ -93,8 +89,46 @@ const StudentProfile = () => {
       }
     };
 
+    const fetchAcademicRecord = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/AH", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Error obteniendo expediente académico.");
+        }
+
+        const data = await response.json();
+        if (data.subjects) {
+          setAcademicRecord(data.subjects);
+        }
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!user || !token) {
+      router.push("/login");
+      return;
+    }
+
+    if (user.role !== "STUDENT" || user.id !== id) {
+      router.push(`/unauthorized`);
+      return;
+    }
+
     fetchData();
+    fetchAcademicRecord();
   }, []);
+
 
   // Función para actualizar la metadata en la BD con PATCH
   const handleUpdateMetadata = async (updates) => {
@@ -272,11 +306,6 @@ const StudentProfile = () => {
       setError(error.message);
     }
   };
-
-  useEffect(() => {
-    fetchAcademicRecord();
-  }, []); // Se ejecuta solo una vez al cargar el componente
-
 
   // Función específica para actualizar los datos personales
   const handleSavePersonalInfo = (updatedData) => {
