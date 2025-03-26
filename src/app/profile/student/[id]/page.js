@@ -362,7 +362,10 @@ const StudentProfile = () => {
             {/* Diseño responsive */}
             <div className="w-full max-w-8xl flex flex-col md:flex-row">
               <div className="w-full md:w-64 overflow-x-auto md:overflow-visible">
-                <SidebarNavigation activeSection={activeSection} setActiveSection={setActiveSection} />
+                <SidebarNavigation
+                  activeSection={activeSection}
+                  setActiveSection={setActiveSection}
+                />
               </div>
 
               {/* Secciones con actualización a la BD */}
@@ -430,10 +433,6 @@ const StudentProfile = () => {
                 {activeSection === "showTutor" && (
                   <ShowTutor
                   />
-                )}
-
-                {activeSection === "career" && (
-                  <CareerOpportunityComponent />
                 )}
 
               </div>

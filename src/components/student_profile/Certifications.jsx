@@ -1,13 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { theme } from "@/constants/theme";
+import { nameRegex } from "@/utils/ValidatorRegex";
+import { FaTrash } from "react-icons/fa";
+import { v4 as uuidv4 } from "uuid";
 
 const Certifications = ({ certifications, setCertifications, onSave, onDelete }) => {
+  const [activeTab, setActiveTab] = useState("recent");
+
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
-  const [tempCertifications, setTempCertifications] = useState([...certifications]); 
-  const [deletedCertifications, setDeletedCertifications] = useState([]); 
+  const [tempCertifications, setTempCertifications] = useState([...certifications]);
+  const [deletedCertifications, setDeletedCertifications] = useState([]);
 
-  const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/; // Solo caracteres latinos
+  useEffect(() => {
+    document.title = activeTab === "recent"
+      ? "Certificaciones de estudiante | Asistente de Carrera Profesional"
+      : "Asistente de Carrera Profesional";
+  }, [activeTab]);
 
   const handleNameChange = (index, event) => {
     const updatedCertifications = [...tempCertifications]
@@ -20,7 +29,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
     updatedCertifications[index].date = event.target.value.trim()
     setTempCertifications(updatedCertifications)
   }
-  
+
   const handleInstitutionChange = (index, event) => {
     const updatedCertifications = [...tempCertifications]
     updatedCertifications[index].institution = event.target.value.trim()
@@ -28,25 +37,33 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
   }
 
   const addCertification = () => {
-    setTempCertifications([...tempCertifications, { name: "", date: "", institution: ""}]);
-  }
+    setTempCertifications([
+      ...tempCertifications,
+      { uuid: uuidv4(), name: "", date: "", institution: "" },
+    ]);
+  };
 
   const validateForm = () => {
-    let newErrors = {}; 
-    
+    let newErrors = {};
+
     tempCertifications.forEach((cert, index) => {
+      // Validar nombre
       if (!cert.name.trim()) {
-        newErrors[`certification-${index}`] = "El campo no puede estar vacío.";
-        console.log("Something wrong")
-      } else if (!nameRegex.test(cert.certification)) {
-        newErrors[`certification-${index}`] = "La certificación solo puede contener caracteres latinos.";
-        console.log("Something wrong 2")
+        newErrors[`certification-${index}`] = "El nombre no puede estar vacío.";
+      } else if (!nameRegex(cert.name)) {
+        newErrors[`certification-${index}`] = "El nombre solo puede contener caracteres latinos.";
+      }
+
+      // Validar fecha
+      if (!cert.date || isNaN(new Date(cert.date).getTime())) {
+        newErrors[`certification-date-${index}`] = "La fecha es obligatoria y debe ser válida.";
       }
     });
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }
+  };
+
 
   const handleDelete = (index) => {
     const certificationToDelete = tempCertifications[index];
@@ -58,21 +75,29 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
     setTempCertifications(tempCertifications.filter((_, i) => i !== index));
   }
 
-  const handleSave = async () => {    
+  const handleSave = async () => {
     if (!validateForm()) return;
 
-    try{
-      if(deletedCertifications.length > 0){
+    try {
+      if (deletedCertifications.length > 0) {
         console.log("Eliminando certificaciones:", deletedCertifications)
         await onDelete({ certifications: deletedCertifications });
         setDeletedCertifications([]);
       }
 
-      if(tempCertifications.length > 0){
-        console.log("Enviando certificaciones:", tempCertifications)
-        await onSave({ certifications: tempCertifications });
+      if (tempCertifications.length > 0) {
+        const existingIds = certifications.map(c => c.uuid);
+
+        const updated = tempCertifications.filter(c => existingIds.includes(c.uuid));
+        const created = tempCertifications.filter(c => !existingIds.includes(c.uuid));
+
+        await onSave({
+          certifications: [...updated, ...created],
+        });
+        
         setCertifications(tempCertifications);
       }
+
 
       setIsEditing(false)
     } catch (error) {
@@ -82,7 +107,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
 
   const handleCancel = () => {
     setTempCertifications([...certifications]);
-    setDeletedCertifications([]); 
+    setDeletedCertifications([]);
     setErrors({});
     setIsEditing(false);
   };
@@ -90,135 +115,152 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
   return (
     <div className="space-y-4 p-4 bg-white rounded-lg">
       {/* Header con botón de edición */}
-        <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>
-                Certificaciones
-              </h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>
+          Certificaciones
+        </h2>
 
-              <div className="flex gap-2">
-                {isEditing && (
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    className="px-4 py-2 text-white rounded-md transition duration-200"
-                    style={{ backgroundColor: theme.palette.primary.hex, fontWeight: "bold" }}
-                  >
-                    Guardar cambios
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => (isEditing ? handleCancel() : setIsEditing(true))}
-                  className="px-4 py-2 text-white rounded-md transition duration-200"
-                  style={{ backgroundColor: isEditing ? theme.palette.error.hex : theme.palette.primary.hex, fontWeight: "bold" }}
-                >
-                  {isEditing ? "Cancelar" : "Editar"}
-                </button>
-              </div>
+        <div className="flex gap-2">
+          {isEditing && (
+            <button
+              type="button"
+              onClick={handleSave}
+              className="px-4 py-2 text-white rounded-md transition duration-200"
+              style={{ backgroundColor: theme.palette.primary.hex, fontWeight: "bold" }}
+            >
+              Guardar cambios
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => (isEditing ? handleCancel() : setIsEditing(true))}
+            className="px-4 py-2 text-white rounded-md transition duration-200"
+            style={{ backgroundColor: isEditing ? theme.palette.error.hex : theme.palette.primary.hex, fontWeight: "bold" }}
+          >
+            {isEditing ? "Cancelar" : "Editar"}
+          </button>
+        </div>
+      </div>
+
+      {/* Mensaje cuando no hay certificaciones */}
+      {tempCertifications.length === 0 && deletedCertifications.length === 0 && (
+        <p className="text-gray-500 text-sm text-center">No hay certificaciones guardadas.</p>
+      )}
+
+      {/* Lista de certificaciones */}
+      {tempCertifications.map((certification, index) => (
+        <div key={index} className="flex items-center gap-4">
+
+          {/* Nombre */}
+          <div className="w-2/5">
+            <label
+              className="block text-sm font-medium mb-1"
+              style={{ color: theme.palette.text.hex }}
+            >
+              Nombre
+            </label>
+            <input
+              type="text"
+              placeholder="Nombre de la certificación"
+              value={certification.name}
+              onChange={(e) => handleNameChange(index, e)}
+              className="block w-full p-2 border rounded-md"
+              style={{
+                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                color: theme.palette.text.hex,
+              }}
+              disabled={!isEditing}
+            />
+
+            {errors[`certification-${index}`] && (
+              <p className="text-red-500 text-xs mt-1">{errors[`certification-${index}`]}</p>
+            )}
           </div>
 
-          {/* Mensaje cuando no hay certificaciones */}
-          {tempCertifications.length === 0 && deletedCertifications.length === 0 && (
-            <p className="text-gray-500 text-sm text-center">No hay certificaciones guardadas.</p>
-          )}
+          {/* Institución */}
+          <div className="w-2/5">
+            <label
+              className="block text-sm font-medium mb-1"
+              style={{ color: theme.palette.text.hex }}
+            >
+              Institución
+            </label>
+            <input
+              type="text"
+              placeholder="Nombre de la institución"
+              value={certification.institution}
+              onChange={(e) => handleInstitutionChange(index, e)}
+              className="block w-full p-2 border rounded-md"
+              style={{
+                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                color: theme.palette.text.hex,
+              }}
+              disabled={!isEditing}
+            />
 
-          {/* Lista de certificaciones */}
-          {tempCertifications.map((certification, index) => (
-            <div key={index} className="flex items-center gap-4">
-              {/* Nombre */}
-              <div className="w-2/5">
-                <input
-                  type="text"
-                  placeholder="Nombre de la certificación"
-                  value={certification.name}
-                  onChange={(e) => handleNameChange(index, e)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-                    color: theme.palette.text.hex,
-                  }}
-                  disabled={!isEditing}
-                />
+            {errors[`certification-${index}`] && (
+              <p className="text-red-500 text-xs mt-1">{errors[`certification-${index}`]}</p>
+            )}
+          </div>
 
-                {errors[`certification-${index}`] && (
-                  <p className="text-red-500 text-xs mt-1">{errors[`certification-${index}`]}</p>
-                )}
-              </div>
+          {/* Fecha */}
+          <div className="w-1/5">
+            <label
+              className="block text-sm font-medium mb-1"
+              style={{ color: theme.palette.text.hex }}
+            >
+              Fecha de obtención
+            </label>
+            <input
+              type="date"
+              value={certification.date}
+              onChange={(e) => handleDateChange(index, e)}
+              className="block w-full p-2 border rounded-md"
+              style={{
+                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                color: theme.palette.text.hex,
+              }}
+              disabled={!isEditing}
+            />
 
-              {/* Fecha */}
-              <div className="w-1/5">
-                <input
-                  type="text"
-                  placeholder="Fecha de obtención"
-                  value={certification.date}
-                  onChange={(e) => handleDateChange(index, e)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-                    color: theme.palette.text.hex,
-                   }}
-                  disabled={!isEditing}
-                />
+            {errors[`certification-date-${index}`] && (
+              <p className="text-red-500 text-xs mt-1">{errors[`certification-date-${index}`]}</p>
+            )}
 
-                {errors[`certification-${index}`] && (
-                  <p className="text-red-500 text-xs mt-1">{errors[`certification-${index}`]}</p>
-                )}
-              </div>
+          </div>
 
-              {/* Institución */}
-              <div className="w-2/5">
-                <input
-                  type="text"
-                  placeholder="Nombre de la institución"
-                  value={certification.institution}
-                  onChange={(e) => handleInstitutionChange(index, e)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-                    color: theme.palette.text.hex,
-                  }}
-                  disabled={!isEditing}
-                />
-
-                {errors[`certification-${index}`] && (
-                  <p className="text-red-500 text-xs mt-1">{errors[`certification-${index}`]}</p>
-                )}
-              </div>
-
-              {/* Botón de eliminar */}
-              {isEditing && (
-                <button
-                  type="button"
-                    onClick={() => handleDelete(index)}
-                    className="px-3 py-2 text-sm text-white rounded-md transition duration-200"
-                    style={{
-                      backgroundColor: theme.palette.error.hex,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    ✕
-                  </button>
-              )}
-            </div>
-          ))}
-
-          {/* Botón para añadir nuevos idiomas */}
-            {isEditing && (
+          {/* Botón de eliminar */}
+          {isEditing && (
+            <div className="pt-6 mt-2">
               <button
                 type="button"
-                onClick={addCertification}
-                className="w-full px-4 py-2 text-white rounded-md transition duration-200"
-                style={{
-                  backgroundColor: theme.palette.primary.hex,
-                  fontWeight: "bold",
-                 }}
+                onClick={() => handleDelete(index)}
+                className="text-white p-2 rounded-md transition duration-200"
+                style={{ backgroundColor: theme.palette.error.hex }}
               >
-                Añadir Certificación
+                <FaTrash className="text-sm" />
               </button>
-            )}
-      </div>
+            </div>
+          )}
+        </div>
+      ))}
+
+      {/* Botón para añadir nuevos idiomas */}
+      {isEditing && (
+        <button
+          type="button"
+          onClick={addCertification}
+          className="w-full px-4 py-2 text-white rounded-md transition duration-200"
+          style={{
+            backgroundColor: theme.palette.primary.hex,
+            fontWeight: "bold",
+          }}
+        >
+          Añadir Certificación
+        </button>
+      )}
+    </div>
   );
 };
-  
+
 export default Certifications;
-  
