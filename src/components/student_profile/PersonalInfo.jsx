@@ -16,17 +16,34 @@ const PersonalInfo = ({
   setBirthDate,
   setEndDate,
   setGender,
+  deletionRequested,
+  handleRequestDeletion,
+  handleCancelDeletion
 }) => {
+  // Texto de la cabecera
+  const [activeTab, setActiveTab] = useState("recent");
+
+  // Otras variables
   const [isEditing, setIsEditing] = useState(false);
   const [tempFirstName, setTempFirstName] = useState(firstName);
   const [tempLastName, setTempLastName] = useState(lastName);
   const [tempBirthDate, setTempBirthDate] = useState(birthDate || "");
   const [tempEndDate, setTempEndDate] = useState(endDate);
   const [tempGender, setTempGender] = useState(gender);
-  const [errors, setErrors] = useState({});
-  const [success, setSuccess] = useState(false);
 
-  // Sincronizar estados cuando cambian las props
+  // Solicitud de dada de baja
+  const [deletionReason, setDeletionReason] = useState("");
+  const [deletionMessage, setDeletionMessage] = useState("");
+
+  // Error
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    document.title = activeTab === "recent"
+      ? "Perfil de estudiante | Asistente de Carrera Profesional"
+      : "Asistente de Carrera Profesional";
+  }, [activeTab]);
+
   useEffect(() => {
     setTempFirstName(firstName || "");
     setTempLastName(lastName || "");
@@ -35,9 +52,7 @@ const PersonalInfo = ({
     setTempGender(gender || "");
   }, [firstName, lastName, birthDate, endDate, gender]);
 
-  // Función para validar el formulario
   const isFormValid = () => {
-    // Crear un objeto de errores sin actualizar aún el estado
     const newErrors = {
       firstName: !tempFirstName.trim()
         ? "El nombre es obligatorio."
@@ -52,25 +67,21 @@ const PersonalInfo = ({
           : undefined,
 
       gender: !tempGender ? "El género es obligatorio." : undefined,
+      endDate:
+        new Date(tempEndDate).getTime() < new Date(endDate).getTime()
+          ? "No puedes seleccionar una fecha anterior a la actual."
+          : undefined,
     };
 
-    // Actualizar el estado con los errores
     setErrors(newErrors);
-
-    // Evaluar si hay algún error
     return Object.values(newErrors).every((error) => error === undefined);
   };
 
-
-  // Función para actualizar la BD con PATCH sin borrar campos
   const handleSave = async () => {
-    setSuccess(false);
+    setErrors({});
 
-    if (!isFormValid()) {
-      return;
-    }
+    if (!isFormValid()) return;
 
-    // Solo actualizar los campos modificados
     const updates = {};
     if (tempFirstName !== firstName) updates.firstName = tempFirstName;
     if (tempLastName !== lastName) updates.lastName = tempLastName;
@@ -79,7 +90,7 @@ const PersonalInfo = ({
     if (tempGender !== gender) updates.gender = tempGender;
 
     if (Object.keys(updates).length === 0) {
-      setErrors("No hay cambios para actualizar.");
+      setIsEditing(false);
       return;
     }
 
@@ -100,20 +111,17 @@ const PersonalInfo = ({
           INTERNAL_SERVER_ERROR: "Error en el servidor.",
         };
         const data = await response.json();
-        setErrors(errorMessages[data?.error] || "Error actualizando los metadatos.");
+        setErrors({ general: errorMessages[data?.error] || "Error actualizando los metadatos." });
         return;
       }
 
       const updatedData = await response.json();
-
-      // Mantener todos los datos existentes y actualizar solo los modificados
       setFirstName(updatedData.firstName || tempFirstName);
       setLastName(updatedData.lastName || tempLastName);
       setBirthDate(updatedData.birthDate || tempBirthDate);
       setEndDate(updatedData.endDate || tempEndDate);
       setGender(updatedData.gender || tempGender);
 
-      setSuccess(true);
       setIsEditing(false);
     } catch (error) {
       setErrors({ general: "Error inesperado al actualizar los datos." });
@@ -132,6 +140,23 @@ const PersonalInfo = ({
     setIsEditing(false);
   };
 
+  const onRequest = async () => {
+    const result = await handleRequestDeletion(deletionReason);
+    if (result.success) {
+      setDeletionMessage("Se ha solicitado darse de baja. Los administradores atenderán tu petición.");
+    } else {
+      setDeletionMessage(result.message);
+    }
+  };
+
+  const onCancel = async () => {
+    const result = await handleCancelDeletion();
+    if (result.success) {
+      setDeletionMessage("Se ha cancelado tu solicitud de baja.");
+    } else {
+      setDeletionMessage(result.message);
+    }
+  };
 
   return (
     <div className="p-4 bg-white rounded-lg">
@@ -171,7 +196,6 @@ const PersonalInfo = ({
           Información personal
         </h3>
 
-
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <div>
@@ -187,7 +211,10 @@ const PersonalInfo = ({
               className="block w-full p-2 border rounded-md transition-all"
               disabled={!isEditing}
               style={{
-                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                borderColor: errors.firstName
+                  ? theme.palette.error.hex
+                  : (isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex),
+                color: theme.palette.text.hex,
               }}
             />
             {isEditing && errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
@@ -206,7 +233,10 @@ const PersonalInfo = ({
               className="block w-full p-2 border rounded-md transition-all"
               disabled={!isEditing}
               style={{
-                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                borderColor: errors.lastName
+                  ? theme.palette.error.hex
+                  : (isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex),
+                color: theme.palette.text.hex,
               }}
             />
             {isEditing && errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
@@ -240,7 +270,9 @@ const PersonalInfo = ({
               onChange={(e) => setTempGender(e.target.value)}
               className="block w-full p-2 border rounded-md transition-all"
               style={{
-                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                borderColor: errors.gender
+                  ? theme.palette.error.hex
+                  : (isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex),
                 color: theme.palette.text.hex,
               }}
               disabled={!isEditing}
@@ -257,7 +289,7 @@ const PersonalInfo = ({
       </div>
 
       {/* Sección de Información académica */}
-      <div>
+      <div className="mb-10">
         <h3
           className="text-md font-semibold mb-3"
           style={{ color: theme.palette.dark.hex }}
@@ -286,10 +318,12 @@ const PersonalInfo = ({
           </div>
 
           <div>
+
             <label className="block text-sm font-medium flex items-center gap-1">
               Fecha de graduación
               {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
             </label>
+
             <input
               type="date"
               value={tempEndDate}
@@ -297,10 +331,104 @@ const PersonalInfo = ({
               className="block w-full p-2 border rounded-md transition-all"
               disabled={!isEditing}
               style={{
-                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
+                borderColor: errors.endDate
+                  ? theme.palette.error.hex
+                  : (isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex),
+                color: theme.palette.text.hex,
               }}
             />
+
+            {isEditing && errors.endDate && <p className="text-red-500 text-xs mt-1">{errors.endDate}</p>}
           </div>
+
+        </div>
+      </div>
+
+      {/* Sección de Configuración de la cuenta */}
+      <div>
+        <h3
+          className="text-md font-semibold mb-3"
+          style={{ color: theme.palette.dark.hex }}
+        >
+          Configuración de la cuenta</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div className="col-span-2 space-y-4 mt-2">
+            {deletionRequested ? (
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div
+                  className="flex items-center gap-3 p-4 text-sm"
+                  style={{
+                    backgroundColor: `${theme.palette.warning.hex}20`,
+                    borderLeft: `4px solid ${theme.palette.warning.hex}`
+                  }}
+                >
+                  <i className="bi bi-exclamation-triangle-fill" style={{ color: theme.palette.warning.hex }}></i>
+                  <p className="">
+                    Ya has solicitado la baja de la cuenta. Si cambiaste de opinión, puedes cancelarla.
+                  </p>
+                </div>
+                <button
+                  onClick={onCancel}
+                  className="px-4 py-2 rounded-full font-semibold text-white"
+                  style={{ backgroundColor: theme.palette.secondary.hex }}
+                >
+                  Cancelar solicitud de baja
+                </button>
+              </div>
+            ) : (
+              <>
+                {!deletionReason && (
+                  <div>
+                    <button
+                      onClick={() => setDeletionReason(" ")} // activa el formulario
+                      className="px-4 py-2 rounded-full text-white font-semibold"
+                      style={{ backgroundColor: theme.palette.secondary.hex }}
+                    >
+                      Solicitar baja de la cuenta
+                    </button>
+                  </div>
+                )}
+
+                {deletionReason && (
+                  <div className="p-4 border rounded-md bg-gray-50 space-y-3 mt-2">
+                    <label className="text-sm font-medium block">
+                      ¿Por qué deseas darte de baja?
+                    </label>
+                    <textarea
+                      value={deletionReason}
+                      onChange={(e) => setDeletionReason(e.target.value)}
+                      rows={3}
+                      className="w-full p-2 border rounded-md resize-none"
+                      style={{
+                        borderColor: theme.palette.primary.hex,
+                        color: theme.palette.text.hex,
+                      }}
+                      placeholder="Explica brevemente el motivo..."
+                    />
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => setDeletionReason("")}
+                        className="px-4 py-2 rounded-full text-gray-700 font-semibold border"
+                        style={{ borderColor: theme.palette.lightGray.hex }}
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        onClick={onRequest}
+                        disabled={!deletionReason.trim()}
+                        className="px-4 py-2 rounded-full text-white font-semibold transition disabled:opacity-50"
+                        style={{ backgroundColor: theme.palette.error.hex }}
+                      >
+                        Confirmar baja
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
 
         </div>
       </div>
