@@ -8,6 +8,7 @@ import "@fontsource/montserrat";
 import ErrorPopUp from "@/components/ErrorPopUp";
 import LoadingModal from "@/components/LoadingModal";
 import Roadmap from "@/components/Roadmap/Roadmap";
+import CareerOpportunityComponent from "@/components/student_profile/CareerOpportunityComponent";
 
 const Home = () => {
   const router = useRouter();
@@ -142,6 +143,10 @@ const Home = () => {
         progress={progress}
         setProgress={setProgress}
       />
+
+      <div className="bg-white shadow-lg m-12 rounded-lg p-10">
+        <CareerOpportunityComponent />
+      </div>
     </div>
   );
 };
