@@ -14,7 +14,7 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
      
   const handleLevelChange = (index, event) => {
     const updateSkill = [...tempSkills]
-    updateSkill[index].level = event
+    updateSkill[index].level = event.target.value
     setTempSkills(updateSkill)
   }
 
@@ -25,7 +25,7 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
   }
 
   const addSkill = () => {
-    setTempSkills([...tempSkills, {skill: ""}])
+    setTempSkills([...tempSkills, {skill: "", level: "Bajo"}])
   }
 
   const handleDeleteSkill = (index) => {
