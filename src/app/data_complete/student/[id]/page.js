@@ -23,7 +23,7 @@ const StudentInitForm = () => {
   const params = useParams();
   const id = params.id;
   const [submitting, setSubmitting] = useState(false);
-  const [metadataError, setMetadataError] = useState(false);
+  // const [metadataError, setMetadataError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,11 +41,17 @@ const StudentInitForm = () => {
         }
         const data = await response.json();
 
-        console.log(data);
-        if (data.metadata) {
-          console.log(data.metadata);
-          setMetadataError(true);
+        // Comprobar si la metadata está completa
+        if (data.metadata && Object.keys(data.metadata).length > 0) {
+
+          // setMetadataError(true);
+
+          router.push(`/profile/${JSON.parse(localStorage.getItem("user")).role == "STUDENT"
+            ? "student"
+            : "teacher"
+            }/${id}`);
         }
+
       } catch (error) {
         setError(error.message);
       } finally {
@@ -142,17 +148,17 @@ const StudentInitForm = () => {
     return <LoadingModal />;
   }
 
-  if (metadataError) {
-    return (
-      <ErrorPopUp
-        message={"No tienes acceso a esta página"}
-        path={`/profile/${JSON.parse(localStorage.getItem("user")).role == "STUDENT"
-            ? "student"
-            : "teacher"
-          }/${id}`}
-      />
-    );
-  }
+  // if (metadataError) {
+  //   return (
+  //     <ErrorPopUp
+  //       message={"No tienes acceso a esta página"}
+  //       path={`/profile/${JSON.parse(localStorage.getItem("user")).role == "STUDENT"
+  //         ? "student"
+  //         : "teacher"
+  //         }/${id}`}
+  //     />
+  //   );
+  // }
 
   return (
     <div
