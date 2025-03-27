@@ -11,7 +11,7 @@ import { useJobOffers } from "./CareerOpportunity/useJobOffers";
 
 const CareerOpportunityComponent = () => {
   const [activeTab, setActiveTab] = useState("recent");
-  
+
   const {
     loading,
     saving,
@@ -29,11 +29,11 @@ const CareerOpportunityComponent = () => {
     clearRecentOffers
   } = useJobOffers();
 
-  useEffect(() => {
-    document.title = activeTab === "recent" 
-      ? "Ofertas Recientes | Portal de Empleo" 
-      : "Ofertas Guardadas | Portal de Empleo";
-  }, [activeTab]);
+  // useEffect(() => {
+  //   document.title = activeTab === "recent" 
+  //     ? "Ofertas Recientes | Portal de Empleo" 
+  //     : "Ofertas Guardadas | Portal de Empleo";
+  // }, [activeTab]);
 
   if (loading) {
     return <LoadingModal />;
@@ -41,13 +41,18 @@ const CareerOpportunityComponent = () => {
 
   return (
     <div className="container mx-auto p-2 max-w-8xl">
-      <h1
-        className="text-2xl font-bold mb-6"
-        style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
-      >
-        Portal de ofertas de {userEligibility.canSearchJobs ? "empleo y prácticas" : "prácticas"}
-      </h1>
-      
+      <div className="flex items-baseline justify-between mb-6">
+        <h1
+          className="text-2xl font-bold"
+          style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
+        >
+          Portal de ofertas de {userEligibility.canSearchJobs ? "empleo y prácticas" : "prácticas"}
+        </h1>
+        <span className="italic text-sm text-gray-500" style={{ fontFamily: "Montserrat" }}>
+          Diseñado especialmente para ti
+        </span>
+      </div>
+
       <SearchForm
         searchParams={searchParams}
         handleInputChange={handleInputChange}
@@ -55,7 +60,7 @@ const CareerOpportunityComponent = () => {
         handleOfferClick={handleOfferClick}
         userEligibility={userEligibility}
       />
-      
+
       <OfferTabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -64,7 +69,7 @@ const CareerOpportunityComponent = () => {
         clearAllOffers={clearAllOffers}
         clearRecentOffers={clearRecentOffers}
       />
-      
+
       {activeTab === "recent" ? (
         <RecentOffers
           recentOffers={recentOffers}
