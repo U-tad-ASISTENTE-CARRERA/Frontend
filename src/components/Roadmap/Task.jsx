@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { theme } from "@/constants/theme";
 import Resource from "@/components/Roadmap/Resource";
+import { MdClose } from "react-icons/md";
 
 const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,13 +17,11 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
       body: JSON.stringify({
-        sectionName: sectionName,
+        sectionName,
         topicName: taskName,
         newStatus: "done",
       }),
     });
-    const data = await response.json();
-    console.log(data);
     if (updateProgress) updateProgress();
     window.location.reload();
   };
@@ -33,99 +32,101 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="cursor-pointer" onClick={toggleTask}>
-        {taskData.status == "doing" ? (
-          <Image
-            src={`/icons/${taskData.skill}.png`}
-            alt={taskName}
-            width={60}
-            height={60}
-          />
-        ) : (
-          <Image src={`/si.png`} alt={taskName} width={60} height={60} />
-        )}
-      </div>
+      {/* Card clickable */}
       <div
-        className={`transition-all duration-300 ease-in-out overflow-hidden ${
-          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}
+        onClick={toggleTask}
+        className="cursor-pointer w-24 h-24 bg-white rounded-2xl shadow-md border border-gray-200 flex items-center justify-center transition hover:shadow-lg"
       >
-        <div
-          className="flex flex-col justify-between bg-gray-50 p-8 rounded-lg mt-4 mb-4"
-          style={{
-            borderColor: theme.palette.light.hex,
-            fontFamily: "Montserrat, sans-serif",
-          }}
-        >
+        <Image
+          src={
+            taskData.status === "doing"
+              ? `/icons/${taskData.skill}.png`
+              : `/si.png`
+          }
+          alt={taskName}
+          width={50}
+          height={50}
+        />
+      </div>
+
+      {/* Panel expandible */}
+      <div
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "max-h-[1000px] opacity-100 mt-4" : "max-h-0 opacity-0"
+          } w-full`}
+      >
+        <div className="relative bg-white p-6 mt-4 rounded-xl shadow-lg border border-gray-200">
+          {/* Close button */}
+          <button
+            onClick={toggleTask}
+            className="absolute top-4 right-4 text-blue-600 hover:text-blue-800"
+          >
+            <MdClose size={24} />
+          </button>
+
           <h3
-            className="font-medium mb-2 text-center"
-            style={{ color: theme.palette.dark.hex, fontSize: 16 }}
+            className="text-lg font-semibold text-center mb-2"
+            style={{ color: theme.palette.dark.hex }}
           >
             {taskName}
           </h3>
+
           <p
-            className="text-gray-700 mb-2 text-sm text-center"
+            className="text-center text-sm mb-4"
             style={{ color: theme.palette.text.hex }}
           >
             {taskData.description}
           </p>
-          <div className="flex items-center justify-center">
-            <button
-              onClick={toggleTask}
-              className="w-20% text-sm items-center px-3 py-1 mt-2 rounded-md transition duration-200"
-              style={{
-                backgroundColor: "white",
-                borderRadius: theme.buttonRadios.xl,
-                fontWeight: theme.fontWeight.bold,
-                border: "2px solid",
-                borderColor: theme.palette.dark.hex,
-                color: theme.palette.dark.hex,
-              }}
+
+          {/* Recursos */}
+          <div className="mt-6 text-center ">
+            <h4
+              className="text-md font-semibold mb-1"
+              style={{ color: theme.palette.primary.hex }}
             >
-              {isOpen ? "Ocultar" : "Detalles"}
-            </button>
-          </div>
-          <div className="space-y-2 mt-2">
-            {taskData.resources &&
-              taskData.resources.map((resource, index) => (
-                <Resource key={index} resource={resource} />
+              Cursos recomendados
+            </h4>
+            <p className="text-xs text-gray-500 mb-4">
+              Las asignaturas que cubren estos conocimientos autocompletarán esta sección automáticamente.
+            </p>
+            <div className="space-y-2">
+              {taskData.resources?.map((resource, i) => (
+                <Resource key={i} resource={resource} />
               ))}
+            </div>
           </div>
-          <div className="flex items-center justify-center">
-            {taskData.status == "doing" ? (
+
+
+          {/* Acción */}
+          <div className="flex justify-center mt-6">
+            {taskData.status === "doing" ? (
               <button
-                type="button"
                 onClick={handleMarkAsDone}
-                className="w-2/3 items-center px-3 py-2 mt-8 rounded-md transition duration-200 text-white"
+                className="px-6 py-2 text-white text-lg font-bold rounded-full shadow-md transition-colors duration-300"
                 style={{
-                  background:
-                    "radial-gradient(circle, rgba(44,69,228,1) 0%, rgba(96,169,255,1) 100%)",
-                  borderRadius: theme.buttonRadios.xl,
-                  fontWeight: theme.fontWeight.bold,
-                  fontFamily: "Montserrat, sans-serif",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                  fontSize: theme.fontSizes.xl,
+                  backgroundColor: theme.palette.primary.hex,
+                  fontFamily: "Montserrat",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = theme.palette.secondary.hex;
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = theme.palette.primary.hex;
                 }}
               >
-                Finalizar
+                Completar sección
               </button>
             ) : (
-              <button
-                type="button"
-                className="w-2/3 items-center px-3 py-2 mt-8 rounded-md transition duration-200 text-white"
+              <div
+                className="px-6 py-2 text-white text-lg font-bold rounded-full shadow-md"
                 style={{
-                  background:
-                    "radial-gradient(circle, rgb(0, 112, 24) 0%, rgb(15, 211, 64) 100%)",
-                  borderRadius: theme.buttonRadios.xl,
-                  fontWeight: theme.fontWeight.bold,
-                  fontFamily: "Montserrat, sans-serif",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                  fontSize: theme.fontSizes.xl,
+                  backgroundColor: "#26a269",
+                  fontFamily: "Montserrat",
                 }}
               >
-                Finalizado
-              </button>
+                Sección completada
+              </div>
             )}
+
           </div>
         </div>
       </div>

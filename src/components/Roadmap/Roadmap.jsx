@@ -5,6 +5,7 @@ import { theme } from "@/constants/theme";
 import ProgressBar from "@/components/student_profile/ProgressBar";
 import Section from "@/components/Roadmap/Section";
 import SectionPopup from "@/components/Roadmap/SectionPopup";
+import { FaArrowRight, FaTrophy } from "react-icons/fa";
 
 const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
   const [selectedSection, setSelectedSection] = useState(null);
@@ -20,11 +21,11 @@ const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
   return (
     <div className="flex items-center justify-center p-8 fade pb-20">
       <div
-        className="w-full p-12 bg-white shadow-lg"
+        className="w-full"
         style={{ borderRadius: theme.buttonRadios.xxl }}
       >
         <h1
-          className="text-3xl font-bold text-center mb-12"
+          className="text-3xl font-bold text-center mb-6"
           style={{
             color: theme.palette.primary.hex,
             fontFamily: "Montserrat",
@@ -32,20 +33,40 @@ const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
         >
           {roadmap.name}
         </h1>
-        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8">
+
+        {/* Bubble con progreso */}
+        <div className="flex justify-center mb-4">
+          <div className="flex items-center gap-3 px-6 py-2 rounded-full shadow-md text-white font-semibold"
+            style={{ backgroundColor: theme.palette.primary.hex }}>
+            <FaTrophy size={18} />
+            Progreso: {Math.round(progress)}%
+          </div>
+        </div>
+
+        {/* Barra de progreso */}
+        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-10">
           <ProgressBar progress={progress} />
         </div>
-        <div className="flex flex-wrap justify-evenly gap-4 mt-12">
+
+        {/* Camino visual de secciones con flechas y separación */}
+        <div className="flex items-center justify-between gap-4 mt-6 px-6">
           {roadmap.body &&
-            Object.entries(roadmap.body).map(([sectionName, sectionData]) => (
-              <Section
-                key={sectionName}
-                sectionName={sectionName}
-                sectionData={sectionData}
-                onClick={() => openSectionPopup(sectionName, sectionData)}
-              />
+            Object.entries(roadmap.body).map(([sectionName, sectionData], index, arr) => (
+              <React.Fragment key={sectionName}>
+                <Section
+                  sectionName={sectionName}
+                  sectionData={sectionData}
+                  onClick={() => openSectionPopup(sectionName, sectionData)}
+                />
+                {index < arr.length - 1 && (
+                  <div className="flex-1 border-dotted border-t-2 border-gray-300 flex justify-center">
+                    <FaArrowRight className="-mt-2 text-blue-500 bg-white px-1" size={16} />
+                  </div>
+                )}
+              </React.Fragment>
             ))}
         </div>
+
       </div>
 
       {selectedSection && (

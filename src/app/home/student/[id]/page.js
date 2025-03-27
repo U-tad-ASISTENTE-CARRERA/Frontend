@@ -10,6 +10,7 @@ import Roadmap from "@/components/Roadmap/Roadmap";
 import CareerOpportunityComponent from "@/components/Roadmap/CareerOpportunityComponent";
 import { AlertSystemRoadmap } from "@/components/Roadmap/AlertSystemRoadmap";
 import { subjectsByYear } from "@/constants/subjectsByYear";
+import { MdSchool, MdWorkspacePremium, MdWork } from "react-icons/md"
 
 const Home = () => {
   const params = useParams();
@@ -71,11 +72,11 @@ const Home = () => {
 
   const generateAlerts = () => {
     if (!metadata) return [];
-  
+
     const alerts = [];
-    const academicRecord = metadata?.AH?.subjects || [];
-  
-    if (academicRecord.length === 0) {
+    const academicRecord = metadata?.AH?.subjects;
+
+    if (!metadata?.AH || !Array.isArray(academicRecord) || academicRecord.length === 0) {
       alerts.push({
         id: "academic-empty",
         type: "warning",
@@ -87,23 +88,27 @@ const Home = () => {
       });
       return alerts;
     }
-  
+
+    const requiredSubjects = [...subjectsByYear[1], ...subjectsByYear[2]];
+
+    const missingSubjects = requiredSubjects.filter((req) => {
+      const subject = academicRecord.find((s) => s.name === req);
+      return !subject || typeof subject.grade !== "number" || subject.grade < 0;
+    });
+
     const hasPassedYear = (year) => {
       const yearSubjects = academicRecord.filter(
-        (s) => Number(s.year) === year && s.grade !== null && s.grade !== undefined && s.grade !== ""
+        (s) => Number(s.year) === year && typeof s.grade === "number"
       );
-  
       const total = yearSubjects.length;
-      const failed = yearSubjects.filter((s) => Number(s.grade) < 5).length;
-  
-      // Consideramos aprobado si ha cursado al menos una asignatura del año y tiene como máximo 2 suspensas
+      const failed = yearSubjects.filter((s) => s.grade < 5).length;
       return total > 0 && failed <= 2;
     };
-  
+
     const passedFirst = hasPassedYear(1);
     const passedSecond = hasPassedYear(2);
-  
-    if (!passedFirst || !passedSecond) {
+
+    if (!passedFirst || !passedSecond || missingSubjects.length > 0) {
       alerts.push({
         id: "academic-incomplete",
         type: "warning",
@@ -114,10 +119,9 @@ const Home = () => {
         },
       });
     }
-  
+
     return alerts;
   };
-  
 
   if (isLoading || !metadata) return <LoadingModal />;
 
@@ -133,48 +137,103 @@ const Home = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-center gap-x-8 p-8">
-        <Image
-          src="/student.png"
-          alt="Student"
-          className="w-32 fade-left"
-          width={600}
-          height={600}
-        />
-        <div className="m-8 flex flex-col items-left fade-up">
-          <h1
-            style={{
-              color: theme.palette.primary.hex,
-              fontFamily: "Montserrat",
-              fontSize: theme.fontSizes.xxxxl,
-              fontWeight: theme.fontWeight.bold,
-            }}
-          >
-            {metadata.firstName} {metadata.lastName}
-          </h1>
-          <h3
-            style={{
-              color: theme.palette.text.hex,
-              fontFamily: "Montserrat",
-              fontSize: theme.fontSizes.xxl,
-              fontWeight: theme.fontWeight.semibold,
-            }}
-          >
-            Alumn{metadata.gender === "male" ? "o" : "a"} de {metadata.degree === "INSO_DATA" ? "INSO con mención en DATA" : metadata.degree}
-          </h3>
+
+      <div className="flex justify-center w-full px-6 py-10 ">
+        <div className="w-full max-w-6xl space-y-8">
+          {/* Cabecera del estudiante */}
+          <div className="flex justify-between items-start p-8 bg-white rounded-2xl shadow-md border border-gray-200 gap-6">
+            {/* Izquierda: Avatar + datos */}
+            <div className="flex items-center gap-6">
+              <div
+                className="rounded-xl overflow-hidden border-4 border-blue-100 bg-white"
+                style={{
+                  width: "112px",
+                  aspectRatio: "1",
+                  minWidth: "96px",
+                  maxWidth: "128px",
+                }}
+              >
+                <Image
+                  src="/student.png"
+                  alt="Foto del estudiante"
+                  width={112}
+                  height={112}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+
+              <div className="flex flex-col justify-center gap-2">
+                <h1
+                  className="text-3xl font-bold"
+                  style={{
+                    color: theme.palette.primary.hex,
+                    fontFamily: "Montserrat",
+                  }}
+                >
+                  {metadata.firstName} {metadata.lastName}
+                </h1>
+
+                <h3
+                  className="text-lg font-medium"
+                  style={{
+                    color: theme.palette.text.hex,
+                    fontFamily: "Montserrat",
+                  }}
+                >
+                  Alumn{metadata.gender === "male" ? "o" : "a"} de{" "}
+                  {metadata.degree === "INSO_DATA"
+                    ? "INSO con mención en DATA"
+                    : metadata.degree}
+                </h3>
+
+                <div className="flex gap-4 mt-3 flex-wrap">
+                  <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-blue-50 text-blue-800 font-medium text-sm">
+                    <MdSchool size={18} />
+                    {Array.isArray(metadata.yearsCompleted)
+                      ? `${Math.max(...metadata.yearsCompleted) + 1}º${metadata.degree?.startsWith("INSO") ? " INSO" : ""
+                      }`
+                      : "1º"}
+                  </div>
+                  <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-green-50 text-green-800 font-medium text-sm">
+                    <MdWorkspacePremium size={18} />
+                    {metadata.certifications?.length || 0} certificaciones
+                  </div>
+                  <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-yellow-50 text-yellow-800 font-medium text-sm">
+                    <MdWork size={18} />
+                    {metadata.workExperience?.length || 0} experiencias
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Derecha: Card extra */}
+            <div className="hidden md:block min-w-[200px] bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm text-center">
+              <h4 className="text-sm text-gray-500 font-medium mb-2">Estado actual</h4>
+              <p className="text-xl font-bold text-blue-600" style={{ fontFamily: "Montserrat" }}>
+                {Math.round(progress)}%
+              </p>
+              <p className="text-xs text-gray-400 mt-1">progreso total</p>
+            </div>
+          </div>
+
+
+          {/* Roadmap */}
+          <div className="bg-white rounded-2xl shadow-md p-10">
+            <Roadmap
+              roadmap={roadmap}
+              metadata={metadata}
+              progress={progress}
+              setProgress={setProgress}
+            />
+          </div>
+
+          {/* Oportunidades */}
+          <div className="bg-white rounded-2xl shadow-md p-10">
+            <CareerOpportunityComponent />
+          </div>
         </div>
       </div>
 
-      <Roadmap
-        roadmap={roadmap}
-        metadata={metadata}
-        progress={progress}
-        setProgress={setProgress}
-      />
-
-      <div className="bg-white shadow-lg m-12 rounded-lg p-10">
-        <CareerOpportunityComponent />
-      </div>
 
     </div>
   );
