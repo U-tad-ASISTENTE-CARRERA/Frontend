@@ -6,7 +6,7 @@ import { theme } from "@constants/theme";
 import "@fontsource/montserrat";
 import ErrorPopUp from "@components/ErrorPopUp";
 import LoadingModal from "@components/LoadingModal";
-import RoadmapTest from "@/components/student_profile/RoadmapGuide/RoadmapTest";
+import RoadmapTest from "@/components/Roadmap/RoadmapGuide/RoadmapTest";
 
 const RoadmapGuide = () => {
   const [error, setError] = useState("");

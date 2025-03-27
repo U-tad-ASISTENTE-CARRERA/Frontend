@@ -373,7 +373,7 @@ const StudentProfile = () => {
             {getWelcomeMessage()} {firstName || "Usuario"}
 
             {/* * testin'!!! sistema de alertas del estudiante sashVqz
-            <AlertSystem
+            <AlertSystemRoadmap
               academicRecord={academicRecord}
               yearsCompleted={yearsCompleted}
               firstName={firstName}
