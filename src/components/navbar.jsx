@@ -89,7 +89,11 @@ export default function Navbar() {
 
       const data = await response.json();
 
-      router.push(`/home/${data.user.role.toLowerCase()}/${data.user.id}`);
+      if (data?.user?.id && data?.user?.role) {
+        router.push(`/home/${data.user.role.toLowerCase()}/${data.user.id}`);
+      } else {
+        router.push("/");
+      }
     }
   };
 
@@ -97,13 +101,16 @@ export default function Navbar() {
     <>
       {/* Navbar principal */}
       <nav className="bg-blue-600 p-4 flex items-center justify-between shadow-lg">
-        <div className="flex col-span-2">
+
+        <div
+          className="flex col-span-2 cursor-pointer"
+          onClick={handleTypeUserHome}
+        >
           <img
             src="/logo.png"
             title="Logo"
             className="h-10 w-10"
-            onClick={() => router.push("/")}
-          ></img>
+          />
           <p
             className="text-white ml-3 mt-2"
             style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 500 }}
@@ -111,6 +118,7 @@ export default function Navbar() {
             Asistente de Carrera Profesional
           </p>
         </div>
+
 
         {/* Botón Hamburguesa para móviles */}
         <button
@@ -176,7 +184,7 @@ export default function Navbar() {
                           router.push("/register"), setIsDropdownOpen(false)
                         )}
                       >
-                        Registrate
+                        Regístrate
                       </button>
                     </div>
                   )}
@@ -190,15 +198,13 @@ export default function Navbar() {
       {/* Sidebar lateral derecho */}
       {isMenuOpen && (
         <div
-          className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity ease-in-out duration-300 ${
-            isMenuOpen ? "opacity-100" : "opacity-0"
-          }`}
+          className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity ease-in-out duration-300 ${isMenuOpen ? "opacity-100" : "opacity-0"
+            }`}
           onClick={() => setIsMenuOpen(false)}
         >
           <div
-            className={`fixed top-0 right-0 w-64 h-full bg-blue-700 shadow-lg flex flex-col p-6 space-y-6 transform transition-transform duration-500 ease-in-out ${
-              isMenuOpen ? "translate-x-0" : "translate-x-full"
-            }`}
+            className={`fixed top-0 right-0 w-64 h-full bg-blue-700 shadow-lg flex flex-col p-6 space-y-6 transform transition-transform duration-500 ease-in-out ${isMenuOpen ? "translate-x-0" : "translate-x-full"
+              }`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Botón para cerrar la navbar lateral */}
@@ -215,7 +221,7 @@ export default function Navbar() {
               onClick={() => (handleTypeUserHome(), setIsMenuOpen(false))}
             >
               <div className="flex flex-row items-center">
-                <i className="bi bi-house-door-fill text-2xl"></i> 
+                <i className="bi bi-house-door-fill text-2xl"></i>
                 <p className="ml-2">Inicio</p>
               </div>
             </div>
@@ -225,14 +231,13 @@ export default function Navbar() {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               <div className="flex flex-row items-center">
-                <i className="bi bi-person-fill text-2xl"></i> 
+                <i className="bi bi-person-fill text-2xl"></i>
                 <p className="ml-2">Usuario</p>
                 <i
-                  className={`${
-                    isDropdownOpen
+                  className={`${isDropdownOpen
                       ? "bi bi-chevron-down ml-3"
                       : "bi bi-chevron-left ml-3"
-                  }`}
+                    }`}
                 ></i>
               </div>
 

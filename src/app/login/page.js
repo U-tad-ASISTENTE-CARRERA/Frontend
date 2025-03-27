@@ -162,7 +162,7 @@ const Login = () => {
             className="text-sm text-center mt-8"
             style={{ color: theme.palette.dark.hex }}
           >
-            Olvidaste tu contraseña?{" "}
+            ¿Olvidaste tu contraseña?{" "}
             <a
               href="/reset-password"
               style={{ color: theme.palette.complementary.hex }}
