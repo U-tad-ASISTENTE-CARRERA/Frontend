@@ -45,7 +45,7 @@ const CareerOpportunityComponent = () => {
         className="text-2xl font-bold mb-6"
         style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
       >
-        Portal de Ofertas de {userEligibility.canSearchJobs ? "Empleo y Prácticas" : "Prácticas"}
+        Portal de ofertas de {userEligibility.canSearchJobs ? "empleo y prácticas" : "prácticas"}
       </h1>
       
       <SearchForm
