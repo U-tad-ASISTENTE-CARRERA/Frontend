@@ -80,7 +80,7 @@ const Pupils = ({ students, setStudents, token, setToken }) => {
                 key={student._id || index}
                 className="hover:bg-gray-50 transition"
               >
-                
+
                 <td className="px-6 py-4 text-sm text-gray-900">
                   {student.firstName}
                 </td>
@@ -90,7 +90,9 @@ const Pupils = ({ students, setStudents, token, setToken }) => {
                 </td>
 
                 <td className="px-6 py-4 text-sm text-gray-900">
-                  {student.yearsCompleted || "No disponible"}
+                  {Array.isArray(student.yearsCompleted) && student.yearsCompleted.length > 0
+                    ? `${Math.max(...student.yearsCompleted)}º`
+                    : "No disponible"}
                 </td>
 
                 <td className="px-6 py-4 text-sm">
@@ -100,12 +102,22 @@ const Pupils = ({ students, setStudents, token, setToken }) => {
                 </td>
 
                 <td className="px-6 py-4 text-sm text-gray-900">
-                  <FaDownload
-                    className="text-blue-500 cursor-pointer"
-                    title="Descargar informe"
-                    onClick={() => handleDownloadReport(student._id)}
-                  />
+                  {student.metadata?.informeEnviado ? (
+                    <FaDownload
+                      className="text-blue-500 cursor-pointer"
+                      title="Descargar informe"
+                      onClick={() => handleDownloadReport(student._id)}
+                    />
+                  ) : (
+                    <span
+                      className="inline-block bg-yellow-100 text-yellow-800 text-xs font-medium px-3 py-1 rounded-full"
+                      title="Este estudiante aún no tiene un informe enviado"
+                    >
+                      Informe no enviado
+                    </span>
+                  )}
                 </td>
+
               </tr>
             ))}
           </tbody>
