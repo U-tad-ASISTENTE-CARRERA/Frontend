@@ -6,12 +6,11 @@ import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import ErrorPopUp from "@/components/ErrorPopUp";
 import LoadingModal from "@/components/LoadingModal";
-import { FaDownload } from "react-icons/fa";
 import SidebarNavigation from "@/components/teacher_profile/SidebarNavigationTeacher";
 import Pupils from "@components/teacher_profile/Pupils";
 import PersonalInfo from "@/components/teacher_profile/PersonalInfo";
 
-const Teacher = () => {
+const TeacherProfile = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = useParams();
@@ -29,6 +28,8 @@ const Teacher = () => {
   const [studentsError, setStudentsError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [activeSection, setActiveSection] = useState("personal");
+  const [deletionRequested, setDeletionRequested] = useState(false);
+
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -70,6 +71,8 @@ const Teacher = () => {
       setLastName(metadata.lastName);
       setGender(metadata.gender);
       setSpecialization(metadata.specialization);
+      setDeletionRequested(data.metadata?.deletionRequestStatus === "pending");
+
     } catch (error) {
       setError(error.message);
     } finally {
@@ -108,17 +111,76 @@ const Teacher = () => {
     fetchStudents();
   }, [token, id]);
 
+
+  const handleRequestDeletion = async (reason) => {
+    if (deletionRequested) return; // Protección en estado local
+
+    try {
+      const response = await fetch("http://localhost:3000/deletionRequest", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ reason }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data?.message || "No se pudo procesar la solicitud." };
+      }
+
+      setDeletionRequested(true);
+
+      return {
+        success: true,
+        requestId: data.requestId,
+        status: data.status,
+        requestDate: data.requestDate,
+      };
+    } catch (error) {
+      return { success: false, message: "Error de red o inesperado al solicitar la baja." };
+    }
+  };
+
+
+  const handleCancelDeletion = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/deletionRequest", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message: data?.message || "No se pudo cancelar la solicitud.",
+        };
+      }
+
+      setDeletionRequested(false);
+
+      return {
+        success: true,
+        cancelledAt: data.cancelledAt,
+        count: data.count,
+      };
+    } catch (error) {
+      return { success: false, message: "Error de red o inesperado al cancelar la solicitud." };
+    }
+  };
+
   const getWelcomeMessage = () => {
     if (gender === "male") return "Bienvenido";
     if (gender === "female") return "Bienvenida";
     return "Bienvenid@";
   };
-
-  const filteredStudents = students.filter((student) =>
-    `${student.firstName} ${student.lastName}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-);
 
   return (
     <>
@@ -155,12 +217,17 @@ const Teacher = () => {
                     firstName={firstName}
                     lastName={lastName}
                     gender={gender}
-                    specialization={specialization} 
+                    specialization={specialization}
                     setFirstName={setFirstName}
                     setLastName={setLastName}
                     setGender={setGender}
                     setSpecialization={setSpecialization}
+                    deletionRequested={deletionRequested}
+                    setDeletionRequested={setDeletionRequested}
+                    handleRequestDeletion={handleRequestDeletion}
+                    handleCancelDeletion={handleCancelDeletion}
                   />
+
                 )}
 
                 {activeSection === "pupils" && (
@@ -180,4 +247,4 @@ const Teacher = () => {
   );
 };
 
-export default Teacher;
+export default TeacherProfile;
