@@ -73,7 +73,7 @@ const StudentProfile = () => {
         setCertifications(data.metadata.certifications || []);
         setWorkExperience(data.metadata.workExperience || []);
         setGender(data.metadata.gender || "");
-        setDeletionRequested(!!data.metadata?.deletionRequested);
+        setDeletionRequested(data.metadata?.deletionRequestStatus === "pending");
 
         setEndDate(convertTimestampToDate(data.metadata.endDate));
         setBirthDate(convertTimestampToDate(data.metadata.birthDate));
@@ -313,8 +313,8 @@ const StudentProfile = () => {
   };
 
   const handleRequestDeletion = async (reason) => {
-    if (deletionRequested) return; // protección real en el estado global
-
+    if (deletionRequested) return; // Protección en estado local
+  
     try {
       const response = await fetch("http://localhost:3000/deletionRequest", {
         method: "POST",
@@ -324,15 +324,26 @@ const StudentProfile = () => {
         },
         body: JSON.stringify({ reason }),
       });
-
-      if (!response.ok) throw new Error("Error al solicitar la baja.");
-
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        return { success: false, message: data?.message || "No se pudo procesar la solicitud." };
+      }
+  
       setDeletionRequested(true);
-      return { success: true };
+  
+      return {
+        success: true,
+        requestId: data.requestId,
+        status: data.status,
+        requestDate: data.requestDate,
+      };
     } catch (error) {
-      return { success: false, message: "No se pudo procesar tu solicitud." };
+      return { success: false, message: "Error de red o inesperado al solicitar la baja." };
     }
   };
+  
 
   const handleCancelDeletion = async () => {
     try {
@@ -343,15 +354,28 @@ const StudentProfile = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
-      if (!response.ok) throw new Error("Error al cancelar la solicitud de baja.");
-
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        return {
+          success: false,
+          message: data?.message || "No se pudo cancelar la solicitud.",
+        };
+      }
+  
       setDeletionRequested(false);
-      return { success: true };
+  
+      return {
+        success: true,
+        cancelledAt: data.cancelledAt,
+        count: data.count,
+      };
     } catch (error) {
-      return { success: false, message: "No se pudo cancelar la solicitud." };
+      return { success: false, message: "Error de red o inesperado al cancelar la solicitud." };
     }
   };
+  
 
   // Mensaje de bienvenida según el género
   const getWelcomeMessage = () => {
