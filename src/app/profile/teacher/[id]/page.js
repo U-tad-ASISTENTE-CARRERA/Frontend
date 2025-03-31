@@ -29,21 +29,43 @@ const TeacherProfile = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeSection, setActiveSection] = useState("personal");
   const [deletionRequested, setDeletionRequested] = useState(false);
-
+  const [authChecking, setAuthChecking] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      let storedToken = localStorage.getItem("token");
+    const init = () => {
+      if (typeof window === "undefined") return;
+
+      const storedToken = localStorage.getItem("token");
       if (!storedToken) {
-        const urlToken = searchParams.get("token");
-        if (urlToken) {
-          localStorage.setItem("token", urlToken);
-          storedToken = urlToken;
-        }
+        router.push("/login");
+        return;
       }
       setToken(storedToken);
-    }
-  }, [searchParams]);
+
+      let storedUser = null;
+      try {
+        storedUser = JSON.parse(localStorage.getItem("user"));
+      } catch {
+        router.push("/login");
+        return;
+      }
+
+      if (!storedUser?.id || !storedUser?.role) {
+        router.push("/login");
+        return;
+      }
+
+      if (storedUser.id !== id) {
+        const targetRole = storedUser.role.toLowerCase();
+        router.push(`/${targetRole}/profile/${storedUser.id}`);
+        return;
+      }
+
+      setAuthChecking(false); // Validación completa
+    };
+
+    init();
+  }, [id]);
 
   const fetchData = async () => {
     if (!token || !id) return;
@@ -107,6 +129,7 @@ const TeacherProfile = () => {
   };
 
   useEffect(() => {
+    if (authChecking) return;
     fetchData();
     fetchStudents();
   }, [token, id]);
