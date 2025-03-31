@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { theme } from "@/constants/theme";
 import ProgressBar from "@/components/student_profile/ProgressBar";
 import Section from "@/components/Roadmap/Section";
-import SectionPopup from "@/components/Roadmap/SectionPopup";
+import SectionPopup from "@/components/Roadmap/SectionPopUp";
 import { FaArrowRight, FaTrophy } from "react-icons/fa";
 
 const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
@@ -35,7 +35,7 @@ const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
         </h1>
 
         {/* Bubble con progreso */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-8">
           <div className="flex items-center gap-3 px-6 py-2 rounded-full shadow-md text-white font-semibold"
             style={{ backgroundColor: theme.palette.primary.hex }}>
             <FaTrophy size={18} />

@@ -173,7 +173,7 @@ const StudentInitForm = () => {
       </h1>
 
       {/* Formulario */}
-      <div className="w-full max-w-4xl bg-white p-8 mt-12 rounded-lg shadow-md flex justify-center">
+      <div className="w-50% max-w-4xl bg-white p-16 mt-12 shadow-md flex justify-center" style={{borderRadius: theme.buttonRadios.xl}}>
         <form
           onSubmit={handleSubmit}
           className="flex flex-col"

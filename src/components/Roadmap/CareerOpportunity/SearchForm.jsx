@@ -37,7 +37,7 @@ const SearchForm = ({
         </div>
       ) : null}
 
-      <form className="space-y-4">
+      <form className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label
@@ -55,7 +55,7 @@ const SearchForm = ({
                 name="keywords"
                 value={searchParams.keywords}
                 onChange={handleInputChange}
-                className="w-full pl-8 p-2 border rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-4 p-2 border rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
                 placeholder="Ej: Desarrollador React, Data Analyst"
               />
@@ -77,7 +77,7 @@ const SearchForm = ({
                 name="location"
                 value={searchParams.location}
                 onChange={handleInputChange}
-                className="w-full pl-8 p-2 border rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-4 p-2 border rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex }}
                 placeholder="Ej: Madrid, Barcelona, Valencia"
               />
@@ -99,7 +99,7 @@ const SearchForm = ({
                 name="jobType"
                 value={searchParams.jobType}
                 onChange={handleInputChange}
-                className="appearance-none w-full p-2 pl-8 pr-8 border rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                className="appearance-none w-full p-2 pl-4 pr-8 border rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
                 style={{ 
                   borderColor: theme.palette.light.hex, 
                   color: theme.palette.text.hex,
@@ -145,7 +145,7 @@ const SearchForm = ({
                 name="datePosted"
                 value={searchParams.datePosted}
                 onChange={handleInputChange}
-                className="appearance-none w-full p-2 pl-8 pr-8 border rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                className="appearance-none w-full p-2 pl-4 pr-8 border rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
                 style={{ 
                   borderColor: theme.palette.light.hex, 
                   color: theme.palette.text.hex,
@@ -194,7 +194,7 @@ const SearchForm = ({
                     checked: e.target.value === "2"
                   }
                 })}
-                className="appearance-none w-full p-2 pl-8 pr-8 border rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                className="appearance-none w-full p-2 pl-4 pr-8 border rounded-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
                 style={{ 
                   borderColor: theme.palette.light.hex, 
                   color: theme.palette.text.hex,
@@ -216,7 +216,7 @@ const SearchForm = ({
           </div>
         </div>
         
-        <div className="text-center mt-6">
+        <div className="text-left">
           {userEligibility.isEligible ? (
             <a
               href={generateLinkedInUrl()}
