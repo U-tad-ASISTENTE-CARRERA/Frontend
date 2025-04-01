@@ -1,30 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import {
+  FaHome,
+  FaUser,
+  FaSignInAlt,
+  FaUserPlus,
+  FaSignOutAlt,
+  FaUserCircle,
+  FaBars,
+  FaTimes,
+  FaArrowLeft,
+} from "react-icons/fa";
 import React, { useState, useEffect, useRef } from "react";
-import { styles } from "@/constants/theme";
 import { useRouter } from "next/navigation";
 import "@fontsource/montserrat";
+import { theme } from "@/constants/theme";
 
 export default function Navbar() {
-  /* 
-   isLoggedIn --> variable que permite saber si un usario ha iniciado sesión
-   isDropdownOpen --> variable que cambia la opción Iniciar sesión por Mi perfil y Log Out
-   isMenuOpen --> variable que permite activar el menu hamburguesa lateral
-  */
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isUserSidebarOpen, setIsUserSidebarOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isToken, setIsToken] = useState("");
   const router = useRouter();
-  const dropdownRef = useRef(null);
+  const userSidebarRef = useRef(null);
 
-  /* 
-    Comrobamos que exista el token del usuario para poder activar las opciones
-    de Mi perfil y Log Out
-  */
   useEffect(() => {
     setIsToken(localStorage.getItem("token"));
 
@@ -37,8 +37,11 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
+      if (
+        userSidebarRef.current &&
+        !userSidebarRef.current.contains(event.target)
+      ) {
+        setIsUserSidebarOpen(false);
       }
     };
 
@@ -46,9 +49,8 @@ export default function Navbar() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [userSidebarRef]);
 
-  /* Recogemos los datos del usuario iniciado para enviarlo a la ruta correcta */
   const handleTypeUserProfile = async (e) => {
     const response = await fetch("http://localhost:3000/", {
       method: "GET",
@@ -58,15 +60,14 @@ export default function Navbar() {
       },
     });
 
-    console.log(response);
-
     if (!response.ok) {
       throw new error("Error al captar al usuario");
     }
 
     const data = await response.json();
 
-    setIsDropdownOpen(false);
+    setIsUserSidebarOpen(false);
+    setIsMenuOpen(false);
 
     router.push(`/profile/${data.user.role.toLowerCase()}/${data.user.id}`);
   };
@@ -99,190 +100,175 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Navbar principal */}
-      <nav className="bg-blue-600 p-4 flex items-center justify-between shadow-lg">
-
+      <nav
+        className="bg-blue-600 p-3 flex items-center justify-between shadow-lg mx-2 mt-2"
+        style={{ borderRadius: theme.buttonRadios.l }}
+      >
         <div
-          className="flex col-span-2 cursor-pointer"
+          className="flex items-center cursor-pointer"
           onClick={handleTypeUserHome}
         >
-          <img
-            src="/logo.png"
-            title="Logo"
-            className="h-10 w-10"
-          />
+          <img src="/logo.png" title="Logo" className="h-8 w-8 rounded-full" />
           <p
-            className="text-white ml-3 mt-2"
-            style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 500 }}
+            className="text-white ml-3 text-sm font-medium"
+            style={{ fontFamily: "Montserrat, sans-serif" }}
           >
-            Asistente de Carrera Profesional
+            Asistente de Carrera
           </p>
         </div>
 
-
-        {/* Botón Hamburguesa para móviles */}
         <button
-          className="text-white cursor-pointer md:hidden"
+          className="text-white cursor-pointer md:hidden p-2 rounded-full hover:bg-blue-700 transition-colors"
           onClick={() => setIsMenuOpen(true)}
         >
-          <i className="bi bi-list text-2xl"></i>
+          <FaBars className="text-2xl" />
         </button>
 
-        <ul className="hidden peer-checked:flex flex-col md:flex md:flex-row md:space-x-8 space-y-4 md:space-y-0 text-white text-lg">
-          <li className="md:ml-auto">
-            <i
-              className="bi bi-house-door-fill text-4xl hover:text-gray-300 transition-colors duration-200 text-nowrap"
-              onClick={() => handleTypeUserHome()}
-            ></i>
-          </li>
+        <div className="hidden md:flex items-center space-x-4">
+          <button
+            className="text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
+            onClick={() => handleTypeUserHome()}
+            title="Inicio"
+          >
+            <FaHome className="text-2xl" />
+          </button>
 
-          <li className="md:ml-auto" ref={dropdownRef}>
-            <div
-              className="hover:text-gray-300 transition-colors duration-200 text-nowrap"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
-              <i className="bi bi-person-fill text-4xl"></i>
-
-              {isDropdownOpen && (
-                <div style={styles.dropdown}>
-                  {isLoggedIn ? (
-                    <div style={styles.submenu}>
-                      <button
-                        style={styles.dropdownButton}
-                        onClick={() => handleTypeUserProfile()}
-                      >
-                        Mi perfil
-                      </button>
-
-                      <div style={{ height: "1px", backgroundColor: "gray", margin: "8px 0" }}></div>
-
-                      <button
-                        style={styles.dropdownButton}
-                        onClick={() => (
-                          router.push("/logout"), setIsDropdownOpen(false)
-                        )}
-                      >
-                        Cerrar sesión
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col">
-                      <button
-                        style={styles.dropdownButton}
-                        onClick={() => (
-                          router.push("/login"), setIsDropdownOpen(false)
-                        )}
-                      >
-                        Iniciar sesión
-                      </button>
-
-                      <div style={{ height: "1px", backgroundColor: "gray", margin: "8px 0" }}></div>
-
-                      <button
-                        style={styles.dropdownButton}
-                        onClick={() => (
-                          router.push("/register"), setIsDropdownOpen(false)
-                        )}
-                      >
-                        Regístrate
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </li>
-        </ul>
+          <button
+            className="text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
+            onClick={() => setIsUserSidebarOpen(true)}
+            title="Usuario"
+          >
+            <FaUser className="text-xl" />
+          </button>
+        </div>
       </nav>
 
-      {/* Sidebar lateral derecho */}
+      {isUserSidebarOpen && (
+        <div
+          className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity ease-in-out duration-300 ${
+            isUserSidebarOpen ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={() => setIsUserSidebarOpen(false)}
+        >
+          <div
+            ref={userSidebarRef}
+            className={`fixed top-0 right-0 w-64 h-full bg-blue-700 shadow-lg flex flex-col p-6 space-y-6 transform transition-transform duration-500 ease-in-out rounded-l-2xl ${
+              isUserSidebarOpen ? "translate-x-0" : "translate-x-full"
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="self-end text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
+              onClick={() => setIsUserSidebarOpen(false)}
+            >
+              <FaTimes className="text-lg" />
+            </button>
+
+            <div className="flex items-center space-x-3 pb-4 border-b border-blue-600">
+              <FaUserCircle className="text-3xl text-white" />
+              <h3 className="text-white text-lg font-semibold">
+                {isLoggedIn ? "Mi cuenta" : "Usuario"}
+              </h3>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              {isLoggedIn ? (
+                <>
+                  <button
+                    className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg transition-colors duration-200"
+                    onClick={() => handleTypeUserProfile()}
+                  >
+                    <FaUser className="mr-3" />
+                    Mi perfil
+                  </button>
+
+                  <button
+                    className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg transition-colors duration-200"
+                    onClick={() => {
+                      router.push("/logout");
+                      setIsUserSidebarOpen(false);
+                    }}
+                  >
+                    <FaSignOutAlt className="mr-3" />
+                    Cerrar sesión
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg transition-colors duration-200"
+                    onClick={() => {
+                      router.push("/login");
+                      setIsUserSidebarOpen(false);
+                    }}
+                  >
+                    <FaSignInAlt className="mr-3" />
+                    Iniciar sesión
+                  </button>
+
+                  <button
+                    className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg transition-colors duration-200"
+                    onClick={() => {
+                      router.push("/register");
+                      setIsUserSidebarOpen(false);
+                    }}
+                  >
+                    <FaUserPlus className="mr-3" />
+                    Registrarse
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {isMenuOpen && (
         <div
-          className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity ease-in-out duration-300 ${isMenuOpen ? "opacity-100" : "opacity-0"
-            }`}
+          className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity ease-in-out duration-300 ${
+            isMenuOpen ? "opacity-100" : "opacity-0"
+          }`}
           onClick={() => setIsMenuOpen(false)}
         >
           <div
-            className={`fixed top-0 right-0 w-64 h-full bg-blue-700 shadow-lg flex flex-col p-6 space-y-6 transform transition-transform duration-500 ease-in-out ${isMenuOpen ? "translate-x-0" : "translate-x-full"
-              }`}
+            className={`fixed top-0 right-0 w-64 h-full bg-blue-700 shadow-lg flex flex-col p-6 space-y-6 transform transition-transform duration-500 ease-in-out rounded-l-2xl ${
+              isMenuOpen ? "translate-x-0" : "translate-x-full"
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Botón para cerrar la navbar lateral */}
             <button
-              className="self-end text-white text-2xl"
+              className="self-end text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              <i className="bi bi-x-lg"></i>
+              <FaTimes className="text-lg" />
             </button>
 
-            {/* Enlaces a las distintas partes de la web */}
-            <div
-              className="text-white text-lg hover:text-gray-300 transition-colors duration-200"
+            <button
+              className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg transition-colors"
+              onClick={() => router.back()}
+            >
+              <FaArrowLeft className="mr-3" />
+              Volver atrás
+            </button>
+
+            <button
+              className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg transition-colors"
               onClick={() => (handleTypeUserHome(), setIsMenuOpen(false))}
             >
-              <div className="flex flex-row items-center">
-                <i className="bi bi-house-door-fill text-2xl"></i>
-                <p className="ml-2">Inicio</p>
-              </div>
-            </div>
+              <FaHome className="mr-3" />
+              Inicio
+            </button>
 
-            <div
-              className="text-white text-lg hover:text-gray-300 transition-colors duration-200"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            <button
+              className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg transition-colors"
+              onClick={() => {
+                setIsMenuOpen(false);
+                setIsUserSidebarOpen(true);
+              }}
             >
-              <div className="flex flex-row items-center">
-                <i className="bi bi-person-fill text-2xl"></i>
-                <p className="ml-2">Usuario</p>
-                <i
-                  className={`${isDropdownOpen
-                      ? "bi bi-chevron-down ml-3"
-                      : "bi bi-chevron-left ml-3"
-                    }`}
-                ></i>
-              </div>
-
-              {isDropdownOpen && (
-                <div className="bg-blue-600 p-2 rounded-lg mt-2 shadow-md">
-                  {isLoggedIn ? (
-                    <>
-                      <button
-                        className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={() => (handleTypeUserProfile(), setIsDropdownOpen(false), setIsMenuOpen(false))}
-                      >
-                        Mi perfil
-                      </button>
-
-                      <div style={{ height: "1px", backgroundColor: "blue", margin: "8px 0" }}></div>
-
-                      <button
-                        className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={() => (router.push("/logout"), setIsDropdownOpen(false), setIsMenuOpen(false))}
-                      >
-                        Cerrar sesión
-                      </button>
-                    </>
-                  ) : (
-                    <div className="flex flex-col">
-                      <button
-                        className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={() => (router.push("/login"), setIsDropdownOpen(false), setIsMenuOpen(false))}
-                      >
-                        Iniciar sesión
-                      </button>
-
-                      <div style={{ height: "1px", backgroundColor: "blue", margin: "8px 0" }}></div>
-
-                      <button
-                        className="block w-full text-left text-white py-1 px-2 hover:bg-blue-500 rounded"
-                        onClick={() => (router.push("/register"), setIsDropdownOpen(false), setIsMenuOpen(false))}
-                      >
-                        Registrate
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+              <FaUser className="mr-3" />
+              Usuario
+            </button>
           </div>
         </div>
       )}

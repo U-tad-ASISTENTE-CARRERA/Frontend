@@ -1,9 +1,13 @@
 "use client";
 import React from "react";
-import Custom404 from "@/constants/404";
+import Custom404 from "@/components/404";
 
 const NotFound = () => {
-  return <Custom404 />;
+  return (
+    <>
+      <Custom404 />
+    </>
+  );
 };
 
 export default NotFound;

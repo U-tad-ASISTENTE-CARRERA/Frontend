@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 
 import React, { useState } from "react";
@@ -108,7 +109,10 @@ const Register = () => {
           fontFamily: "Montserrat",
         }}
       >
-        <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
+        <div
+          className="w-full max-w-md p-8 bg-white shadow-lg"
+          style={{ borderRadius: theme.buttonRadios.l }}
+        >
           <h2
             className="text-2xl font-bold text-center pb-8"
             style={{
@@ -126,7 +130,7 @@ const Register = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300 focus:ring focus:ring-blue-500"
+                className="block w-full mt-1 p-3 border border-gray-300"
                 placeholder="tuemail@live.u-tad.com"
                 style={{
                   borderColor: theme.palette.light.hex,
@@ -143,7 +147,7 @@ const Register = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300 focus:ring focus:ring-blue-500"
+                className="block w-full mt-1 p-3 border border-gray-300"
                 placeholder="Contraseña"
                 style={{
                   borderColor: theme.palette.light.hex,
@@ -160,7 +164,7 @@ const Register = () => {
                 required
                 value={seedWord}
                 onChange={(e) => setSeedWord(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300 focus:ring focus:ring-blue-500"
+                className="block w-full mt-1 p-3 border border-gray-300"
                 placeholder="Palabra clave"
                 style={{
                   borderColor: theme.palette.light.hex,
