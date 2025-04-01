@@ -2,35 +2,64 @@ import React, { useState, useEffect } from "react";
 import { theme } from "@/constants/theme";
 import { subjectsByYear } from "@/constants/subjectsByYear";
 import { gradeRegex } from "@/utils/ValidatorRegex";
+import { FaCheckCircle, FaTimesCircle, FaGraduationCap, FaClipboard, FaStar } from "react-icons/fa";
 
-const ExpedienteAcademico = ({ academicRecord, onSave }) => {
+const ExpedienteAcademico = ({
+  academicRecord,
+  onSave,
+  yearsCompleted = [],
+  degree
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [grades, setGrades] = useState({});
   const [tempGrades, setTempGrades] = useState({});
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
   const [activeYear, setActiveYear] = useState(1);
+  const [average, setAverage] = useState(null);
+  const [credits, setCredits] = useState(null);
+  const [currentCourse, setCurrentCourse] = useState("SIN CALCULAR");
 
   useEffect(() => {
     if (academicRecord.length > 0) {
       const extractedGrades = {};
+      let total = 0;
+      let sum = 0;
+      let totalCredits = 0;
+
       academicRecord.forEach((subject) => {
-        extractedGrades[subject.name] = subject.grade !== null ? subject.grade.toString() : "";
+        const value = subject.grade !== null ? subject.grade : null;
+        extractedGrades[subject.name] = value !== null ? value.toString() : "";
+        if (value !== null && !isNaN(value)) {
+          sum += parseFloat(value);
+          total++;
+        }
+        if (subject.credits && value !== null && !isNaN(value)) {
+          totalCredits += parseFloat(subject.credits);
+        }
       });
+
       setGrades(extractedGrades);
       setTempGrades({ ...extractedGrades });
+      setAverage(total > 0 ? (sum / total).toFixed(2) : null);
+      setCredits(totalCredits > 0 ? totalCredits : null);
     }
-  }, [academicRecord]);
 
-  // Manejar cambios en la nota
+    if (Array.isArray(yearsCompleted) && yearsCompleted.length > 0) {
+      const last = Math.max(...yearsCompleted);
+      const current = Math.min(last + 1, 4);
+      setCurrentCourse(`${current}º`);
+    } else {
+      setCurrentCourse("1º");
+    }
+  }, [academicRecord, yearsCompleted]);
+
   const handleGradeChange = (subjectName, value) => {
-    let normalizedValue = value.replace(",", "."); // Convertir comas en puntos
-
-    // Validar que el número tiene máximo un punto decimal y 2 decimales
+    let normalizedValue = value.replace(",", ".");
     if (/^\d{1,2}(\.\d{0,2})?$/.test(normalizedValue)) {
-      setGrades((prevGrades) => ({
-        ...prevGrades,
-        [subjectName]: normalizedValue.replace(/^0+(\d)/, "$1"), // Evita 08.5 → 8.5
+      setGrades((prev) => ({
+        ...prev,
+        [subjectName]: normalizedValue.replace(/^0+(\d)/, "$1"),
       }));
     }
   };
@@ -42,49 +71,112 @@ const ExpedienteAcademico = ({ academicRecord, onSave }) => {
         newErrors[subject] = "Nota inválida (debe ser entre 0 y 10, con hasta 2 decimales)";
       }
     });
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!isFormValid()) return;
-
     const updatedGrades = Object.entries(grades)
-      .filter(([subject, grade]) => grade !== tempGrades[subject]) // Solo cambios
-      .map(([subject, grade]) => ({
-        name: subject,
-        grade: grade === "" ? null : parseFloat(grade), // Convertir a número o dejar null
-      }));
-
+      .filter(([subject, grade]) => grade !== tempGrades[subject])
+      .map(([subject, grade]) => ({ name: subject, grade: grade === "" ? null : parseFloat(grade) }));
     if (updatedGrades.length === 0) {
       setIsEditing(false);
       return;
     }
-
     onSave(updatedGrades);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 3000);
     setErrors({});
-    setTempGrades({ ...grades }); // Actualizar valores después de guardar
+    setTempGrades({ ...grades });
     setIsEditing(false);
   };
 
   const handleEdit = () => {
-    setTempGrades({ ...grades }); // Guardar una copia antes de editar
+    setTempGrades({ ...grades });
     setIsEditing(true);
   };
 
   const handleCancel = () => {
-    setGrades({ ...tempGrades }); // Restaurar valores originales
+    setGrades({ ...tempGrades });
     setErrors({});
     setIsEditing(false);
   };
 
+  const totalSubjects = subjectsByYear[activeYear].length;
+  const completed = subjectsByYear[activeYear].filter((subj) => grades[subj] !== "" && grades[subj] !== undefined).length;
+  const failed = subjectsByYear[activeYear].filter((subj) => parseFloat(grades[subj]) < 5).length;
+
   return (
-    <div className="p-4 bg-white rounded-lg">
+    <div className="p-6 bg-white rounded-lg">
+
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-4">
+          Expediente académico
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Curso actual */}
+          <div className="p-4 bg-white w-full border rounded-lg shadow-sm" style={{ borderLeft: `6px solid ${theme.palette.primary.hex}` }}>
+            <p className="text-xs mb-2 flex items-center gap-2" style={{ color: theme.palette.darkGray.hex }}>
+              <FaGraduationCap className="text-sm" />
+              Curso actual
+            </p>
+            <div
+              className="flex"
+            >
+              <p className="text-l font-bold" style={{ color: theme.palette.text.hex }}>{currentCourse}</p>
+              <p
+                className="text-l font-bold ml-2"
+                style={{ color: theme.palette.text.hex }}>
+                {degree}
+              </p>
+            </div>
+
+          </div>
+
+          {/* Nota media */}
+          <div className="flex rounded-lg overflow-hidden border" style={{ borderColor: theme.palette.lightGray.hex }}>
+            <div style={{ width: "6px", backgroundColor: theme.palette.primary.hex }} />
+            <div className="p-4 bg-white w-full">
+              <p className="text-xs mb-2 flex items-center gap-2" style={{ color: theme.palette.darkGray.hex }}>
+                <FaStar className="text-sm" />
+                Nota media
+              </p>
+              <p className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
+                {average !== null ? average : "SIN CALCULAR"}
+              </p>
+            </div>
+          </div>
+
+          {/* Créditos acumulados */}
+          <div className="flex rounded-lg overflow-hidden border" style={{ borderColor: theme.palette.lightGray.hex }}>
+            <div style={{ width: "6px", backgroundColor: theme.palette.primary.hex }} />
+            <div className="p-4 bg-white w-full">
+              <p className="text-xs mb-2 flex items-center gap-2" style={{ color: theme.palette.darkGray.hex }}>
+                <FaClipboard className="text-sm" />
+                Créditos acumulados
+              </p>
+              <p className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
+                {credits !== null ? credits : "SIN CALCULAR"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Expediente académico</h2>
+        <div className="flex gap-2">
+          {Object.keys(subjectsByYear).map((year) => (
+            <button
+              key={year}
+              className={`px-4 py-2 text-sm rounded-md ${activeYear === parseInt(year) ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}
+              onClick={() => setActiveYear(parseInt(year))}
+            >
+              Curso {year}
+            </button>
+          ))}
+        </div>
 
         <div className="flex gap-2">
           {isEditing && (
@@ -108,22 +200,35 @@ const ExpedienteAcademico = ({ academicRecord, onSave }) => {
         </div>
       </div>
 
-      {/* Menú de selección de año */}
-      <div className="flex gap-2 mb-4">
-        {Object.keys(subjectsByYear).map((year) => (
-          <button
-            key={year}
-            className={`px-4 py-2 text-sm rounded-md ${
-              activeYear === parseInt(year) ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
-            }`}
-            onClick={() => setActiveYear(parseInt(year))}
+      <div className="flex flex-wrap items-center gap-3 text-sm mb-4">
+        {/* Asignaturas completadas */}
+        <div
+          className="flex items-center gap-2 px-3 py-1 rounded-full font-medium"
+          style={{
+            backgroundColor: `${theme.palette.primary.hex}20`,
+            color: theme.palette.primary.hex,
+          }}
+        >
+          <FaCheckCircle size={14} />
+          {completed}/{totalSubjects} completadas
+        </div>
+
+        {/* Asignaturas suspensas */}
+        {failed > 0 && (
+          <div
+            className="flex items-center gap-2 px-3 py-1 rounded-full font-medium"
+            style={{
+              backgroundColor: theme.palette.error.hex + "20",
+              color: theme.palette.error.hex,
+            }}
           >
-            Curso {year}
-          </button>
-        ))}
+            <FaTimesCircle size={14} />
+            {failed} suspensas
+          </div>
+        )}
       </div>
 
-      {/* Tabla de notas con validación */}
+
       <div className="flex flex-col gap-2">
         {subjectsByYear[activeYear].map((subjectName, index) => (
           <div
@@ -131,21 +236,15 @@ const ExpedienteAcademico = ({ academicRecord, onSave }) => {
             className="flex items-center gap-4 p-2 rounded-md"
             style={{ backgroundColor: index % 2 === 0 ? theme.palette.neutral.hex : "transparent" }}
           >
-            {/* Nombre de la asignatura */}
             <label className="text-sm font-medium w-3/5">{subjectName}</label>
-
-            {/* Campo editable */}
             <input
               type="number"
               value={grades[subjectName] || ""}
               onChange={(e) => handleGradeChange(subjectName, e.target.value)}
               className="block w-1/5 p-2 border rounded-md transition-all"
               disabled={!isEditing}
-              style={{
-                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-              }}
+              style={{ borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex }}
             />
-
             {isEditing && errors[subjectName] && <p className="text-red-500 text-xs">{errors[subjectName]}</p>}
           </div>
         ))}

@@ -480,6 +480,8 @@ const StudentProfile = () => {
                   <ExpedienteAcademico
                     academicRecord={academicRecord}
                     onSave={handleSaveGrades}
+                    yearsCompleted={yearsCompleted}
+                    degree={degree}
                   />
                 )}
 
