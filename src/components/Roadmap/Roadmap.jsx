@@ -5,10 +5,11 @@ import { theme } from "@/constants/theme";
 import ProgressBar from "@/components/student_profile/ProgressBar";
 import Section from "@/components/Roadmap/Section";
 import SectionPopup from "@/components/Roadmap/SectionPopUp";
-import { FaArrowRight, FaTrophy } from "react-icons/fa";
+import { FaInfoCircle, FaTrophy } from "react-icons/fa";
 
 const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
   const [selectedSection, setSelectedSection] = useState(null);
+  const [showInfo, setShowInfo] = useState(false); // NUEVO
 
   const openSectionPopup = (sectionName, sectionData) => {
     setSelectedSection({ sectionName, sectionData });
@@ -20,24 +21,45 @@ const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
 
   return (
     <div className="flex items-center justify-center p-8 fade pb-20">
-      <div
-        className="w-full"
-        style={{ borderRadius: theme.buttonRadios.xxl }}
-      >
-        <h1
-          className="text-3xl font-bold text-center mb-6"
-          style={{
-            color: theme.palette.primary.hex,
-            fontFamily: "Montserrat",
-          }}
-        >
-          {roadmap.name}
-        </h1>
+      <div className="w-full" style={{ borderRadius: theme.buttonRadios.xxl }}>
+        {/* Título con icono de información */}
+        <div className="relative mb-6 text-center flex items-center justify-center gap-2">
+          <h1
+            className="text-3xl font-bold"
+            style={{
+              color: theme.palette.primary.hex,
+              fontFamily: "Montserrat",
+            }}
+          >
+            {roadmap.name}
+          </h1>
+
+          <button
+            onClick={() => setShowInfo(!showInfo)}
+            title="Información sobre el progreso"
+            className="text-blue-600 hover:text-blue-800 transition"
+          >
+            <FaInfoCircle size={18} />
+          </button>
+
+          {showInfo && (
+            <div
+              className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 shadow-md rounded-md px-4 py-3 text-sm text-gray-800 z-50 w-full max-w-md"
+              style={{ fontFamily: "Montserrat" }}
+            >
+              <p>El progreso mostrado también se actualiza automáticamente en función de las asignaturas que hayas superado.</p>
+              
+              <p>Si ya has aprobado contenidos relacionados, se convalidarán checkpoints del roadmap correspondientes.</p>
+            </div>
+          )}
+        </div>
 
         {/* Bubble con progreso */}
         <div className="flex justify-center mb-8">
-          <div className="flex items-center gap-3 px-6 py-2 rounded-full shadow-md text-white font-semibold"
-            style={{ backgroundColor: theme.palette.primary.hex }}>
+          <div
+            className="flex items-center gap-3 px-6 py-2 rounded-full shadow-md text-white font-semibold"
+            style={{ backgroundColor: theme.palette.primary.hex }}
+          >
             <FaTrophy size={18} />
             Progreso: {Math.round(progress)}%
           </div>
@@ -48,25 +70,42 @@ const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
           <ProgressBar progress={progress} />
         </div>
 
-        {/* Camino visual de secciones con flechas y separación */}
-        <div className="flex items-center justify-between gap-4 mt-6 px-6">
+        {/* Camino visual de secciones con conectores simplificados */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6 mt-6 px-6">
           {roadmap.body &&
-            Object.entries(roadmap.body).map(([sectionName, sectionData], index, arr) => (
-              <React.Fragment key={sectionName}>
-                <Section
-                  sectionName={sectionName}
-                  sectionData={sectionData}
-                  onClick={() => openSectionPopup(sectionName, sectionData)}
-                />
-                {index < arr.length - 1 && (
-                  <div className="flex-1 border-dotted border-t-2 border-gray-300 flex justify-center">
-                    <FaArrowRight className="-mt-2 text-blue-500 bg-white px-1" size={16} />
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-        </div>
+            Object.entries(roadmap.body).map(([sectionName, sectionData]) => {
+              const isDone = Object.values(sectionData)
+                .slice(1)
+                .every((task) => task?.status === "done");
 
+              return (
+                <div
+                  key={sectionName}
+                  className={`relative flex flex-col items-center p-4 rounded-xl border shadow-sm transition duration-300 ease-in-out ${
+                    isDone
+                      ? "bg-green-50 border-green-400"
+                      : "bg-white border-gray-200"
+                  }`}
+                >
+                  {isDone && (
+                    <span className="absolute top-2 right-2 px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-700 rounded-full">
+                      Completado
+                    </span>
+                  )}
+
+                  <Section
+                    sectionName={sectionName}
+                    sectionData={sectionData}
+                    onClick={() => openSectionPopup(sectionName, sectionData)}
+                  />
+
+                  <p className="mt-3 text-center text-sm font-medium text-gray-700 leading-snug">
+                    {sectionName}
+                  </p>
+                </div>
+              );
+            })}
+        </div>
       </div>
 
       {selectedSection && (
@@ -90,26 +129,17 @@ function calculateProgress(_roadmap) {
   let totalTasks = 0;
   let completedTasks = 0;
 
-  Object.entries(_roadmap.body).forEach(([sectionName, sectionData]) => {
+  Object.entries(_roadmap.body).forEach(([_, sectionData]) => {
     const tasks = Object.entries(sectionData).slice(1);
-
-    tasks.forEach(([taskName, taskData]) => {
-      if (taskData && typeof taskData === "object" && "status" in taskData) {
+    tasks.forEach(([_, taskData]) => {
+      if (taskData?.status) {
         totalTasks++;
-        if (taskData.status === "done") {
-          completedTasks++;
-        }
+        if (taskData.status === "done") completedTasks++;
       }
     });
   });
 
-  const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-
-  console.log(
-    `Progreso calculado: ${progress}% (${completedTasks}/${totalTasks} tareas completadas)`
-  );
-
-  return progress;
+  return totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 }
 
 export default Roadmap;

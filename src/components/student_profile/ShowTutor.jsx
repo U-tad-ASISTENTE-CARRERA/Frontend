@@ -130,7 +130,7 @@ const ShowTutor = () => {
     <div className="flex flex-col w-full mx-auto">
       <div className="relative p-6 bg-white rounded-lg">
 
-        <h2 className="text-lg font-semibold mb-5">Tutores asignados</h2>
+        <h2 className="text-lg font-semibold mb-5">Tutor asignado</h2>
 
         {/* Mensaje de aviso */}
         {tutors.length === 1 && (
