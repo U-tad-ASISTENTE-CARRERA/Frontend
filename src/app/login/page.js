@@ -93,7 +93,10 @@ const Login = () => {
           fontFamily: "Montserrat, sans-serif",
         }}
       >
-        <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
+        <div
+          className="w-full max-w-md p-8 bg-white shadow-lg"
+          style={{ borderRadius: theme.buttonRadios.l }}
+        >
           <h2
             className="text-2xl font-bold text-center pb-8"
             style={{
@@ -127,7 +130,7 @@ const Login = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
+                className="block w-full mt-1 p-3 border border-gray-300 rounded-md"
                 placeholder="Contraseña"
                 style={{
                   color: theme.palette.text.hex,

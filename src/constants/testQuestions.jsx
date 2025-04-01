@@ -24,7 +24,7 @@ export const testQuestions = [
         tag: "backend"
     },
     {
-        text: "¿Qué tanto disfrutas explicar conclusiones a personas no técnicas a partir de análisis de datos?",
+        text: "¿Qué tanto te interesa llevar a cabo un análisis de principio a fin, desde entender el problema hasta extraer conclusiones basadas en datos?",
         tag: "data"
     },
     {

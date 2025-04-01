@@ -130,10 +130,10 @@ const ShowTutor = () => {
     <div className="flex flex-col w-full mx-auto">
       <div className="relative p-6 bg-white rounded-lg">
 
-        <h2 className="text-lg font-semibold mb-5">Tutores asignados</h2>
+        <h2 className="text-lg font-semibold mb-5">Tutor asignado</h2>
 
         {/* Mensaje de aviso */}
-        {tutors.length >= 3 && (
+        {tutors.length === 1 && (
           <div
             className="flex items-center gap-3 p-4 text-sm mt-4 mb-5"
             style={{
@@ -142,7 +142,7 @@ const ShowTutor = () => {
             }}
           >
             <i className="bi bi-exclamation-triangle-fill" style={{ color: theme.palette.warning.hex }}></i>
-            <p className="m-0">Has alcanzado el número máximo de tutores asignados (3).</p>
+            <p className="m-0">Solo puedes asignarte un tutor.</p>
           </div>
         )}
 
@@ -208,7 +208,7 @@ const ShowTutor = () => {
       </div>
 
       {/* Listado de tutores por asignar */}
-      {tutors.length < 3 && (
+      {tutors.length != 1 && (
         <div className="mt-6">
           <div className="p-6 bg-white rounded-lg border border-gray-200">
             <h2

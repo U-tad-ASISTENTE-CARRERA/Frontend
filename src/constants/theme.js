@@ -2,7 +2,7 @@ export const theme = {
   palette: {
     primary: {
       name: "Azul Principal",
-      hex: "#0065EF",
+      hex: "#0065ef",
     },
     text: {
       name: "Negro",
