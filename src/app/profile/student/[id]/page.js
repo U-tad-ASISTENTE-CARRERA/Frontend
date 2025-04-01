@@ -161,6 +161,7 @@ const StudentProfile = () => {
 
   const handleDeleteLanguage = async (languageObj) => {
     const languageList = languageObj.languages.map(lang => ({
+      _id: lang._id,
       language: lang.language,
       level: lang.level
     }));

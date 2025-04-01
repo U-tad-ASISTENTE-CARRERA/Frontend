@@ -138,7 +138,7 @@ const ExpedienteAcademico = ({ academicRecord, onSave }) => {
             <input
               type="number"
               value={grades[subjectName] || ""}
-              onChange={(e) => handleGradeChange(subjectName, e.target.value)}
+              onChange={(e) => {handleGradeChange(subjectName, e.target.value)}}
               className="block w-1/5 p-2 border rounded-md transition-all"
               disabled={!isEditing}
               style={{

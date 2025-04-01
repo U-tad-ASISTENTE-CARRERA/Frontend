@@ -25,12 +25,15 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
   };
 
   const addLanguage = () => {
-    setTempLanguages([...tempLanguages, { language: "", level: "A1" }]);
+    setTempLanguages([
+      ...tempLanguages,
+      { _id: null, language: "", level: "A1" },
+    ]);
   };
 
   const markLanguageForDeletion = (index) => {
     const languageToDelete = tempLanguages[index];
-    if (languages.some((lang) => lang.language === languageToDelete.language)) {
+    if (languages.some((lang) => lang._id === languageToDelete._id)) {
       setDeletedLanguages((prev) => [...prev, languageToDelete]);
     }
     setTempLanguages(tempLanguages.filter((_, i) => i !== index));
@@ -55,12 +58,23 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
     if (!validateForm()) return;
     try {
       if (deletedLanguages.length > 0) {
-        await onDelete({ languages: deletedLanguages });
+        await onDelete({
+          languages: deletedLanguages.map(({ _id, language, level }) => ({
+            _id,
+            language,
+            level,
+          })),
+        });
         setDeletedLanguages([]);
       }
       if (tempLanguages.length > 0) {
-        await onSave({ languages: tempLanguages });
-        setLanguages(tempLanguages);
+        const updatedLanguages = tempLanguages.map(({ _id, language, level }) => ({
+          _id,
+          language,
+          level,
+        }));
+        await onSave({ languages: updatedLanguages });
+        setLanguages(updatedLanguages);
       }
       setIsEditing(false);
     } catch (error) {
@@ -112,9 +126,6 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
       {tempLanguages.length === 0 && deletedLanguages.length === 0 && (
         <p className="text-gray-500 text-sm text-center">No hay idiomas guardados.</p>
       )}
-
-
-
 
       {tempLanguages.map((lang, index) => {
         const filtered = filterOptions(languageSearch[index] || "");
