@@ -1,6 +1,7 @@
 import React from "react";
 import { theme } from "@/constants/theme";
 import JobOfferCard from "./JobOfferCard";
+import { FaInfoCircle } from "react-icons/fa";
 
 const RecentOffers = ({ 
   recentOffers, 
@@ -32,7 +33,7 @@ const RecentOffers = ({
 
       {hasFilteredOffers && userEligibility.canSearchInternships && !userEligibility.canSearchJobs && (
         <div className="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-4 text-sm flex items-start">
-          <i className="bi bi-info-circle-fill mr-2 mt-0.5"></i>
+          <FaInfoCircle className="mr-2 mt-0.5" />
           <p>Algunas ofertas no se muestran porque en tu año académico actual solo puedes acceder a prácticas.</p>
         </div>
       )}
