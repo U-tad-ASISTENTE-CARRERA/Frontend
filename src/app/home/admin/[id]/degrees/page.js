@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { theme } from "@/constants/theme";
 import LoadingModal from "@/components/LoadingModal";
+import { FaUpload, FaTrash } from 'react-icons/fa';
 
 const DegreeList = () => {
   const router = useRouter();
@@ -148,7 +149,7 @@ const DegreeList = () => {
               onClick={() => setShowUploadModal(true)}
               className="px-4 py-2 bg-green-600 text-white rounded-md flex items-center gap-2 hover:bg-green-700 transition-colors"
             >
-              <i className="bi bi-upload"></i>
+              <FaUpload className="text-lg" /> 
               Subir Titulación
             </button>
             <button
@@ -292,7 +293,7 @@ const DegreeList = () => {
                               handleDelete(degree.name);
                             }}
                           >
-                            <i className="bi bi-trash"></i> Eliminar
+                            <FaTrash className="text-lg" /> Eliminar
                           </button>
                         </div>
                       </div>

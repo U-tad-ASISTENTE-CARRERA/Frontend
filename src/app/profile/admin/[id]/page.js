@@ -5,22 +5,33 @@ import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import LoadingModal from "@/components/LoadingModal";
 import ErrorPopUp from "@/components/ErrorPopUp";
+import { FaUsers, FaMap, FaGraduationCap } from "react-icons/fa";
 
-const AdminActionCard = ({ icon, title, description, onClick }) => (
-  <div 
-    onClick={onClick}
-    className="flex flex-col items-center p-8 transition-all bg-white border rounded-lg cursor-pointer hover:shadow-lg hover:bg-gray-50"
-    style={{ borderColor: theme.palette.light.hex }}
-  >
-    <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full" style={{ backgroundColor: theme.palette.primary.hex }}>
-      <i className={`text-2xl bi bi-${icon} text-white`}></i>
+const AdminActionCard = ({ icon, title, description, onClick }) => {
+  // Mapeamos el icono con `react-icons` según el nombre
+  const Icon = {
+    users: FaUsers,
+    map: FaMap,
+    "graduation-cap": FaGraduationCap,
+  }[icon];
+
+  return (
+    <div 
+      onClick={onClick}
+      className="flex flex-col items-center p-8 transition-all bg-white border rounded-lg cursor-pointer hover:shadow-lg hover:bg-gray-50"
+      style={{ borderColor: theme.palette.light.hex }}
+    >
+      <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full" style={{ backgroundColor: theme.palette.primary.hex }}>
+        <Icon className="text-2xl text-white" />
+      </div>
+      <h3 className="mb-12 text-lg font-semibold" style={{ color: theme.palette.dark.hex }}>
+        {title}
+      </h3>
+      <p className="text-sm text-center text-gray-600">{description}</p>
     </div>
-    <h3 className="mb-12 text-lg font-semibold" style={{ color: theme.palette.dark.hex }}>
-      {title}
-    </h3>
-    <p className="text-sm text-center text-gray-600">{description}</p>
-  </div>
-);
+  );
+};
+
 
 const AdminProfile = () => {
   const router = useRouter();
@@ -77,19 +88,19 @@ const AdminProfile = () => {
 
   const adminActions = [
     {
-      icon: "people-fill",
+      icon: "users",
       title: "Usuarios",
       description: "Administrar los usuarios de la plataforma, editar roles y permisos",
       path: `/home/admin/${id}/users`
     },
     {
-      icon: "map",
+      icon: "map", 
       title: "Roadmaps",
       description: "Crear y visualizar las rutas de aprendizaje personalizadas de los estudiantes",
       path: `/home/admin/${id}/roadmaps`
     },
     {
-      icon: "mortarboard-fill",
+      icon: "graduation-cap",
       title: "Titulaciones",
       description: "Configurar grados, asignaturas y planes académicos",
       path: `/home/admin/${id}/degrees`

@@ -7,6 +7,7 @@ import "@fontsource/montserrat";
 import ErrorPopUp from "@/components/ErrorPopUp";
 import LoadingModal from "@/components/LoadingModal";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { FaUsers, FaGraduationCap, FaChalkboardTeacher, FaHeartbeat, FaMap } from 'react-icons/fa';
 
 const AdminDashboard = () => {
   const router = useRouter();
@@ -34,7 +35,7 @@ const AdminDashboard = () => {
         if (localStorage.getItem("user") && localStorage.getItem("token")) {
           const userData = JSON.parse(localStorage.getItem("user"));
           setUser(userData);
-          
+
           if (userData.role !== "ADMIN") {
             return (
               <ErrorPopUp
@@ -43,7 +44,7 @@ const AdminDashboard = () => {
               />
             );
           }
-          
+
           // Fetch user data from backend
           const userResponse = await fetch("http://localhost:3000/", {
             method: "GET",
@@ -59,7 +60,7 @@ const AdminDashboard = () => {
 
           const userData2 = await userResponse.json();
           setUser(userData2.user);
-          
+
           // Fetch all stats data
           await fetchAllStats();
         } else {
@@ -90,12 +91,12 @@ const AdminDashboard = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      
+
       if (!usersResponse.ok) throw new Error("Error al obtener datos de usuarios");
       const usersData = await usersResponse.json();
       const students = usersData.filter(user => user.role === "STUDENT");
       const teachers = usersData.filter(user => user.role === "TEACHER");
-      
+
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       const activeUsers = usersData.filter(user => {
@@ -104,9 +105,9 @@ const AdminDashboard = () => {
       });
 
       const usersByMonth = processUsersByMonth(usersData);
-      const studentsByDegree = processStudentsByDegree(students);      
+      const studentsByDegree = processStudentsByDegree(students);
       const specializations = processSpecializations(teachers);
-      
+
       const roadmapsResponse = await fetch("http://localhost:3000/roadmaps", {
         method: "GET",
         headers: {
@@ -114,13 +115,13 @@ const AdminDashboard = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      
+
       if (!roadmapsResponse.ok) {
         throw new Error("Error al obtener datos de roadmaps");
       }
-      
+
       const roadmapsData = await roadmapsResponse.json();
-      
+
       const degreesResponse = await fetch("http://localhost:3000/degrees", {
         method: "GET",
         headers: {
@@ -128,13 +129,13 @@ const AdminDashboard = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      
+
       if (!degreesResponse.ok) {
         throw new Error("Error al obtener datos de titulaciones");
       }
-      
+
       const degreesData = await degreesResponse.json();
-      
+
       setStats({
         totalUsers: usersData.length,
         totalStudents: students.length,
@@ -157,9 +158,9 @@ const AdminDashboard = () => {
   };
 
   const processUsersByMonth = (usersData) => {
-    const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];    
+    const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
     const usersByMonthMap = new Map();
-    
+
     const today = new Date();
     for (let i = 5; i >= 0; i--) {
       const month = new Date(today.getFullYear(), today.getMonth() - i, 1);
@@ -172,12 +173,12 @@ const AdminDashboard = () => {
         date: new Date(month)
       });
     }
-    
+
     usersData.forEach(user => {
       if (user.createdAt) {
         const createdAt = new Date(user.createdAt);
         const monthKey = `${createdAt.getFullYear()}-${createdAt.getMonth()}`;
-        
+
         if (usersByMonthMap.has(monthKey)) {
           const monthData = usersByMonthMap.get(monthKey);
           if (user.role === "STUDENT") {
@@ -190,14 +191,14 @@ const AdminDashboard = () => {
         }
       }
     });
-    
+
     return Array.from(usersByMonthMap.values())
       .sort((a, b) => a.date - b.date);
   };
 
   const processStudentsByDegree = (students) => {
     const degreeMap = new Map();
-    
+
     students.forEach(student => {
       if (student.metadata && student.metadata.degree) {
         const degree = student.metadata.degree;
@@ -208,7 +209,7 @@ const AdminDashboard = () => {
         degreeMap.set("Sin asignar", degreeCount + 1);
       }
     });
-    
+
     return Array.from(degreeMap.entries())
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
@@ -216,7 +217,7 @@ const AdminDashboard = () => {
 
   const processSpecializations = (teachers) => {
     const specializationMap = new Map();
-    
+
     teachers.forEach(teacher => {
       if (teacher.metadata && teacher.metadata.specialization) {
         const specialization = teacher.metadata.specialization;
@@ -227,14 +228,14 @@ const AdminDashboard = () => {
         specializationMap.set("Sin especialización", specCount + 1);
       }
     });
-    
+
     return Array.from(specializationMap.entries())
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
   };
 
   const COLORS = [
-    theme.palette.primary.hex, 
+    theme.palette.primary.hex,
     theme.palette.accent.hex,
     theme.palette.purple.hex,
     theme.palette.teal.hex,
@@ -246,7 +247,7 @@ const AdminDashboard = () => {
 
   return (
     <div
-      style={{ 
+      style={{
         backgroundImage: "url('/assets/fondo.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -254,9 +255,9 @@ const AdminDashboard = () => {
       }}
     >
       <div className="flex items-center justify-center p-5">
-          <h1 className="text-4xl font-bold text-blue-800 mt-5">
-            Panel de Administración
-          </h1>
+        <h1 className="text-4xl font-bold text-blue-800 mt-5">
+          Panel de Administración
+        </h1>
       </div>
 
       <div className="container p-4 mx-auto">
@@ -268,11 +269,11 @@ const AdminDashboard = () => {
                 <p className="mt-1 text-3xl font-bold" style={{ color: theme.palette.primary.hex }}>{stats.totalUsers}</p>
               </div>
               <div className="p-3 rounded-full" style={{ backgroundColor: `${theme.palette.primary.hex}15` }}>
-                <i className="text-xl bi bi-people-fill" style={{ color: theme.palette.primary.hex }}></i>
+                <FaUsers className="text-xl" style={{ color: theme.palette.primary.hex }} />
               </div>
             </div>
           </div>
-            
+
           <div className="p-6 bg-white border rounded-lg shadow-sm" style={{ borderLeft: `4px solid ${theme.palette.accent.hex}` }}>
             <div className="flex items-center justify-between">
               <div>
@@ -280,11 +281,11 @@ const AdminDashboard = () => {
                 <p className="mt-1 text-3xl font-bold" style={{ color: theme.palette.accent.hex }}>{stats.totalStudents}</p>
               </div>
               <div className="p-3 rounded-full" style={{ backgroundColor: `${theme.palette.accent.hex}15` }}>
-                <i className="text-xl bi bi-mortarboard-fill" style={{ color: theme.palette.accent.hex }}></i>
+                <FaGraduationCap className="text-xl" style={{ color: theme.palette.accent.hex }} />
               </div>
             </div>
           </div>
-            
+
           <div className="p-6 bg-white border rounded-lg shadow-sm" style={{ borderLeft: `4px solid ${theme.palette.primary.hex}` }}>
             <div className="flex items-center justify-between">
               <div>
@@ -292,11 +293,11 @@ const AdminDashboard = () => {
                 <p className="mt-1 text-3xl font-bold" style={{ color: theme.palette.primary.hex }}>{stats.totalTeachers}</p>
               </div>
               <div className="p-3 rounded-full" style={{ backgroundColor: `${theme.palette.primary.hex}15` }}>
-                <i className="text-xl bi bi-person-workspace" style={{ color: theme.palette.primary.hex }}></i>
+                <FaChalkboardTeacher className="text-xl" style={{ color: theme.palette.primary.hex }} />
               </div>
             </div>
           </div>
-            
+
           <div className="p-6 bg-white border rounded-lg shadow-sm" style={{ borderLeft: `4px solid ${theme.palette.success.hex}` }}>
             <div className="flex items-center justify-between">
               <div>
@@ -305,12 +306,12 @@ const AdminDashboard = () => {
                 <p className="text-xs text-gray-500">Últimos 7 días</p>
               </div>
               <div className="p-3 rounded-full" style={{ backgroundColor: `${theme.palette.success.hex}15` }}>
-                <i className="text-xl bi bi-activity" style={{ color: theme.palette.success.hex }}></i>
+                <FaHeartbeat className="text-xl" style={{ color: theme.palette.success.hex }} />
               </div>
             </div>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
           <div className="p-6 bg-white border rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4">
@@ -328,12 +329,12 @@ const AdminDashboard = () => {
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip formatter={(value, name) => [value, name === "students" ? "Estudiantes" : name === "teachers" ? "Profesores" : "Total"]} />
-                  <Legend 
+                  <Legend
                     payload={[
                       { value: 'Estudiantes', type: 'square', color: theme.palette.accent.hex },
                       { value: 'Profesores', type: 'square', color: theme.palette.primary.hex },
                       { value: 'Total', type: 'square', color: theme.palette.purple.hex }
-                    ]} 
+                    ]}
                   />
                   <Bar dataKey="students" name="Estudiantes" stackId="a" fill={theme.palette.accent.hex} radius={[4, 4, 0, 0]} />
                   <Bar dataKey="teachers" name="Profesores" stackId="a" fill={theme.palette.primary.hex} radius={[4, 4, 0, 0]} />
@@ -342,7 +343,7 @@ const AdminDashboard = () => {
               </ResponsiveContainer>
             </div>
           </div>
-          
+
           <div className="p-6 bg-white border rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
@@ -403,7 +404,7 @@ const AdminDashboard = () => {
               </ResponsiveContainer>
             </div>
           </div>
-          
+
           <div className="p-6 bg-white border rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold" style={{ color: theme.palette.text.hex }}>
@@ -434,11 +435,11 @@ const AdminDashboard = () => {
             onClick={() => router.push(`/home/admin/${id}/users`)}
             className="flex items-center p-4 bg-white border rounded-lg transition-shadow hover:shadow-md"
           >
-            <div 
+            <div
               className="flex items-center justify-center w-9 h-9 mr-4 rounded"
               style={{ backgroundColor: `${theme.palette.primary.hex}15` }}
             >
-              <i className="text-lg bi bi-people-fill" style={{ color: theme.palette.primary.hex }}></i>
+              <FaUsers className="text-lg" style={{ color: theme.palette.primary.hex }} />
             </div>
             <div className="text-left">
               <h3 className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
@@ -452,11 +453,11 @@ const AdminDashboard = () => {
             onClick={() => router.push(`/home/admin/${id}/roadmaps`)}
             className="flex items-center p-4 bg-white border rounded-lg transition-shadow hover:shadow-md"
           >
-            <div 
+            <div
               className="flex items-center justify-center w-9 h-9 mr-4 rounded"
               style={{ backgroundColor: `${theme.palette.primary.hex}15` }}
             >
-              <i className="text-lg bi bi-map" style={{ color: theme.palette.primary.hex }}></i>
+              <FaMap className="text-lg" style={{ color: theme.palette.primary.hex }} />
             </div>
             <div className="text-left">
               <h3 className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
@@ -470,11 +471,11 @@ const AdminDashboard = () => {
             onClick={() => router.push(`/home/admin/${id}/degrees`)}
             className="flex items-center p-4 bg-white border rounded-lg transition-shadow hover:shadow-md"
           >
-            <div 
+            <div
               className="flex items-center justify-center w-9 h-9 mr-4 rounded"
               style={{ backgroundColor: `${theme.palette.primary.hex}15` }}
             >
-              <i className="text-lg bi bi-mortarboard-fill" style={{ color: theme.palette.primary.hex }}></i>
+              <FaGraduationCap className="text-lg" style={{ color: theme.palette.primary.hex }} />
             </div>
             <div className="text-left">
               <h3 className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
@@ -484,6 +485,7 @@ const AdminDashboard = () => {
             </div>
           </button>
         </div>
+
       </div>
     </div>
   );

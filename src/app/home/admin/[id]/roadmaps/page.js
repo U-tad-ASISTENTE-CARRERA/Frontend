@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { theme } from "@/constants/theme";
 import LoadingModal from "@/components/LoadingModal";
+import { FaUpload, FaEye, FaTrash } from 'react-icons/fa';
 
 const RoadmapList = () => {
   const router = useRouter();
@@ -142,7 +143,7 @@ const RoadmapList = () => {
               onClick={() => setShowUploadModal(true)}
               className="px-4 py-2 bg-green-600 text-white rounded-md flex items-center gap-2 hover:bg-green-700 transition-colors"
             >
-              <i className="bi bi-upload"></i>
+              <FaUpload className="text-lg" />
               Subir Roadmap
             </button>
             <button
@@ -217,13 +218,13 @@ const RoadmapList = () => {
                         router.push(url);
                       }}
                     >
-                      <i className="bi bi-eye"></i> Ver Detalles
+                      <FaEye className="text-lg" /> Ver Detalles
                     </button>
                     <button
                       className="text-red-600 hover:text-red-900 px-2 py-1 flex items-center gap-1 hover:bg-red-50 rounded transition-colors"
                       onClick={() => handleDelete(roadmap.name)}
                     >
-                      <i className="bi bi-trash"></i> Eliminar
+                      <FaTrash className="text-lg" /> Eliminar
                     </button>
                   </div>
                 </div>
