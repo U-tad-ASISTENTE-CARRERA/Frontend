@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { theme } from "@/constants/theme";
-import { MdWarning, MdErrorOutline } from "react-icons/md";
+import { MdWarning, MdInfoOutline } from "react-icons/md";
 
 export const AlertSystemRoadmap = ({ alerts }) => {
     const router = useRouter();
@@ -14,8 +14,8 @@ export const AlertSystemRoadmap = ({ alerts }) => {
         empty: {
             title: "Expediente vacío",
             message: "Aún no has cargado tu expediente académico. Para comenzar, debes completarlo.",
-            icon: <MdErrorOutline size={36} color="#fff" />,
-            iconBg: theme.palette.warning.hex,
+            icon: <MdInfoOutline size={36} color="#fff" />,
+            iconBg: theme.palette.primary.hex,
             typeColor: theme.palette.text.hex,
             action: {
                 label: "Ir al perfil",
