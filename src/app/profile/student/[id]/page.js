@@ -13,6 +13,7 @@ import Certifications from "@/components/student_profile/Certifications";
 import WorkExperience from "@/components/student_profile/WorkExperience";
 import ExpedienteAcademico from "@/components/student_profile/ExpedienteAcademico";
 import ShowTutor from "@/components/student_profile/ShowTutor";
+import ActivityLog from "@/components/student_profile/ActivityLog";
 
 import { convertTimestampToDate } from "@/utils/FirebaseDateUtils";
 
@@ -37,6 +38,7 @@ const StudentProfile = () => {
   const [activeSection, setActiveSection] = useState("personal");
   const [academicRecord, setAcademicRecord] = useState([]);
   const [deletionRequested, setDeletionRequested] = useState(false);
+  const [updateHistory, setUpdateHistory] = useState([]); 
 
 
   useEffect(() => {
@@ -57,7 +59,6 @@ const StudentProfile = () => {
 
         const data = await response.json();
 
-        // Redirigir si no hay metadata
         if (!data.metadata) {
           router.push(`/data_complete/student/${id}`);
           return;
@@ -74,6 +75,7 @@ const StudentProfile = () => {
         setWorkExperience(data.metadata.workExperience || []);
         setGender(data.metadata.gender || "");
         setDeletionRequested(data.metadata?.deletionRequestStatus === "pending");
+        setUpdateHistory(data.metadata.updateHistory || []); 
 
         setEndDate(convertTimestampToDate(data.metadata.endDate));
         setBirthDate(convertTimestampToDate(data.metadata.birthDate));
@@ -152,8 +154,14 @@ const StudentProfile = () => {
         setError(errorMessages[data?.error] || "Error actualizando los metadatos.");
         return;
       }
+
       const data = await response.json();
       localStorage.setItem("metadata", JSON.stringify(data.updatedFields));
+
+      // Update the updateHistory state with the backend-provided history
+      if (data.updateHistory) {
+        setUpdateHistory(data.updateHistory);
+      }
     } catch (error) {
       setError("Error inesperado al actualizar los datos.");
     }
@@ -183,14 +191,11 @@ const StudentProfile = () => {
         throw new Error(data.errors?.[0] || "Error eliminando el idioma.");
       }
 
-      // Eliminar del estado global si la petición fue exitosa
-      setLanguages((prevLanguages) =>
-        prevLanguages.filter((lang) => (
-          !languageList.some(
-            (l) => l.language === lang.language && l.level === lang.level
-          )
-        ))
-      );
+      const data = await response.json();
+      setLanguages(data.updatedFields["metadata.languages"] || []);
+      if (data.updateHistory) {
+        setUpdateHistory(data.updateHistory);
+      }
     } catch (error) {
       console.error("Error al eliminar idioma:", error.message);
     }
@@ -207,7 +212,7 @@ const StudentProfile = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
-          skills: skillList.map(skill => ({ skill })), // Enviar como array de objetos
+          skills: skillList.map(skill => ({ skill })), 
         }),
       });
 
@@ -216,9 +221,11 @@ const StudentProfile = () => {
         throw new Error(data.errors?.[0] || "Error eliminando skill.");
       }
 
-      setSkills((prevSkills) =>
-        prevSkills.filter((sk) => !skillList.includes(sk.skill))
-      );
+      const data = await response.json();
+      setSkills(data.updatedFields["metadata.skills"] || []);
+      if (data.updateHistory) {
+        setUpdateHistory(data.updateHistory);
+      }
     } catch (error) {
       console.log("Error al eliminar skill:", error.message);
     }
@@ -248,13 +255,11 @@ const StudentProfile = () => {
         throw new Error(data.errors?.[0] || "Error eliminando certificaciones.");
       }
 
-      setCertifications((prevCertifications) =>
-        prevCertifications.filter((cert) =>
-          !certificationList.some(
-            (c) => c.name === cert.name && c.date === cert.date && c.institution === cert.institution
-          )
-        )
-      );
+      const data = await response.json();
+      setCertifications(data.updatedFields["metadata.certifications"] || []);
+      if (data.updateHistory) {
+        setUpdateHistory(data.updateHistory);
+      }
     } catch (error) {
       console.log("Error al eliminar certificaciones:", error.message);
     }
@@ -277,7 +282,6 @@ const StudentProfile = () => {
         throw new Error(data.message || "Error actualizando expediente académico.");
       }
 
-      // Obtener los datos actualizados después de hacer el PATCH
       fetchAcademicRecord();
 
     } catch (error) {
@@ -488,6 +492,12 @@ const StudentProfile = () => {
 
                 {activeSection === "showTutor" && (
                   <ShowTutor
+                  />
+                )}
+
+                {activeSection === "activityLog" &&(
+                  <ActivityLog
+                    updateHistory={updateHistory}
                   />
                 )}
 

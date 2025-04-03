@@ -7,6 +7,7 @@ const SidebarNavigation = ({ activeSection, setActiveSection }) => {
     { id: "employee", label: "Experiencia laboral" },
     { id: "AH", label: "Expediente académico" },
     { id: "showTutor", label: "Tutor" },
+    { id: "activityLog", label: "Registro de actividad" },
   ];
 
   return (
