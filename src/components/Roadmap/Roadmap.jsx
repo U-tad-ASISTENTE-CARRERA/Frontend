@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { theme } from "@/constants/theme";
 import ProgressBar from "@/components/student_profile/ProgressBar";
 import Section from "@/components/Roadmap/Section";
@@ -9,7 +9,15 @@ import { FaInfoCircle, FaTrophy } from "react-icons/fa";
 
 const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
   const [selectedSection, setSelectedSection] = useState(null);
-  const [showInfo, setShowInfo] = useState(false); // NUEVO
+  const [showInfo, setShowInfo] = useState(false);
+
+  useEffect(() => {
+    if (selectedSection) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [selectedSection]);
 
   const openSectionPopup = (sectionName, sectionData) => {
     setSelectedSection({ sectionName, sectionData });
@@ -47,9 +55,15 @@ const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
               className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border border-gray-200 shadow-md rounded-md px-4 py-3 text-sm text-gray-800 z-50 w-full max-w-md"
               style={{ fontFamily: "Montserrat" }}
             >
-              <p>El progreso mostrado también se actualiza automáticamente en función de las asignaturas que hayas superado.</p>
-              
-              <p>Si ya has aprobado contenidos relacionados, se convalidarán checkpoints del roadmap correspondientes.</p>
+              <p>
+                El progreso mostrado también se actualiza automáticamente en
+                función de las asignaturas que hayas superado.
+              </p>
+
+              <p>
+                Si ya has aprobado contenidos relacionados, se convalidarán
+                checkpoints del roadmap correspondientes.
+              </p>
             </div>
           )}
         </div>

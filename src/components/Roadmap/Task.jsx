@@ -24,9 +24,9 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex h-80 flex-col items-center">
       {/* Icon card */}
-      <div className="w-24 h-24 bg-white rounded-2xl shadow-md border border-gray-200 flex items-center justify-center">
+      <div className="w-24 h-24 bg-white mt-4 rounded-2xl flex items-center justify-center">
         <Image
           src={
             taskData.status === "doing"
@@ -65,7 +65,8 @@ const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
               Cursos recomendados
             </h4>
             <p className="text-xs text-gray-500 mb-4">
-              Las asignaturas que cubren estos conocimientos autocompletarán esta sección automáticamente.
+              Las asignaturas que cubren estos conocimientos autocompletarán
+              esta sección automáticamente.
             </p>
             <div className="space-y-2">
               {taskData.resources?.map((resource, i) => (
