@@ -162,7 +162,6 @@ const PersonalInfo = ({
     <div className="p-4 bg-white rounded-lg">
 
       {/* Cabecera y botones */}
-
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Información principal</h2>
         <div className="flex gap-2">
@@ -189,160 +188,137 @@ const PersonalInfo = ({
 
       {/* Sección de Información personal */}
       <div className="mb-10">
-        <h3
-          className="text-md font-semibold mb-3"
-          style={{ color: theme.palette.dark.hex }}
-        >
+        <h3 className="text-md font-semibold mb-3" style={{ color: theme.palette.dark.hex }}>
           Información personal
         </h3>
-
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Nombre */}
           <div>
             <label className="block text-sm font-medium flex items-center gap-1">
               Nombre
               {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
             </label>
-
-            <input
-              type="text"
-              value={tempFirstName}
-              onChange={(e) => setTempFirstName(e.target.value)}
-              className="block w-full p-2 border rounded-md transition-all"
-              disabled={!isEditing}
-              style={{
-                borderColor: errors.firstName
-                  ? theme.palette.error.hex
-                  : (isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex),
-                color: theme.palette.text.hex,
-              }}
-            />
+            {isEditing ? (
+              <input type="text" value={tempFirstName} onChange={(e) => setTempFirstName(e.target.value)} className="block w-full p-2 border rounded-md transition-all" style={{ borderColor: errors.firstName ? theme.palette.error.hex : theme.palette.primary.hex, color: theme.palette.text.hex }} />
+            ) : (
+              <p className="w-full p-2 text-sm text-gray-800 bg-transparent border border-transparent rounded-md">{tempFirstName || "—"}</p>
+            )}
             {isEditing && errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
           </div>
 
+          {/* Apellidos */}
           <div>
             <label className="block text-sm font-medium flex items-center gap-1">
               Apellidos
               {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
             </label>
-
-            <input
-              type="text"
-              value={tempLastName}
-              onChange={(e) => setTempLastName(e.target.value)}
-              className="block w-full p-2 border rounded-md transition-all"
-              disabled={!isEditing}
-              style={{
-                borderColor: errors.lastName
-                  ? theme.palette.error.hex
-                  : (isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex),
-                color: theme.palette.text.hex,
-              }}
-            />
+            {isEditing ? (
+              <input type="text" value={tempLastName} onChange={(e) => setTempLastName(e.target.value)} className="block w-full p-2 border rounded-md transition-all" style={{ borderColor: errors.lastName ? theme.palette.error.hex : theme.palette.primary.hex, color: theme.palette.text.hex }} />
+            ) : (
+              <p className="w-full p-2 text-sm text-gray-800 bg-transparent border border-transparent rounded-md">{tempLastName || "—"}</p>
+            )}
             {isEditing && errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
           </div>
 
-
-
+          {/* Fecha de nacimiento */}
           <div>
             <label className="block text-sm font-medium">Fecha de nacimiento</label>
-            <input
-              type="date"
-              value={tempBirthDate}
-              onChange={(e) => setTempBirthDate(e.target.value)}
-              className="block w-full p-2 border rounded-md transition-all"
-              disabled={!isEditing}
-              style={{
-                borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-              }}
-            />
+            {isEditing ? (
+              <input
+                type="date"
+                value={tempBirthDate}
+                onChange={(e) => setTempBirthDate(e.target.value)}
+                className="block w-full p-2 border rounded-md transition-all"
+                style={{ borderColor: theme.palette.primary.hex }}
+              />
+            ) : (
+              <p className="w-full p-2 text-sm text-gray-800 bg-transparent border border-transparent rounded-md">
+                {tempBirthDate
+                  ? new Date(tempBirthDate).toLocaleDateString("es-ES")
+                  : "—"}
+              </p>
+            )}
           </div>
 
-          <div>
 
+          {/* Género */}
+          <div>
             <label className="block text-sm font-medium flex items-center gap-1">
               Género
               {isEditing && <span className="text-red-500 text-xs ml-1">*</span>}
             </label>
-
-            <select
-              value={tempGender}
-              onChange={(e) => setTempGender(e.target.value)}
-              className="block w-full p-2 border rounded-md transition-all"
-              style={{
-                borderColor: errors.gender
-                  ? theme.palette.error.hex
-                  : (isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex),
-                color: theme.palette.text.hex,
-              }}
-              disabled={!isEditing}
-            >
-              <option value="">Selecciona tu género</option>
-              <option value="male">Masculino</option>
-              <option value="female">Femenino</option>
-              <option value="prefer not to say">Prefiero no decirlo</option>
-            </select>
+            {isEditing ? (
+              <select value={tempGender} onChange={(e) => setTempGender(e.target.value)} className="block w-full p-2 border rounded-md transition-all" style={{ borderColor: errors.gender ? theme.palette.error.hex : theme.palette.primary.hex, color: theme.palette.text.hex }}>
+                <option value="">Selecciona tu género</option>
+                <option value="male">Masculino</option>
+                <option value="female">Femenino</option>
+                <option value="prefer not to say">Prefiero no decirlo</option>
+              </select>
+            ) : (
+              <p className="w-full p-2 text-sm text-gray-800 bg-transparent border border-transparent rounded-md">
+                {tempGender === "male" ? "Masculino" : tempGender === "female" ? "Femenino" : tempGender === "prefer not to say" ? "Prefiero no decirlo" : "—"}
+              </p>
+            )}
             {isEditing && errors.gender && <p className="text-red-500 text-xs mt-1">{errors.gender}</p>}
           </div>
-
-        </form>
+        </div>
       </div>
 
-      {/* Sección de Información académica */}
+      {/* Información académica */}
       <div className="mb-10">
-        <h3
-          className="text-md font-semibold mb-3"
-          style={{ color: theme.palette.dark.hex }}
-        >
-          Información académica</h3>
+        <h3 className="text-md font-semibold mb-3" style={{ color: theme.palette.dark.hex }}>Información académica</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
           <div className="md:col-span-2">
             <label className="block text-sm font-medium">Curso académico</label>
-            <input
-              type="text"
-              value={yearsCompleted?.length > 0 ? `${yearsCompleted[yearsCompleted.length - 1]}º` : "SIN CALCULAR"}
-              className="block w-full p-2 border rounded-md"
-              disabled
-            />
+            <p className="w-full p-2 text-sm text-gray-800 bg-gray-100 border border-gray-200 rounded-md">
+              {yearsCompleted?.length > 0 ? `${yearsCompleted[yearsCompleted.length - 1]}º` : "SIN CALCULAR"}
+            </p>
             <p className="text-xs text-gray-500">Este campo no es editable</p>
           </div>
-
 
           <div>
             <label className="block text-sm font-medium flex items-center gap-1">
               Grado
               {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
             </label>
-            <input type="text" value={degree} className="block w-full p-2 border rounded-md bg-gray-200" disabled />
+            <p className="w-full p-2 text-sm text-gray-800 bg-gray-100 border border-gray-200 rounded-md">{degree}</p>
           </div>
 
           <div>
-
             <label className="block text-sm font-medium flex items-center gap-1">
               Fecha de graduación
               {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
             </label>
 
-            <input
-              type="date"
-              value={tempEndDate}
-              onChange={(e) => setTempEndDate(e.target.value)}
-              className="block w-full p-2 border rounded-md transition-all"
-              disabled={!isEditing}
-              style={{
-                borderColor: errors.endDate
-                  ? theme.palette.error.hex
-                  : (isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex),
-                color: theme.palette.text.hex,
-              }}
-            />
+            {isEditing ? (
+              <input
+                type="date"
+                value={tempEndDate}
+                onChange={(e) => setTempEndDate(e.target.value)}
+                className="block w-full p-2 border rounded-md transition-all"
+                style={{
+                  borderColor: errors.endDate
+                    ? theme.palette.error.hex
+                    : theme.palette.primary.hex,
+                  color: theme.palette.text.hex,
+                }}
+              />
+            ) : (
+              <p className="w-full p-2 text-sm text-gray-800 bg-transparent border border-transparent rounded-md">
+                {tempEndDate
+                  ? new Date(tempEndDate).toLocaleDateString("es-ES")
+                  : "—"}
+              </p>
+            )}
 
-            {isEditing && errors.endDate && <p className="text-red-500 text-xs mt-1">{errors.endDate}</p>}
+            {isEditing && errors.endDate && (
+              <p className="text-red-500 text-xs mt-1">{errors.endDate}</p>
+            )}
           </div>
 
         </div>
       </div>
+
 
       {/* Sección de Configuración de la cuenta */}
       <div>
