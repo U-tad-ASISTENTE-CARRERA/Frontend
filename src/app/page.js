@@ -36,7 +36,7 @@ export default function Home() {
             borderRadius: theme.buttonRadios.m,
           }}
           className="mt-8 px-6 py-3 rounded-md text-lg font-semibold transition-colors duration-300"
-          onClick={() => (window.location.href = "/explorar")}
+          onClick={() => (window.location.href = "/exploreRoadmaps")}
         >
           Explorar carreras
         </button>
