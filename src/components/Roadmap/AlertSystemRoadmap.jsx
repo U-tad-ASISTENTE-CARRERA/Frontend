@@ -43,7 +43,7 @@ export const AlertSystemRoadmap = ({ alerts }) => {
         <div className="flex flex-col justify-center items-center p-6 bg-transparent">
 
             <h1
-                className="text-3xl font-bold text-center pt-20 pb-10"
+                className="text-3xl font-bold text-center pt-10 pb-10"
                 style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
             >
                 Antes de continuar

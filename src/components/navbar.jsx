@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   FaHome,
   FaUser,
@@ -11,18 +10,25 @@ import {
   FaBars,
   FaTimes,
 } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import "@fontsource/montserrat";
 import { theme } from "@/constants/theme";
+import LogOut from "./LogOut";
+
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [showNavbar, setShowNavbar] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const router = useRouter();
   const sidebarRef = useRef(null);
+  const dropdownRef = useRef(null);
   const lastScrollY = useRef(0);
 
   const fetchUserData = async () => {
@@ -60,7 +66,16 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setShowDropdown(false);
+      }
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target)
+      ) {
         setIsSidebarOpen(false);
       }
     };
@@ -76,6 +91,15 @@ export default function Navbar() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleTypeUserProfile = async () => {
@@ -102,118 +126,269 @@ export default function Navbar() {
     router.push(`/home/${data.user.role.toLowerCase()}/${data.user.id}`);
   };
 
+  const getRoleLabel = () => {
+    if (!userRole) return "Cuenta";
+    if (userRole === "STUDENT") return "Estudiante";
+    if (userRole === "TEACHER") return "Profesor/a";
+    return "Administrador";
+  };
+
+  const buttonBaseStyle = {
+    color: theme.palette.background.hex,
+    backgroundColor: "transparent",
+    fontSize: theme.fontSizes.m,
+    padding: "8px 12px",
+    borderRadius: theme.buttonRadios.m,
+    fontWeight: theme.fontWeight.regular,
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    cursor: "pointer",
+    border: "none",
+  };
+
+  const hoverStyle = {
+    backgroundColor: theme.palette.dark.hex,
+  };
+
   return (
     <>
-      <div className="h-[64px] w-full" />
+      <div style={{ height: "64px", width: "100%" }} />
 
       <nav
-        className="fixed top-0 left-0 right-0 z-40 bg-blue-600 p-3 flex items-center justify-between shadow-lg transition-transform duration-300"
-        style={{ transform: showNavbar ? "translateY(0%)" : "translateY(-100%)" }}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 40,
+          backgroundColor: theme.palette.primary.hex,
+          padding: "12px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+          transform: showNavbar ? "translateY(0%)" : "translateY(-100%)",
+          transition: "transform 0.3s",
+        }}
       >
-        <div className="flex items-center cursor-pointer" onClick={handleTypeUserHome}>
-          <img src="/logo.png" title="Logo" className="h-8 w-8 rounded-full" />
+        <div
+          style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+          onClick={handleTypeUserHome}
+        >
+          <img src="/logo.png" title="Logo" style={{ height: "32px", width: "32px", borderRadius: "9999px" }} />
           <p
-            className="text-white ml-3 text-sm font-medium"
-            style={{ fontFamily: "Montserrat, sans-serif" }}
+            style={{
+              color: theme.palette.background.hex,
+              marginLeft: "12px",
+              fontSize: theme.fontSizes.m,
+              fontWeight: theme.fontWeight.medium,
+              fontFamily: "Montserrat, sans-serif",
+            }}
           >
             Asistente de Carrera Profesional
           </p>
         </div>
 
-        <button
-          className="text-white cursor-pointer p-2 rounded-full hover:bg-blue-700 transition-colors"
-          onClick={() => setIsSidebarOpen(true)}
-        >
-          <FaBars className="text-2xl" />
-        </button>
-      </nav>
-
-      <div
-        className={`fixed inset-0 z-50 ${isSidebarOpen ? "bg-black bg-opacity-60" : "bg-transparent"} transition-opacity duration-300 pointer-events-none`}
-      >
-        <div
-          ref={sidebarRef}
-          className={`fixed top-0 right-0 w-64 h-full bg-blue-700 shadow-lg flex flex-col p-6 space-y-6 transform rounded-l-2xl z-60 transition-transform duration-500 ease-in-out ${isSidebarOpen ? "translate-x-0" : "translate-x-full"} pointer-events-auto`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            className="self-end text-white p-2 rounded-full hover:bg-blue-600"
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <FaTimes className="text-lg" />
-          </button>
-
-          <div className="flex flex-col space-y-1 pb-4 border-b border-blue-600">
-            <div className="flex items-center space-x-3">
-              <FaUserCircle className="text-3xl text-white" />
-              <h3 className="text-white text-lg font-semibold">
-                {isLoggedIn ? "Mi cuenta" : "Sesión no iniciada"}
-              </h3>
-            </div>
-            {userRole && (
-              <p className="text-white text-sm ml-10">
-                {userRole === "STUDENT"
-                  ? "Estudiante"
-                  : userRole === "TEACHER"
-                    ? "Profesor"
-                    : "Administrador"}
-              </p>
-            )}
-          </div>
-
-
-          <div className="flex flex-col space-y-2">
+        {!isMobile && (
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <button
-              className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg"
+              style={buttonBaseStyle}
+              onMouseOver={(e) => Object.assign(e.currentTarget.style, hoverStyle)}
+              onMouseOut={(e) => Object.assign(e.currentTarget.style, { backgroundColor: "transparent" })}
               onClick={handleTypeUserHome}
             >
-              <FaHome className="mr-3" /> Inicio
+              <FaHome /> Inicio
             </button>
-            {isLoggedIn ? (
-              <>
-                <button
-                  className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg"
-                  onClick={handleTypeUserProfile}
-                >
-                  <FaUser className="mr-3" /> Mi perfil
-                </button>
 
-                <button
-                  className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg"
-                  onClick={() => {
-                    router.push("/logout");
-                    setIsSidebarOpen(false);
-                  }}
-                >
-                  <FaSignOutAlt className="mr-3" /> Cerrar sesión
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg"
-                  onClick={() => {
-                    router.push("/login");
-                    setIsSidebarOpen(false);
-                  }}
-                >
-                  <FaSignInAlt className="mr-3" /> Iniciar sesión
-                </button>
+            <div style={{ position: "relative" }} ref={dropdownRef}>
+              <button
+                style={buttonBaseStyle}
+                onMouseOver={(e) => Object.assign(e.currentTarget.style, hoverStyle)}
+                onMouseOut={(e) => Object.assign(e.currentTarget.style, { backgroundColor: "transparent" })}
+                onClick={() => setShowDropdown((prev) => !prev)}
+              >
+                <FaUserCircle /> {getRoleLabel()} {showDropdown ? <FaChevronUp /> : <FaChevronDown />}
+              </button>
+              <div
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  marginTop: "8px",
+                  width: "192px",
+                  backgroundColor: theme.palette.background.hex,
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                  transform: showDropdown ? "scale(1)" : "scale(0.95)",
+                  opacity: showDropdown ? 1 : 0,
+                  pointerEvents: showDropdown ? "auto" : "none",
+                  transition: "all 0.3s ease-in-out",
+                  overflow: "hidden",
+                  zIndex: 50,
+                }}
+              >
+                {(isLoggedIn ? [
+                  { label: "Mi perfil", onClick: handleTypeUserProfile },
+                  { label: "Cerrar sesión", onClick: () => { setShowDropdown(false); setShowLogoutModal(true); } },
+                ] : [
+                  { label: "Iniciar sesión", onClick: () => { router.push("/login"); setShowDropdown(false); } },
+                  { label: "Registrarse", onClick: () => { router.push("/register"); setShowDropdown(false); } },
+                ]).map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={item.onClick}
+                    style={{
+                      padding: "10px 16px",
+                      background: "none",
+                      border: "none",
+                      textAlign: "left",
+                      fontSize: theme.fontSizes.m,
+                      color: theme.palette.text.hex,
+                      width: "100%",
+                      cursor: "pointer",
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = theme.palette.lightGray.hex}
+                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
-                <button
-                  className="flex items-center text-white text-sm hover:bg-blue-600 p-3 rounded-lg"
-                  onClick={() => {
-                    router.push("/register");
-                    setIsSidebarOpen(false);
-                  }}
-                >
-                  <FaUserPlus className="mr-3" /> Registrarse
-                </button>
-              </>
-            )}
+        {isMobile && (
+          <button
+            style={{ ...buttonBaseStyle, padding: "8px" }}
+            onClick={() => setIsSidebarOpen(true)}
+          >
+            <FaBars style={{ fontSize: "20px" }} />
+          </button>
+        )}
+      </nav>
+
+      {/* Sidebar móvil funcional */}
+      {isMobile && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 50,
+            backgroundColor: isSidebarOpen ? "rgba(0, 0, 0, 0.6)" : "transparent",
+            transition: "opacity 0.3s",
+            pointerEvents: isSidebarOpen ? "auto" : "none",
+          }}
+        >
+          <div
+            ref={sidebarRef}
+            style={{
+              position: "fixed",
+              top: 0,
+              right: 0,
+              width: "256px",
+              height: "100%",
+              backgroundColor: theme.palette.blueNavbar.hex,
+              boxShadow: "-2px 0 8px rgba(0,0,0,0.2)",
+              display: "flex",
+              flexDirection: "column",
+              padding: "24px",
+              gap: "16px",
+              borderTopLeftRadius: "16px",
+              borderBottomLeftRadius: "16px",
+              transform: isSidebarOpen ? "translateX(0%)" : "translateX(100%)",
+              transition: "transform 0.5s ease-in-out",
+              pointerEvents: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              style={{
+                alignSelf: "flex-end",
+                color: theme.palette.background.hex,
+                padding: "8px",
+                borderRadius: "8px",
+                backgroundColor: theme.palette.dark.hex,
+                border: "none",
+              }}
+            >
+              <FaTimes style={{ fontSize: "16px" }} />
+            </button>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px", borderBottom: `1px solid ${theme.palette.dark.hex}`, paddingBottom: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <FaUserCircle style={{ fontSize: "28px", color: theme.palette.background.hex }} />
+                <h3 style={{ color: theme.palette.background.hex, fontSize: theme.fontSizes.l, fontWeight: theme.fontWeight.bold }}>
+                  {isLoggedIn ? getRoleLabel() : "Sesión no iniciada"}
+                </h3>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <button
+                style={buttonBaseStyle}
+                onMouseOver={(e) => Object.assign(e.currentTarget.style, hoverStyle)}
+                onMouseOut={(e) => Object.assign(e.currentTarget.style, { backgroundColor: "transparent" })}
+                onClick={handleTypeUserHome}
+              >
+                <FaHome /> Inicio
+              </button>
+              {isLoggedIn ? (
+                <>
+                  <button
+                    style={buttonBaseStyle}
+                    onMouseOver={(e) => Object.assign(e.currentTarget.style, hoverStyle)}
+                    onMouseOut={(e) => Object.assign(e.currentTarget.style, { backgroundColor: "transparent" })}
+                    onClick={handleTypeUserProfile}
+                  >
+                    <FaUser /> Mi perfil
+                  </button>
+
+                  <button
+                    style={buttonBaseStyle}
+                    onMouseOver={(e) => Object.assign(e.currentTarget.style, hoverStyle)}
+                    onMouseOut={(e) => Object.assign(e.currentTarget.style, { backgroundColor: "transparent" })}
+                    onClick={() => {
+                      setIsSidebarOpen(false);
+                      setShowLogoutModal(true);
+                    }}                    
+                  >
+                    <FaSignOutAlt /> Cerrar sesión
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    style={buttonBaseStyle}
+                    onMouseOver={(e) => Object.assign(e.currentTarget.style, hoverStyle)}
+                    onMouseOut={(e) => Object.assign(e.currentTarget.style, { backgroundColor: "transparent" })}
+                    onClick={() => {
+                      router.push("/login");
+                      setIsSidebarOpen(false);
+                    }}
+                  >
+                    <FaSignInAlt /> Iniciar sesión
+                  </button>
+
+                  <button
+                    style={buttonBaseStyle}
+                    onMouseOver={(e) => Object.assign(e.currentTarget.style, hoverStyle)}
+                    onMouseOut={(e) => Object.assign(e.currentTarget.style, { backgroundColor: "transparent" })}
+                    onClick={() => {
+                      router.push("/register");
+                      setIsSidebarOpen(false);
+                    }}
+                  >
+                    <FaUserPlus /> Registrarse
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
+      {showLogoutModal && <LogOut onClose={() => setShowLogoutModal(false)} />}
     </>
   );
 }

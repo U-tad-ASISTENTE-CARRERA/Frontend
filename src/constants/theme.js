@@ -4,6 +4,10 @@ export const theme = {
       name: "Azul Principal",
       hex: "#0065ef",
     },
+    blueNavbar: {
+      name: "Azul Navbar",
+      hex: "#1D4ED8",
+    },
     text: {
       name: "Negro",
       hex: "#2f2f2f",
