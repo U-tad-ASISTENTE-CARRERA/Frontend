@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { MdSchool, MdWorkspacePremium, MdWork } from "react-icons/md";
 import { theme } from "@/constants/theme";
+import SendReportButton from "../notifications/SendReportButton";
 
-const StudentHeaderCard = ({ metadata, onSendReport }) => {
+const StudentHeaderCard = ({ metadata }) => {
   const [tutor, setTutor] = useState(null);
 
   useEffect(() => {
@@ -111,37 +112,25 @@ const StudentHeaderCard = ({ metadata, onSendReport }) => {
           Tutor asignado
         </h4>
 
-        <p
-          className="text-base font-semibold"
-          style={{ color: theme.palette.text.hex }}
-        >
-          {tutor
-            ? `${tutor.metadata.firstName} ${tutor.metadata.lastName}`
-            : "Sin tutor asignado"}
-        </p>
-
-        {!metadata.informeEnviado && tutor && (
-          <button
-            onClick={onSendReport}
-            className="mt-4 px-4 py-2 text-sm font-medium rounded-full w-full md:w-auto"
-            style={{
-              backgroundColor: theme.palette.primary.hex,
-              color: theme.palette.background.hex,
-            }}
-          >
-            Enviar informe
-          </button>
-        )}
-
-        {metadata.informeEnviado && (
+        <div className="flex flex-col items-center gap-2">
           <p
-            className="mt-4 text-xs font-medium"
-            style={{ color: theme.palette.success.hex }}
+            className="text-base font-semibold"
+            style={{ color: theme.palette.text.hex }}
           >
-            Informe ya enviado
+            {tutor
+              ? `${tutor.metadata.firstName} ${tutor.metadata.lastName}`
+              : "Sin tutor asignado"}
           </p>
-        )}
+
+          {!metadata.informeEnviado && tutor && (
+            <SendReportButton
+              tutorId={tutor.id}
+              tutorName={`${tutor.metadata?.firstName || ""} ${tutor.metadata?.lastName || ""}`}
+            />
+          )}
+        </div>
       </div>
+
     </div>
 
   );
