@@ -162,11 +162,11 @@ const StudentInitForm = () => {
 
   return (
     <div
-      className="flex flex-col items-center min-h-screen px-6 py-10"
+      className="flex flex-col items-center min-h-screen"
     >
       {/* Título */}
       <h1
-        className="text-3xl font-bold text-center pt-10 pb-6"
+        className="text-2xl font-bold text-center pt-20"
         style={{ color: theme.palette.primary.hex }}
       >
         ¡Queremos saber más de ti!

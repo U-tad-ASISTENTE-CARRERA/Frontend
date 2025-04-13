@@ -55,6 +55,8 @@ const RoadmapGuide = () => {
   };
 
   const handleSubmit = async (specialization) => {
+    setLoading(true); // muestra el modal de carga
+  
     try {
       const response = await fetch("http://localhost:3000/metadata", {
         method: "PATCH",
@@ -62,35 +64,30 @@ const RoadmapGuide = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({
-          specialization,
-        }),
+        body: JSON.stringify({ specialization }),
       });
-
+  
       const data = await response.json();
-      console.log(data);
-
+  
       if (!response.ok) {
         const errorMessages = {
           NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido",
           INVALID_USER_ID: "El usuario no existe",
           INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
         };
-
-        setError(
-          errorMessages[data?.error] || "Error al actualizar los metadatos"
-        );
+        setError(errorMessages[data?.error] || "Error al actualizar los metadatos");
+        setLoading(false);
         return;
-      } else {
-        setSuccess(true);
-        generateRoadmap();
-        router.push(`/home/student/${params.id}`);
       }
-    } catch (error) {
-      console.error(error);
+  
+      await generateRoadmap(); // espera a que termine antes de continuar
+      router.push(`/home/student/${params.id}`);
+    } catch (err) {
+      console.error(err);
       setError("Ha ocurrido un error inesperado");
+      setLoading(false);
     }
-  };
+  };  
 
   if (loading) {
     return <LoadingModal message="Cargando..." />;
@@ -106,7 +103,7 @@ const RoadmapGuide = () => {
             color: theme.palette.error.hex,
             fontFamily: "Montserrat, sans-serif",
           }}
-          className="text-red-500 text-sm text-center"
+          className="text-sm text-center"
         >
           {error}
         </p>

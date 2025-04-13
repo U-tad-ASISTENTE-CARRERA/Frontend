@@ -168,7 +168,7 @@ const TeacherInitForm = () => {
     <>
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h1
-          className="text-4xl font-bold text-center pb-4"
+          className="text-xl font-bold text-center pt-20"
           style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
         >
           ¡Queremos saber más de ti!

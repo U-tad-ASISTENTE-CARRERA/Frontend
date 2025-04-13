@@ -95,11 +95,10 @@ const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
               return (
                 <div
                   key={sectionName}
-                  className={`relative flex flex-col items-center p-4 rounded-xl border shadow-sm transition duration-300 ease-in-out ${
-                    isDone
+                  className={`relative flex flex-col items-center p-4 rounded-xl border shadow-sm transition duration-300 ease-in-out ${isDone
                       ? "bg-green-50 border-green-400"
                       : "bg-white border-gray-200"
-                  }`}
+                    }`}
                 >
                   {isDone && (
                     <span className="absolute top-2 right-2 px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-700 rounded-full">
