@@ -4,6 +4,7 @@ import ConfirmPopup from "../ConfirmPopUp";
 import LoadingModal from "../LoadingModal";
 import { theme } from "@/constants/theme";
 import { teacherSpecializations } from "@/constants/teacherSpecializations";
+import SendReportButton from "../notifications/SendReportButton";
 
 const ShowTutor = () => {
   const [tutors, setTutors] = useState([]);
@@ -190,14 +191,10 @@ const ShowTutor = () => {
                     <span className="text-sm">Quitar tutor</span>
                   </button>
 
-                  <button
-                    className="flex items-center gap-2 px-3 py-1 rounded-full hover:opacity-80 transition"
-                    title="Enviar informe"
-                    style={{ backgroundColor: `${theme.palette.primary.hex}20`, color: theme.palette.primary.hex }}
-                  >
-                    <FaFileAlt className="text-sm" />
-                    <span className="text-sm">Enviar informe</span>
-                  </button>
+                  <SendReportButton
+                    tutorId={tutor.id}
+                    tutorName={`${tutor.metadata?.firstName || ""} ${tutor.metadata?.lastName || ""}`}
+                  ></SendReportButton>
                 </div>
               </div>
             ))}
