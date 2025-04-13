@@ -56,7 +56,7 @@ export default function ExploreRoadmaps() {
     >
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6 text-center text-blue-700 shadow-text">
-          Explorar Especialidades
+          Conoce Nuestras Especialidades
         </h1>
 
         <div className="mb-8 max-w-xl mx-auto relative">
@@ -85,13 +85,13 @@ export default function ExploreRoadmaps() {
         </div>
 
         {filteredResults.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {filteredResults.map((roadmap) => (
               <div
                 key={roadmap.id}
                 onClick={() => handleRoadmapClick(roadmap.id)}
-                className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer hover:bg-opacity-100"
-                style={{ fontFamily: 'Montserrat', borderLeft: `4px solid ${theme.palette.primary.hex}` }}
+                className="bg-white bg-opacity-90 rounded-lg shadow hover:shadow-md overflow-hidden transition-all duration-200 cursor-pointer hover:bg-opacity-100"
+                style={{ fontFamily: 'Montserrat' }}
               >
                 <div className="p-4">
                   <div className="mb-3 flex items-center">

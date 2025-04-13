@@ -40,10 +40,8 @@ const RoadmapDetail = () => {
     }
   };
 
-  if (loading) {
-    return <LoadingModal />;
-  }
-
+  if (loading) return <LoadingModal />;
+  
   if (!roadmap) {
     return (
       <div 
@@ -116,11 +114,6 @@ const RoadmapDetail = () => {
                         style={{ backgroundColor: theme.palette.primary.hex }}
                       ></div>
                       <span className="font-medium">{subject.name}</span>
-                      {subject.difficulty && (
-                        <span className="ml-auto text-sm text-gray-500">
-                          Dificultad: {subject.difficulty}/5
-                        </span>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -182,65 +175,97 @@ const RoadmapDetail = () => {
 
           <div className="bg-white bg-opacity-95 rounded-xl shadow-lg p-6">
             <h2 className="text-2xl font-bold mb-6" style={{ color: theme.palette.primary.hex }}>
-              Perfiles Profesionales
+              Perfiles Profesionales Derivados
             </h2>
 
             <JobTrends roadmap={roadmap} />
             
             {roadmap.jobProfiles && roadmap.jobProfiles.length > 0 && (
-              <div className="space-y-4">
-                {roadmap.jobProfiles.map((profile, index) => (
-                  <div 
-                    key={index}
-                    className="border rounded-lg overflow-hidden shadow-sm transition-all duration-300"
-                    style={{ 
-                      borderColor: expandedProfile === index ? theme.palette.primary.hex : '#e5e7eb',
-                      boxShadow: expandedProfile === index ? `0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 3px ${theme.palette.primary.hex}25` : ''
-                    }}
-                  >
+              <>
+                <p className="mb-4 text-gray-700">
+                  Estos son los principales perfiles profesionales derivados de la especialización en {roadmap.name}. 
+                  Cada perfil muestra su porcentaje de demanda en el mercado laboral actual y su proyección de crecimiento.
+                </p>
+
+                <div className="space-y-4">
+                  {roadmap.jobProfiles.map((profile, index) => (
                     <div 
-                      className="p-4 flex justify-between items-center cursor-pointer"
-                      onClick={() => toggleProfile(index)}
+                      key={index}
+                      className="border rounded-lg overflow-hidden shadow-sm transition-all duration-300"
                       style={{ 
-                        backgroundColor: expandedProfile === index ? `${theme.palette.primary.hex}10` : 'white'
+                        borderColor: expandedProfile === index ? theme.palette.primary.hex : '#e5e7eb',
+                        boxShadow: expandedProfile === index ? `0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 3px ${theme.palette.primary.hex}25` : ''
                       }}
                     >
-                      <div className="flex items-center space-x-3">
-                        <div>{profile.name}</div>
-                        <div 
-                          className={`px-2 py-1 text-xs rounded-full ${profile.growth === 'alto' || profile.growth === 'muy alto' ? 'bg-green-100 text-green-800' : profile.growth === 'moderado' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800' }`}
-                        >
-                          {profile.growth || 'N/A'}
+                      <div 
+                        className="p-4 flex justify-between items-center cursor-pointer"
+                        onClick={() => toggleProfile(index)}
+                        style={{ 
+                          backgroundColor: expandedProfile === index ? `${theme.palette.primary.hex}10` : 'white'
+                        }}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div>{profile.name}</div>
+                          <div 
+                            className={`px-2 py-1 text-xs rounded-full ${profile.growth === 'alto' || profile.growth === 'muy alto' ? 'bg-green-100 text-green-800' : profile.growth === 'moderado' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800' }`}
+                          >
+                            {profile.growth || 'N/A'}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center">
+                          <div className="mr-4 flex items-center" style={{ color: theme.palette.primary.hex }} >
+                            <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                              <div className="h-2 rounded-full" style={{ width: `${profile.percentage}%`, backgroundColor: theme.palette.primary.hex }}></div>
+                            </div>
+                            <span className="text-sm font-medium">{profile.percentage}%</span>
+                          </div>
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            className={`h-5 w-5 transition-transform duration-300 ${expandedProfile === index ? 'transform rotate-180' : ''}`} 
+                            fill="none" 
+                            viewBox="0 0 24 24" 
+                            stroke="currentColor"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
                         </div>
                       </div>
                       
-                      <div className="flex items-center">
-                        <div className="mr-4 flex items-center" style={{ color: theme.palette.primary.hex }} >
-                          <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                            <div className="h-2 rounded-full" style={{ width: `${profile.percentage}%`, backgroundColor: theme.palette.primary.hex }}></div>
-                          </div>
-                          <span className="text-sm font-medium">{profile.percentage}%</span>
+                      {expandedProfile === index && (
+                        <div className="px-4 py-5 bg-gray-50 border-t"> 
+                          <p className="text-gray-600"> {profile.description || "..."} </p>                          
                         </div>
-                        <svg 
-                          xmlns="http://www.w3.org/2000/svg" 
-                          className={`h-5 w-5 transition-transform duration-300 ${expandedProfile === index ? 'transform rotate-180' : ''}`} 
-                          fill="none" 
-                          viewBox="0 0 24 24" 
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 rounded-full bg-green-100 border border-green-800"></div>
+                      <span className="text-sm">Crecimiento muy alto/alto</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 rounded-full bg-yellow-100 border border-yellow-800"></div>
+                      <span className="text-sm">Crecimiento moderado</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 rounded-full bg-gray-100 border border-gray-800"></div>
+                      <span className="text-sm">Crecimiento estable/bajo</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="flex items-center">
+                        <div className="w-10 h-2 rounded-full bg-gray-200">
+                          <div className="h-2 rounded-full bg-blue-500" style={{ width: '50%' }}></div>
+                        </div>
+                        <span className="text-sm ml-2">% demanda mercado</span>
                       </div>
                     </div>
-                    
-                    {expandedProfile === index && (
-                      <div className="px-4 py-5 bg-gray-50 border-t"> 
-                        <p className="text-gray-600"> {profile.description || "..."} </p>                          
-                      </div>
-                    )}
                   </div>
-                ))}
-              </div>
+                </div>
+              </>
             )}
           </div>
 

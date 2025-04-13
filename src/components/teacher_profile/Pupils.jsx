@@ -1,14 +1,69 @@
 import React, { useState, useEffect } from "react";
-
-import { FaDownload } from "react-icons/fa";
+import { FaFilePdf, FaSpinner } from "react-icons/fa";
+import { exportToPDF } from '@/components/notifications/exportSummary'; 
 
 const Pupils = ({ students, setStudents, token, setToken }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [filteredStudents, setFilteredStudents] = useState([]);
+  const [studentSummaries, setStudentSummaries] = useState({});
+  const [downloadingStudent, setDownloadingStudent] = useState(null);
 
-  const handleDownloadReport = async (studentId) => {
+  useEffect(() => {
+    if (students && students.length > 0) {
+      const filtered = students.filter(student => {
+        const fullName = `${student.firstName || ""} ${student.lastName || ""}`.toLowerCase();
+        return fullName.includes(searchTerm.toLowerCase());
+      });
+      setFilteredStudents(filtered);
+      
+      // Fetch summaries for each student
+      filtered.forEach(student => {
+        fetchStudentSummaries(student.id);
+      });
+    } else {
+      setFilteredStudents([]);
+    }
+  }, [searchTerm, students]);
+
+  const fetchStudentSummaries = async (studentId) => {
     try {
+      const response = await fetch(`http://localhost:3000/summary/${studentId}/all`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        console.log(`No summaries found for student ${studentId}`);
+        return;
+      }
+
+      const data = await response.json();
+      
+      // Update state with summaries for this student
+      setStudentSummaries(prev => ({
+        ...prev,
+        [studentId]: data.summaries || []
+      }));
+    } catch (error) {
+      console.error(`Error fetching summaries for student ${studentId}:`, error);
+    }
+  };
+
+  const hasSummaries = (student) => {
+    return studentSummaries[student.id] && studentSummaries[student.id].length > 0;
+  };
+
+  const handleDownloadSummary = async (studentId) => {
+    try {
+      // Set downloading state
+      setDownloadingStudent(studentId);
+
+      // Fetch latest summary
       const response = await fetch(
-        `http://localhost:3000/student/report/${studentId}`,
+        `http://localhost:3000/summary/${studentId}/latest`,
         {
           method: "GET",
           headers: {
@@ -17,29 +72,35 @@ const Pupils = ({ students, setStudents, token, setToken }) => {
           },
         }
       );
-
+  
       if (!response.ok) {
-        throw new Error("Error al descargar el informe");
+        const errorText = await response.text();
+        console.error("Error fetching summary:", errorText);
+        return;
       }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = `reporte_estudiante_${studentId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+  
+      const data = await response.json();
+      
+      if (!data || !data.summary) {
+        console.error("No summary found for the student");
+        return;
+      }
+  
+      // Use the exportToPDF function to download the summary
+      const pdfExport = exportToPDF(data.summary);
+      pdfExport.download();
+      
     } catch (error) {
-      console.error("Error al descargar el informe:", error);
+      console.error("Detailed error al descargar el informe:", error);
+    } finally {
+      // Reset downloading state
+      setDownloadingStudent(null);
     }
   };
 
   return (
-    <div className='p-4 bg-white rounded-lg'>
-      <h2 className='text-lg font-semibold'>
+    <div className="p-4 bg-white rounded-lg">
+      <h2 className="text-lg font-semibold">
         Alumnos tutelados
       </h2>
 
@@ -64,23 +125,22 @@ const Pupils = ({ students, setStudents, token, setToken }) => {
                 Apellidos
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Grupo
+                Curso
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Grado
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Descargar informe
+                Informe
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {students.map((student, index) => (
+            {filteredStudents.map((student, index) => (
               <tr
-                key={student._id || index}
+                key={student.id || index}
                 className="hover:bg-gray-50 transition"
               >
-
                 <td className="px-6 py-4 text-sm text-gray-900">
                   {student.firstName}
                 </td>
@@ -101,30 +161,35 @@ const Pupils = ({ students, setStudents, token, setToken }) => {
                   </span>
                 </td>
 
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {student.metadata?.informeEnviado ? (
-                    <FaDownload
-                      className="text-blue-500 cursor-pointer"
-                      title="Descargar informe"
-                      onClick={() => handleDownloadReport(student._id)}
-                    />
+                <td className="px-6 py-4 text-sm text-gray-900 flex items-center justify-center">
+                  {hasSummaries(student) ? (
+                    downloadingStudent === student.id ? (
+                      <FaSpinner className="text-blue-500 animate-spin" />
+                    ) : (
+                      <button 
+                        onClick={() => handleDownloadSummary(student.id)}
+                        className="text-blue-500 hover:text-blue-700 transition-colors"
+                        title="Descargar último informe"
+                      >
+                        <FaFilePdf size={20} />
+                      </button>
+                    )
                   ) : (
                     <span
-                      className="inline-block bg-yellow-100 text-yellow-800 text-xs font-medium px-3 py-1 rounded-full"
-                      title="Este estudiante aún no tiene un informe enviado"
+                      className="text-gray-400 text-xs"
+                      title="Sin informes disponibles"
                     >
-                      Informe no enviado
+                      N/A
                     </span>
                   )}
                 </td>
-
               </tr>
             ))}
           </tbody>
         </table>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Pupils;
