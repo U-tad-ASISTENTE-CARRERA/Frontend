@@ -1,4 +1,6 @@
 export const teacherSpecializations = [
     "Bases de datos",
-    "Frontend"
+    "Frontend",
+    "Sistemas operativos",
+    "Aprendizaje automático",
 ];

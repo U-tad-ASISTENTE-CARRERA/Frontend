@@ -5,7 +5,8 @@ import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import { useRouter, useParams } from "next/navigation";
 import LoadingModal from "@/components/LoadingModal";
-import { nameRegex, dateRegex } from "@/utils/ValidatorRegex";
+import { nameRegex } from "@/utils/ValidatorRegex";
+import { teacherSpecializations } from "@/constants/teacherSpecializations";
 
 const TeacherInitForm = () => {
   const [errors, setErrors] = useState({});
@@ -255,15 +256,18 @@ const TeacherInitForm = () => {
               <select
                 value={specialization}
                 onChange={(e) => setSpecialization(e.target.value)}
-                className="block w-full p-2 border border-gray-300 rounded-md"
+                className="block w-full p-2 border rounded-md"
                 style={{
                   borderColor: theme.palette.light.hex,
                   color: theme.palette.text.hex,
                 }}
               >
                 <option value="">Selecciona tu especialización</option>
-                <option value="Base de datos">Base de datos</option>
-                <option value="Frontend">Frontend</option>
+                {teacherSpecializations.map((spec) => (
+                  <option key={spec} value={spec}>
+                    {spec}
+                  </option>
+                ))}
               </select>
             </div>
 
