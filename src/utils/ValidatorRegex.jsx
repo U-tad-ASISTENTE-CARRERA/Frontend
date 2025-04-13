@@ -1,4 +1,6 @@
-export const dniRegex = (dni) => /^\d{8}[A-Z]$/.test(dni);
+export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
 
 export const nameRegex = (name) => {
   const namePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+$/;
