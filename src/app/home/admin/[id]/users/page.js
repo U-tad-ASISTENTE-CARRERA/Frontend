@@ -4,7 +4,10 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
-import LoadingModal from "@/components/LoadingModal";
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import { FaEdit, FaTrash } from "react-icons/fa";
 
 const UserList = () => {

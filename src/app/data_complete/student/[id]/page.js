@@ -5,7 +5,10 @@ import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import LoadingModal from "@/components/LoadingModal";
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import { nameRegex, dateRegex } from "@/utils/ValidatorRegex";
 import ErrorPopUp from "@/components/ErrorPopUp";
 import { FaLongArrowAltRight } from "react-icons/fa";

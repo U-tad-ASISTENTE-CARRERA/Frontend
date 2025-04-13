@@ -3,7 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import "@fontsource/montserrat";
-import LoadingModal from "@/components/LoadingModal";
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import Roadmap from "@/components/Roadmap/Roadmap";
 import CareerOpportunityComponent from "@/components/Roadmap/CareerOpportunityComponent";
 import { AlertSystemRoadmap } from "@/components/Roadmap/AlertSystemRoadmap";

@@ -1,9 +1,16 @@
+"use client";
+
 import React from "react";
-import Lottie from "lottie-react";
-import animationData from "../lotties/loading_v4.json";
+import dynamic from "next/dynamic";
 import { theme } from "@/constants/theme";
 
+// Importa el componente de Lottie solo en el cliente
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+import animationData from "../lotties/loading_v4.json";
+
 const LoadingModal = () => {
+  if (typeof window === "undefined") return null;
+
   return (
     <div className="fixed inset-0 flex justify-center items-center z-50">
       <Lottie

@@ -5,7 +5,10 @@ import { useRouter, useParams } from "next/navigation";
 import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import ErrorPopUp from "@/components/ErrorPopUp";
-import LoadingModal from "@/components/LoadingModal";
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { FaUsers, FaGraduationCap, FaChalkboardTeacher, FaHeartbeat, FaMap } from 'react-icons/fa';
 

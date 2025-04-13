@@ -4,7 +4,10 @@ import React, { useState, useEffect } from "react";
 import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import { useRouter, useParams } from "next/navigation";
-import LoadingModal from "@/components/LoadingModal";
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import { nameRegex } from "@/utils/ValidatorRegex";
 import { teacherSpecializations } from "@/constants/teacherSpecializations";
 

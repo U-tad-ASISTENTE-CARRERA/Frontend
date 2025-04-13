@@ -3,7 +3,10 @@ import { theme } from "@/constants/theme";
 import { useSummary } from "./useSummary";
 import { useNotifications } from "./useNotifications";
 import { exportToPDF } from "./exportSummary";
-import LoadingModal from "@/components/LoadingModal";
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import { FaFileAlt } from "react-icons/fa";
 
 const SendReportButton = ({ tutorId, tutorName, baseUrl = "http://localhost:3000" }) => {

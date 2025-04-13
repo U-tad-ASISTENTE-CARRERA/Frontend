@@ -5,7 +5,10 @@ import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import ErrorPopUp from "@/components/ErrorPopUp";
-import LoadingModal from "@/components/LoadingModal";
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import SidebarNavigation from "@/components/teacher_profile/SidebarNavigationTeacher";
 import Pupils from "@components/teacher_profile/Pupils";
 import PersonalInfo from "@/components/teacher_profile/PersonalInfo";
