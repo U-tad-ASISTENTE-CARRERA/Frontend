@@ -19,8 +19,12 @@ export const AlertSystemRoadmap = ({ alerts }) => {
             typeColor: theme.palette.text.hex,
             action: {
                 label: "Ir al perfil",
-                path: `/profile/student/${typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user"))?.id : ""}`,
-            },
+                path:
+                  typeof window !== "undefined"
+                    ? `/profile/student/${JSON.parse(localStorage.getItem("user"))?.id}?section=AH`
+                    : "",
+              },
+              
         },
         incomplete: {
             title: "Expediente incompleto",
@@ -29,9 +33,13 @@ export const AlertSystemRoadmap = ({ alerts }) => {
             iconBg: theme.palette.warning.hex,
             typeColor: theme.palette.text.hex,
             action: {
-                label: "Revisar expediente",
-                path: `/profile/student/${typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user"))?.id : ""}`,
-            },
+                label: "Ir al perfil",
+                path:
+                  typeof window !== "Revisar expediente"
+                    ? `/profile/student/${JSON.parse(localStorage.getItem("user"))?.id}?section=AH`
+                    : "",
+              },
+              
         },
     };
 

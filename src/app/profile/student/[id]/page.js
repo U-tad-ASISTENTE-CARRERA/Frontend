@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import LoadingModal from "@/components/LoadingModal";
@@ -18,10 +18,18 @@ import ActivityLog from "@/components/student_profile/ActivityLog";
 import { convertTimestampToDate } from "@/utils/FirebaseDateUtils";
 
 const StudentProfile = () => {
+  const searchParams = useSearchParams();
+  const sectionParam = searchParams.get("section");
+
   const { id } = useParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [activeSection, setActiveSection] = useState(() => {
+    const section = searchParams.get("section");
+    return section || "personal";
+  });
 
   const [languages, setLanguages] = useState([]);
   const [specialization, setSpecialization] = useState("");
@@ -35,7 +43,6 @@ const StudentProfile = () => {
   const [certifications, setCertifications] = useState([]);
   const [workExperience, setWorkExperience] = useState([]);
   const [gender, setGender] = useState("");
-  const [activeSection, setActiveSection] = useState("personal");
   const [academicRecord, setAcademicRecord] = useState([]);
   const [deletionRequested, setDeletionRequested] = useState(false);
   const [updateHistory, setUpdateHistory] = useState([]);
