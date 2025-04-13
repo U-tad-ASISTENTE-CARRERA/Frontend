@@ -4,7 +4,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAllRoadmaps } from '@/components/exploreRoadmaps/roadmapsData.js';
 import { theme } from '@/constants/theme';
-import LoadingModal from '@/components/LoadingModal';
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import { FaSearch, FaTimes } from 'react-icons/fa';
 
 export default function ExploreRoadmaps() {

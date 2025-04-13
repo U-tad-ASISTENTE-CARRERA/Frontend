@@ -4,7 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { theme } from '@/constants/theme';
 import { getRoadmapById } from '@/components/exploreRoadmaps/roadmapsData';
-import LoadingModal from '@/components/LoadingModal';
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import JobTrends from '@/components/exploreRoadmaps/JobTrends';
 import SalaryComparison from '@/components/exploreRoadmaps/SalaryComparison';
 
