@@ -38,7 +38,7 @@ const StudentProfile = () => {
   const [activeSection, setActiveSection] = useState("personal");
   const [academicRecord, setAcademicRecord] = useState([]);
   const [deletionRequested, setDeletionRequested] = useState(false);
-  const [updateHistory, setUpdateHistory] = useState([]); 
+  const [updateHistory, setUpdateHistory] = useState([]);
 
 
   useEffect(() => {
@@ -75,7 +75,7 @@ const StudentProfile = () => {
         setWorkExperience(data.metadata.workExperience || []);
         setGender(data.metadata.gender || "");
         setDeletionRequested(data.metadata?.deletionRequestStatus === "pending");
-        setUpdateHistory(data.metadata.updateHistory || []); 
+        setUpdateHistory(data.metadata.updateHistory || []);
 
         setEndDate(convertTimestampToDate(data.metadata.endDate));
         setBirthDate(convertTimestampToDate(data.metadata.birthDate));
@@ -212,7 +212,7 @@ const StudentProfile = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
-          skills: skillList.map(skill => ({ skill })), 
+          skills: skillList.map(skill => ({ skill })),
         }),
       });
 
@@ -319,7 +319,7 @@ const StudentProfile = () => {
 
   const handleRequestDeletion = async (reason) => {
     if (deletionRequested) return; // Protección en estado local
-  
+
     try {
       const response = await fetch("http://localhost:3000/deletionRequest", {
         method: "POST",
@@ -329,15 +329,15 @@ const StudentProfile = () => {
         },
         body: JSON.stringify({ reason }),
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         return { success: false, message: data?.message || "No se pudo procesar la solicitud." };
       }
-  
+
       setDeletionRequested(true);
-  
+
       return {
         success: true,
         requestId: data.requestId,
@@ -348,7 +348,7 @@ const StudentProfile = () => {
       return { success: false, message: "Error de red o inesperado al solicitar la baja." };
     }
   };
-  
+
 
   const handleCancelDeletion = async () => {
     try {
@@ -359,18 +359,18 @@ const StudentProfile = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         return {
           success: false,
           message: data?.message || "No se pudo cancelar la solicitud.",
         };
       }
-  
+
       setDeletionRequested(false);
-  
+
       return {
         success: true,
         cancelledAt: data.cancelledAt,
@@ -380,7 +380,7 @@ const StudentProfile = () => {
       return { success: false, message: "Error de red o inesperado al cancelar la solicitud." };
     }
   };
-  
+
 
   // Mensaje de bienvenida según el género
   const getWelcomeMessage = () => {
@@ -396,7 +396,7 @@ const StudentProfile = () => {
       ) : (
         <div className="flex flex-col items-center min-h-screen p-6">
           <h1
-            className="text-3xl font-bold text-center pt-20 pb-10"
+            className="text-3xl font-bold text-center pt-10 pb-10"
             style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
           >
             {getWelcomeMessage()} {firstName || "Usuario"}
@@ -495,7 +495,7 @@ const StudentProfile = () => {
                   />
                 )}
 
-                {activeSection === "activityLog" &&(
+                {activeSection === "activityLog" && (
                   <ActivityLog
                     updateHistory={updateHistory}
                   />

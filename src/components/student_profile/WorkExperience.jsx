@@ -100,7 +100,7 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
       {/* Header con botón de edición */}
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>
-          Experiencias Laborales
+          Experiencia laboral
         </h2>
 
         <div className="flex gap-2">

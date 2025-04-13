@@ -108,10 +108,10 @@ const ExpedienteAcademico = ({
   const failed = subjectsByYear[activeYear].filter((subj) => parseFloat(grades[subj]) < 5).length;
 
   return (
-    <div className="p-6 bg-white rounded-lg">
+    <div className="space-y-4 p-4 bg-white rounded-lg">
 
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-4">
+      <div className="">
+        <h2 className="text-lg font-semibold mt-1 mb-4">
           Expediente académico
         </h2>
 

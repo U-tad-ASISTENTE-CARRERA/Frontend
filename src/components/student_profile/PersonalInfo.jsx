@@ -196,28 +196,48 @@ const PersonalInfo = ({
           <div>
             <label className="block text-sm font-medium flex items-center gap-1">
               Nombre
-              {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
+              {isEditing && <p
+                className="text-xs mt-1"
+                style={{ color: theme.palette.error.hex }}
+              >*</p>}
             </label>
             {isEditing ? (
               <input type="text" value={tempFirstName} onChange={(e) => setTempFirstName(e.target.value)} className="block w-full p-2 border rounded-md transition-all" style={{ borderColor: errors.firstName ? theme.palette.error.hex : theme.palette.primary.hex, color: theme.palette.text.hex }} />
             ) : (
-              <p className="w-full p-2 text-sm text-gray-800 bg-transparent border border-transparent rounded-md">{tempFirstName || "—"}</p>
+              <p
+                className="w-full p-2 text-m bg-transparent border border-transparent rounded-md"
+                style={{ color: theme.palette.text.hex }}
+              >{tempFirstName || "—"}</p>
             )}
-            {isEditing && errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
+            {isEditing && errors.firstName && <p
+              className="text-xs mt-1"
+              style={{ color: theme.palette.error.hex }}
+            >
+              {errors.firstName}</p>}
           </div>
 
           {/* Apellidos */}
           <div>
             <label className="block text-sm font-medium flex items-center gap-1">
               Apellidos
-              {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
+              {isEditing && <p
+                className="text-xs mt-1"
+                style={{ color: theme.palette.error.hex }}
+              >*</p>}
             </label>
             {isEditing ? (
               <input type="text" value={tempLastName} onChange={(e) => setTempLastName(e.target.value)} className="block w-full p-2 border rounded-md transition-all" style={{ borderColor: errors.lastName ? theme.palette.error.hex : theme.palette.primary.hex, color: theme.palette.text.hex }} />
             ) : (
-              <p className="w-full p-2 text-sm text-gray-800 bg-transparent border border-transparent rounded-md">{tempLastName || "—"}</p>
+              <p
+                className="w-full p-2 text-m bg-transparent border border-transparent rounded-md"
+                style={{ color: theme.palette.text.hex }}
+              >
+                {tempLastName || "—"}</p>
             )}
-            {isEditing && errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
+            {isEditing && errors.lastName && <p
+              className="text-xs mt-1"
+              style={{ color: theme.palette.error.hex }}
+            >{errors.lastName}</p>}
           </div>
 
           {/* Fecha de nacimiento */}
@@ -232,7 +252,10 @@ const PersonalInfo = ({
                 style={{ borderColor: theme.palette.primary.hex }}
               />
             ) : (
-              <p className="w-full p-2 text-sm text-gray-800 bg-transparent border border-transparent rounded-md">
+              <p
+                className="w-full p-2 text-m bg-transparent border border-transparent rounded-md"
+                style={{ color: theme.palette.text.hex }}
+              >
                 {tempBirthDate
                   ? new Date(tempBirthDate).toLocaleDateString("es-ES")
                   : "—"}
@@ -245,7 +268,10 @@ const PersonalInfo = ({
           <div>
             <label className="block text-sm font-medium flex items-center gap-1">
               Género
-              {isEditing && <span className="text-red-500 text-xs ml-1">*</span>}
+              {isEditing && <p
+                className="text-xs mt-1"
+                style={{ color: theme.palette.error.hex }}
+              >*</p>}
             </label>
             {isEditing ? (
               <select value={tempGender} onChange={(e) => setTempGender(e.target.value)} className="block w-full p-2 border rounded-md transition-all" style={{ borderColor: errors.gender ? theme.palette.error.hex : theme.palette.primary.hex, color: theme.palette.text.hex }}>
@@ -255,11 +281,17 @@ const PersonalInfo = ({
                 <option value="prefer not to say">Prefiero no decirlo</option>
               </select>
             ) : (
-              <p className="w-full p-2 text-sm text-gray-800 bg-transparent border border-transparent rounded-md">
+              <p
+                className="w-full p-2 text-m bg-transparent border border-transparent rounded-md"
+                style={{ color: theme.palette.text.hex }}
+              >
                 {tempGender === "male" ? "Masculino" : tempGender === "female" ? "Femenino" : tempGender === "prefer not to say" ? "Prefiero no decirlo" : "—"}
               </p>
             )}
-            {isEditing && errors.gender && <p className="text-red-500 text-xs mt-1">{errors.gender}</p>}
+            {isEditing && errors.gender && <p
+              className="text-xs mt-1"
+              style={{ color: theme.palette.error.hex }}
+            >{errors.gender}</p>}
           </div>
         </div>
       </div>
@@ -270,24 +302,44 @@ const PersonalInfo = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
             <label className="block text-sm font-medium">Curso académico</label>
-            <p className="w-full p-2 text-sm text-gray-800 bg-gray-100 border border-gray-200 rounded-md">
-              {yearsCompleted?.length > 0 ? `${yearsCompleted[yearsCompleted.length - 1]}º` : "SIN CALCULAR"}
+            <p
+              className="w-full p-3 text-sm rounded-md font-medium shadow-sm"
+              style={{
+                color: theme.palette.primary.hex,
+                backgroundColor: `${theme.palette.primary.hex}15`,
+                border: `1px solid ${theme.palette.primary.hex}15`,
+              }}
+            >
+              {yearsCompleted?.length > 0
+                ? `${yearsCompleted[yearsCompleted.length - 1]}º`
+                : "SIN CALCULAR"}
             </p>
-            <p className="text-xs text-gray-500">Este campo no es editable</p>
+            <p className="text-xs mt-1" style={{ color: theme.palette.gray.hex }}>
+              Campo no editable. Se calcula automáticamente a partir del expediente académico.
+            </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium flex items-center gap-1">
               Grado
-              {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
+              {isEditing && <p
+                className="text-xs mt-1"
+                style={{ color: theme.palette.error.hex }}
+              >*</p>}
             </label>
-            <p className="w-full p-2 text-sm text-gray-800 bg-gray-100 border border-gray-200 rounded-md">{degree}</p>
+            <p className="w-full p-2 text-m rounded-md"
+              style={{ color: theme.palette.text.hex }}
+            >
+              {degree}</p>
           </div>
 
           <div>
             <label className="block text-sm font-medium flex items-center gap-1">
               Fecha de graduación
-              {isEditing && <p className="text-red-500 text-xs mt-1">*</p>}
+              {isEditing && <p
+                className="text-xs mt-1"
+                style={{ color: theme.palette.error.hex }}
+              >*</p>}
             </label>
 
             {isEditing ? (
@@ -304,7 +356,10 @@ const PersonalInfo = ({
                 }}
               />
             ) : (
-              <p className="w-full p-2 text-sm text-gray-800 bg-transparent border border-transparent rounded-md">
+              <p
+                className="w-full p-2 text-m bg-transparent border border-transparent rounded-md"
+                style={{ color: theme.palette.text.hex }}
+              >
                 {tempEndDate
                   ? new Date(tempEndDate).toLocaleDateString("es-ES")
                   : "—"}
@@ -312,7 +367,10 @@ const PersonalInfo = ({
             )}
 
             {isEditing && errors.endDate && (
-              <p className="text-red-500 text-xs mt-1">{errors.endDate}</p>
+              <p
+                className="text-xs mt-1"
+                style={{ color: theme.palette.error.hex }}
+              >{errors.endDate}</p>
             )}
           </div>
 
@@ -357,7 +415,7 @@ const PersonalInfo = ({
                 {!deletionReason && (
                   <div>
                     <button
-                      onClick={() => setDeletionReason(" ")} // activa el formulario
+                      onClick={() => setDeletionReason(" ")}
                       className="px-4 py-2 rounded-full text-white font-semibold"
                       style={{ backgroundColor: theme.palette.secondary.hex }}
                     >
