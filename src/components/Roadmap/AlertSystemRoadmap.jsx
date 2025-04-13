@@ -1,55 +1,48 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { theme } from "@/constants/theme";
-import { MdWarning, MdInfoOutline } from "react-icons/md";
+import { MdUpdate } from "react-icons/md";
 
-export const AlertSystemRoadmap = ({ alerts }) => {
+export const AlertSystemRoadmap = ({ metadata }) => {
     const router = useRouter();
 
-    if (!alerts || alerts.length === 0) return null;
+    const currentTime = new Date();
+    const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user")) : null;
+
+    const alerts = [];
+
+    // Check for stale update
+    const lastUpdate = metadata?.updatedAt ? new Date(metadata.updatedAt) : null;
+    const monthsSinceUpdate = lastUpdate
+        ? (currentTime.getFullYear() - lastUpdate.getFullYear()) * 12 + (currentTime.getMonth() - lastUpdate.getMonth())
+        : null;
+
+    const shouldShowUpdateAlert = monthsSinceUpdate !== null && monthsSinceUpdate >= 6;
+    if (shouldShowUpdateAlert) alerts.push({ keyword: "stale" });
+
+    if (alerts.length === 0) return null;
 
     const alert = alerts[0];
 
     const alertConfig = {
-        empty: {
-            title: "Expediente vacío",
-            message: "Aún no has cargado tu expediente académico. Para comenzar, debes completarlo.",
-            icon: <MdInfoOutline size={36} color="#fff" />,
-            iconBg: theme.palette.primary.hex,
+        stale: {
+            title: "Expediente desactualizado",
+            message: `Tu expediente no se ha actualizado en más de ${monthsSinceUpdate} meses. Es recomendable revisarlo para asegurar su vigencia.`,
+            icon: <MdUpdate size={36} color="#fff" />,
+            iconBg: theme.palette.secondary.hex,
             typeColor: theme.palette.text.hex,
             action: {
-                label: "Ir al perfil",
-                path:
-                  typeof window !== "undefined"
-                    ? `/profile/student/${JSON.parse(localStorage.getItem("user"))?.id}?section=AH`
-                    : "",
-              },
-              
-        },
-        incomplete: {
-            title: "Expediente incompleto",
-            message: "Debes aprobar al menos el 80% de asignaturas de 1º y 2º curso (máx. 2 suspensas por año).",
-            icon: <MdWarning size={36} color="#fff" />,
-            iconBg: theme.palette.warning.hex,
-            typeColor: theme.palette.text.hex,
-            action: {
-                label: "Ir al perfil",
-                path:
-                  typeof window !== "Revisar expediente"
-                    ? `/profile/student/${JSON.parse(localStorage.getItem("user"))?.id}?section=AH`
-                    : "",
-              },
-              
+                label: "Actualizar ahora",
+                path: `/profile/student/${user?.id}?section=AH`,
+            },
         },
     };
 
     const current = alertConfig[alert.keyword];
-
     if (!current) return null;
 
     return (
         <div className="flex flex-col justify-center items-center p-6 bg-transparent">
-
             <h1
                 className="text-3xl font-bold text-center pt-10 pb-10"
                 style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
@@ -62,8 +55,6 @@ export const AlertSystemRoadmap = ({ alerts }) => {
                 style={{ backgroundColor: `${current.iconBg}20`, borderLeft: `6px solid ${current.iconBg}` }}
             >
                 <div className="flex flex-col items-center gap-6 text-center">
-
-                    {/* Cabecera */}
                     <div className="flex items-center gap-4">
                         <div className="rounded-full w-14 h-14 flex items-center justify-center" style={{ backgroundColor: current.iconBg }}>
                             {current.icon}
@@ -73,12 +64,10 @@ export const AlertSystemRoadmap = ({ alerts }) => {
                         </h2>
                     </div>
 
-                    {/* Texto */}
                     <p className="text-lg leading-relaxed" style={{ color: current.typeColor, fontFamily: "Montserrat" }}>
                         {current.message}
                     </p>
 
-                    {/* Botón */}
                     {current.action && (
                         <button
                             onClick={() => router.push(current.action.path)}

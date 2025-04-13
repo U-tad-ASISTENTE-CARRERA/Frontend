@@ -6,6 +6,7 @@ import ProgressBar from "@/components/student_profile/ProgressBar";
 import Section from "@/components/Roadmap/Section";
 import SectionPopup from "@/components/Roadmap/SectionPopUp";
 import { FaInfoCircle, FaTrophy } from "react-icons/fa";
+import MotivationalMessage from "@/components/Roadmap/MotivationalMessage";
 
 const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
   const [selectedSection, setSelectedSection] = useState(null);
@@ -59,7 +60,6 @@ const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
                 El progreso mostrado también se actualiza automáticamente en
                 función de las asignaturas que hayas superado.
               </p>
-
               <p>
                 Si ya has aprobado contenidos relacionados, se convalidarán
                 checkpoints del roadmap correspondientes.
@@ -69,7 +69,7 @@ const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
         </div>
 
         {/* Bubble con progreso */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-2">
           <div
             className="flex items-center gap-3 px-6 py-2 rounded-full shadow-md text-white font-semibold"
             style={{ backgroundColor: theme.palette.primary.hex }}
@@ -78,6 +78,9 @@ const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
             Progreso: {Math.round(progress)}%
           </div>
         </div>
+
+        {/* Mensaje motivacional */}
+        <MotivationalMessage progress={progress} />
 
         {/* Barra de progreso */}
         <div className="w-full bg-gray-200 rounded-full h-2.5 mb-10">
@@ -95,10 +98,9 @@ const Roadmap = ({ roadmap, metadata, progress, setProgress }) => {
               return (
                 <div
                   key={sectionName}
-                  className={`relative flex flex-col items-center p-4 rounded-xl border shadow-sm transition duration-300 ease-in-out ${isDone
-                      ? "bg-green-50 border-green-400"
-                      : "bg-white border-gray-200"
-                    }`}
+                  className={`relative flex flex-col items-center p-4 rounded-xl border shadow-sm transition duration-300 ease-in-out ${
+                    isDone ? "bg-green-50 border-green-400" : "bg-white border-gray-200"
+                  }`}
                 >
                   {isDone && (
                     <span className="absolute top-2 right-2 px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-700 rounded-full">

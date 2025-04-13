@@ -152,7 +152,14 @@ const Home = () => {
       <div className="flex justify-center w-full px-6 py-10 ">
         <div className="w-full max-w-6xl space-y-8">
           {/* Cabecera del estudiante */}
-          <StudentHeaderCard metadata={metadata} />
+          <StudentHeaderCard
+            metadata={metadata}
+          />
+
+          {/* Mensaje recordatorio de actualizar perfil */}
+          <AlertSystemRoadmap
+            metadata={metadata}
+          />
 
           {/* Roadmap */}
           <div className="bg-white rounded-2xl shadow-md p-10">
