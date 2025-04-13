@@ -16,14 +16,14 @@ import StudentHeaderCard from "@/components/Roadmap/StudentHeaderCard";
 const Home = () => {
   const params = useParams();
   const router = useRouter();
-  const [roadmap, setRoadmap] = useState({ body: {} });
+  const [roadmap, setRoadmap] = useState(null);
   const [metadata, setMetadata] = useState(null);
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchMetadataAndRoadmap = async () => {
     try {
-      const response = await fetch("http://localhost:3000/metadata", {
+      const metadataRes = await fetch("http://localhost:3000/metadata", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -31,13 +31,24 @@ const Home = () => {
         },
       });
 
-      const data = await response.json();
-      localStorage.setItem("metadata", JSON.stringify(data.metadata));
-      setMetadata(data.metadata);
-      setRoadmap(data.metadata.roadmap);
-      setProgress(calculateProgress(data.metadata.roadmap));
+      const metadataData = await metadataRes.json();
+      localStorage.setItem("metadata", JSON.stringify(metadataData.metadata));
+      setMetadata(metadataData.metadata);
+
+      const roadmapRes = await fetch("http://localhost:3000/userRoadmap", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const roadmapData = await roadmapRes.json();
+      setRoadmap(roadmapData.roadmap);
+      setProgress(calculateProgress(roadmapData.roadmap));
+
     } catch (error) {
-      console.error("Error fetching metadata:", error);
+      console.error("Error fetching metadata or roadmap:", error);
     }
   };
 
@@ -66,10 +77,10 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (metadata) {
+    if (metadata && roadmap) {
       setTimeout(() => setIsLoading(false), 2000);
     }
-  }, [metadata]);
+  }, [metadata, roadmap]);
 
   const generateAlerts = () => {
     if (!metadata) return [];
@@ -124,7 +135,7 @@ const Home = () => {
     return alerts;
   };
 
-  if (isLoading || !metadata) return <LoadingModal />;
+  if (isLoading || !metadata || !roadmap) return <LoadingModal />;
 
   const alerts = generateAlerts();
 
@@ -138,14 +149,10 @@ const Home = () => {
 
   return (
     <div>
-
       <div className="flex justify-center w-full px-6 py-10 ">
         <div className="w-full max-w-6xl space-y-8">
           {/* Cabecera del estudiante */}
-          <StudentHeaderCard
-            metadata={metadata}
-          />
-
+          <StudentHeaderCard metadata={metadata} />
 
           {/* Roadmap */}
           <div className="bg-white rounded-2xl shadow-md p-10">
@@ -156,7 +163,6 @@ const Home = () => {
               setProgress={setProgress}
             />
           </div>
-          
 
           {/* Oportunidades */}
           <div className="bg-white rounded-2xl shadow-md p-10">
@@ -164,8 +170,6 @@ const Home = () => {
           </div>
         </div>
       </div>
-
-
     </div>
   );
 };
