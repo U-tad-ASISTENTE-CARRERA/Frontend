@@ -1,15 +1,19 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
-import "../../../src/app/globals.css";
 import ErrorPopUp from "@/components/ErrorPopUp";
-import { useEffect } from "react";
+import { emailRegex, passwordRegex } from "@/utils/ValidatorRegex";
+import { FaEye, FaEyeSlash, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
-const Register = () => {
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
+
+const RegisterForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [seedWord, setSeedWord] = useState("");
@@ -17,6 +21,13 @@ const Register = () => {
   const [success, setSuccess] = useState(false);
   const router = useRouter();
   const [tokenError, setTokenError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Comprobaciones de la contraseña
+  const hasMinLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*]/.test(password);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -30,23 +41,31 @@ const Register = () => {
   const validateForm = async (e) => {
     e.preventDefault();
     setError("");
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+    // Validar que todos los campos estén completados
+    if (!email.trim() || !password.trim() || !seedWord.trim()) {
+      setError("Todos los campos deben estar completados.");
+      setIsLoading(false);
+      return;
+    }
+  
     if (
       !emailRegex.test(email) ||
       (!email.endsWith("live.u-tad.com") && !email.endsWith("u-tad.com"))
     ) {
       setError("El correo debe terminar en live.u-tad.com o u-tad.com");
+      setIsLoading(false);
       return;
     }
-
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
+  
     if (!passwordRegex.test(password)) {
-      setError(
-        "La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial."
-      );
+      setError("La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial.");
+      setIsLoading(false);
       return;
     }
-
+  
+    setIsLoading(true);
+  
     try {
       const response = await fetch("http://localhost:3000/register", {
         method: "POST",
@@ -55,99 +74,102 @@ const Register = () => {
         },
         body: JSON.stringify({ email, password, seedWord }),
       });
-
+  
       const data = await response.json();
-      console.log(data);
-
+  
       if (!response.ok) {
         const errorMessages = {
           USER_ALREADY_EXISTS: "Ya existe un usuario registrado con ese correo",
-          INVALID_EMAIL:
-            "El correo debe terminar en live.u-tad.com o u-tad.com",
+          INVALID_EMAIL: "El correo debe terminar en live.u-tad.com o u-tad.com",
           INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
         };
-
-        setSuccess("");
+  
+        setSuccess(false);
         setError(errorMessages[data?.error] || "Error en el registro");
         return;
       }
-
+  
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-
-      if (
-        data?.user?.id &&
-        data?.user?.role &&
-        localStorage.getItem("token") &&
-        localStorage.getItem("user")
-      ) {
-        const userRole =
-          data.user.role || JSON.parse(localStorage.getItem("user"))?.role;
-
-        if (userRole === "STUDENT") {
-          router.push(`/data_complete/student/${data.user.id}`);
-        } else if (userRole === "TEACHER") {
-          router.push(`/data_complete/teacher/${data.user.id}`);
-        }
+  
+      const userRole =
+        data.user.role || JSON.parse(localStorage.getItem("user"))?.role;
+  
+      if (userRole === "STUDENT") {
+        router.push(`/data_complete/student/${data.user.id}`);
+      } else if (userRole === "TEACHER") {
+        router.push(`/data_complete/teacher/${data.user.id}`);
       }
+  
       setSuccess(true);
     } catch (error) {
       console.error("Error en la conexión con el backend:", error);
       setError("Ocurrió un error inesperado. Inténtalo de nuevo.");
+    } finally {
+      setIsLoading(false);
     }
   };
+  
 
   if (tokenError) {
     return <ErrorPopUp message={"No tienes acceso a esta página"} path="" />;
   }
 
+
   return (
-    <>
+    <div
+      className="fixed inset-0 flex items-center justify-center z-1 mt-20"
+      style={{ overflow: "hidden" }}
+    >
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <LoadingModal />
+        </div>
+      )}
+
       <div
-        className="flex items-center justify-center min-h-screen"
-        style={{
-          fontFamily: "Montserrat",
-        }}
+        className="w-full max-w-md p-8 bg-white shadow-lg"
+        style={{ borderRadius: theme.buttonRadios.l }}
       >
-        <div
-          className="w-full max-w-md p-8 bg-white shadow-lg"
-          style={{ borderRadius: theme.buttonRadios.l }}
+        <h2
+          className="text-2xl font-bold text-center pb-6"
+          style={{
+            color: theme.palette.primary.hex,
+            fontFamily: "Montserrat",
+          }}
         >
-          <h2
-            className="text-2xl font-bold text-center pb-8"
-            style={{
-              color: theme.palette.primary.hex,
-              fontFamily: "Montserrat",
-            }}
-          >
-            Regístrate
-          </h2>
-          <form className="space-y-6" onSubmit={validateForm}>
-            <div>
+          Regístrate
+        </h2>
+
+        <form className="space-y-5" onSubmit={validateForm}>
+          {/* Email */}
+          <div>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="block w-full p-3 border"
+              placeholder="tuemail@live.u-tad.com"
+              style={{
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+                fontFamily: "Montserrat, sans-serif",
+                borderRadius: theme.buttonRadios.m,
+              }}
+            />
+          </div>
+
+          {/* Contraseña */}
+          <div className="space-y-3">
+            {/* Input + botón en un contenedor relativo */}
+            <div className="relative">
               <input
-                type="email"
-                id="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300"
-                placeholder="tuemail@live.u-tad.com"
-                style={{
-                  borderColor: theme.palette.light.hex,
-                  color: theme.palette.text.hex,
-                  fontFamily: "Montserrat, sans-serif",
-                  borderRadius: theme.buttonRadios.m,
-                }}
-              />
-            </div>
-            <div>
-              <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
-                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300"
+                className="block w-full p-3 border pr-10"
                 placeholder="Contraseña"
                 style={{
                   borderColor: theme.palette.light.hex,
@@ -156,61 +178,126 @@ const Register = () => {
                   borderRadius: theme.buttonRadios.m,
                 }}
               />
+              {password.trim() !== "" && (
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  style={{ color: theme.palette.gray.hex }}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                </button>
+              )}
             </div>
-            <div>
-              <input
-                type="text"
-                id="seed"
-                required
-                value={seedWord}
-                onChange={(e) => setSeedWord(e.target.value)}
-                className="block w-full mt-1 p-3 border border-gray-300"
-                placeholder="Palabra clave"
-                style={{
-                  borderColor: theme.palette.light.hex,
-                  color: theme.palette.text.hex,
-                  fontFamily: "Montserrat, sans-serif",
-                  borderRadius: theme.buttonRadios.m,
-                }}
-              />
-            </div>
-            {error && (
-              <p className="text-red-500 text-sm text-center">{error}</p>
-            )}
-            {success && (
-              <p className="text-green-500 text-sm text-center">
-                Registro exitoso. Ahora puedes iniciar sesión.
-              </p>
-            )}
-            <button
-              type="submit"
-              className="w-full px-4 py-2 text-white rounded-md transition duration-200"
+
+            {/* Validaciones dinámicas */}
+            <ul
+              className="space-y-1 text-xs font-medium"
+              style={{ color: theme.palette.darkGray.hex }}
+            >
+              <li className="flex items-center gap-2">
+                {hasMinLength ? (
+                  <FaCheckCircle style={{ color: theme.palette.success.hex }} />
+                ) : (
+                  <FaTimesCircle style={{ color: theme.palette.error.hex }} />
+                )}
+                Al menos 8 caracteres
+              </li>
+              <li className="flex items-center gap-2">
+                {hasUppercase ? (
+                  <FaCheckCircle style={{ color: theme.palette.success.hex }} />
+                ) : (
+                  <FaTimesCircle style={{ color: theme.palette.error.hex }} />
+                )}
+                Al menos 1 mayúscula
+              </li>
+              <li className="flex items-center gap-2">
+                {hasSpecialChar ? (
+                  <FaCheckCircle style={{ color: theme.palette.success.hex }} />
+                ) : (
+                  <FaTimesCircle style={{ color: theme.palette.error.hex }} />
+                )}
+                Al menos 1 carácter especial (!@#$%^&*)
+              </li>
+            </ul>
+          </div>
+
+
+          {/* Palabra clave */}
+          <div>
+            <input
+              type="text"
+              id="seed"
+              value={seedWord}
+              onChange={(e) => setSeedWord(e.target.value)}
+              className="block w-full p-3 border "
+              placeholder="Palabra clave"
               style={{
-                backgroundColor: theme.palette.primary.hex,
+                borderColor: theme.palette.light.hex,
+                color: theme.palette.text.hex,
+                fontFamily: "Montserrat, sans-serif",
                 borderRadius: theme.buttonRadios.m,
-                fontWeight: theme.fontWeight.bold,
               }}
+            />
+            <p
+              className="text-xs mt-2"
+              style={{ color: theme.palette.darkGray.hex }}
             >
-              Regístrate
-            </button>
-          </form>
-          <p
-            className="text-sm text-center mt-8"
-            style={{ color: theme.palette.text.hex }}
+              Una palabra personal que se usará para verificar tu identidad en caso de recuperación de cuenta.
+            </p>
+          </div>
+
+          {/* Errores / éxito */}
+          {error && (
+            <p
+              className="text-sm text-center"
+              style={{ color: theme.palette.error.hex }}
+            >
+              {error}
+            </p>
+          )}
+
+          {success && (
+            <p
+              className="text-sm text-center"
+              style={{ color: theme.palette.success.hex }}
+            >
+              Registro exitoso.
+            </p>
+          )}
+
+
+          <button
+            type="submit"
+            className="w-full px-4 py-2 text-white rounded-md transition duration-200"
+            style={{
+              backgroundColor: theme.palette.primary.hex,
+              borderRadius: theme.buttonRadios.m,
+              fontWeight: theme.fontWeight.bold,
+            }}
           >
-            ¿Ya tienes una cuenta?{" "}
-            <a
-              href="/login"
-              style={{ color: theme.palette.dark.hex }}
-              className="hover:underline"
-            >
-              Acceder
-            </a>
-          </p>
-        </div>
+            Regístrate
+          </button>
+        </form>
+
+        <p
+          className="text-sm text-center mt-6"
+          style={{ color: theme.palette.text.hex }}
+        >
+          ¿Ya tienes una cuenta?{" "}
+          <a
+            href="/login"
+            style={{ color: theme.palette.dark.hex }}
+            className="hover:underline"
+          >
+            Acceder
+          </a>
+        </p>
       </div>
-    </>
+    </div>
+
   );
 };
 
-export default Register;
+export default RegisterForm;

@@ -6,9 +6,12 @@ import { useRouter } from "next/navigation";
 import "@fontsource/montserrat";
 import ErrorPopUp from "@/components/ErrorPopUp";
 import { emailRegex, passwordRegex } from "@/utils/ValidatorRegex";
-
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -18,6 +21,7 @@ const LoginForm = () => {
   const [error, setError] = useState("");
   const [tokenError, setTokenError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
 
   useEffect(() => {
@@ -34,72 +38,80 @@ const LoginForm = () => {
   }
 
   const validateForm = async (e) => {
-    // Prevent default form submission
     e.preventDefault();
     setError("");
-
-    // Validar el formato del correo electrónico y la contraseña
+    setIsLoading(true);
+  
+    // Validar que todos los campos estén completados
+    if (!email.trim() || !password.trim()) {
+      setError("Todos los campos deben estar completados.");
+      setIsLoading(false);
+      return;
+    }
+  
     if (
       !emailRegex.test(email) ||
       (!email.endsWith("live.u-tad.com") && !email.endsWith("u-tad.com"))
     ) {
       setError("El correo debe terminar en live.u-tad.com o u-tad.com");
+      setIsLoading(false);
       return;
     }
-
+  
     if (!passwordRegex.test(password)) {
-      setError(
-        "La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial."
-      );
+      setError("La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial.");
+      setIsLoading(false);
       return;
     }
-
+  
     try {
       const response = await fetch("http://localhost:3000/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const data = await response.json();
-      console.log(data);
+  
       if (!response.ok) {
         const errorMessages = {
           INVALID_CREDENTIALS: "Usuario no encontrado",
           INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
         };
-
+  
         setError(errorMessages[data?.error] || "Error al acceder");
         return;
       }
-
-      // Guardar el token y el usuario en localStorage
+  
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      console.log(data);
-
-      // Redirigir según el rol del usuario
-      if (data.user.role == "STUDENT") {
+  
+      if (data.user.role === "STUDENT") {
         router.push(`/profile/student/${data.user.id}`);
-      } else if (data.user.role == "TEACHER") {
+      } else if (data.user.role === "TEACHER") {
         router.push(`/profile/teacher/${data.user.id}`);
-      } else if (data.user.role == "ADMIN") {
+      } else if (data.user.role === "ADMIN") {
         router.push(`/home/admin/${data.user.id}`);
       }
-
     } catch (error) {
       setError("Ha ocurrido un error inesperado");
-      console.log(error);
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
+  
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50 mt-20"
+      className="fixed inset-0 flex items-center justify-center z-1 mt-20"
       style={{ overflow: "hidden" }}
     >
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <LoadingModal />
+        </div>
+      )}
 
       <div
         className="w-full max-w-md p-8 bg-white shadow-lg"
@@ -120,7 +132,6 @@ const LoginForm = () => {
             <input
               type="email"
               id="email"
-              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="block w-full mt-1 p-3 border"
@@ -137,7 +148,6 @@ const LoginForm = () => {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="block w-full mt-1 p-3 border pr-10"
