@@ -7,10 +7,12 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
   const [errors, setErrors] = useState({});
   const [tempWorkExperience, setTempWorkExperience] = useState([...workExperience]);
   const [deletedWorkExperience, setDeletedWorkExperience] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 2;
 
   const handleInputChange = (index, field, value) => {
     const updatedWorkExperience = [...tempWorkExperience];
-    updatedWorkExperience[index][field] = value.trim();
+    updatedWorkExperience[index][field] = field === "jobType" || field === "description" ? value : value.trim();
     setTempWorkExperience(updatedWorkExperience);
   };
 
@@ -25,22 +27,18 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
     let newErrors = {};
 
     tempWorkExperience.forEach((work, index) => {
-      if (!work.jobType.trim()) {
+      if (!work.jobType) {
         newErrors[`jobType-${index}`] = "El tipo de trabajo no puede estar vacío.";
       }
-      if (!work.company.trim()) {
+      if (!work.company) {
         newErrors[`company-${index}`] = "La compañía no puede estar vacía.";
-      }
-      if (!work.responsibilities.trim()) {
-        newErrors[`responsibilities-${index}`] = "Las responsabilidades no pueden estar vacías.";
       }
       if (!work.startDate || isNaN(new Date(work.startDate).getTime())) {
         newErrors[`startDate-${index}`] = "La fecha de inicio es obligatoria y debe ser válida.";
+      } else if (new Date(work.startDate) > new Date()) {
+        newErrors[`startDate-${index}`] = "La fecha de inicio no puede ser posterior a la fecha actual.";
       }
-      if (work.endDate && isNaN(new Date(work.endDate).getTime())) {
-        newErrors[`endDate-${index}`] = "La fecha de finalización debe ser válida.";
-      }
-      if (!work.description.trim()) {
+      if (!work.description) {
         newErrors[`description-${index}`] = "La descripción no puede estar vacía.";
       }
     });
@@ -95,6 +93,22 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
     setIsEditing(false);
   };
 
+  const totalPages = Math.ceil(tempWorkExperience.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = tempWorkExperience.slice(startIndex, startIndex + itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="space-y-4 p-4 bg-white rounded-lg">
       {/* Header con botón de edición */}
@@ -130,13 +144,18 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
         <p className="text-gray-500 text-sm text-center">No hay experiencias laborales guardadas.</p>
       )}
 
-      {/* Lista de experiencias laborales */}
-      {tempWorkExperience.map((work, index) => {
-        const hasError = errors[`jobType-${index}`] || errors[`company-${index}`] || errors[`responsibilities-${index}`] || errors[`startDate-${index}`] || errors[`endDate-${index}`] || errors[`description-${index}`];
+      {/* Lista de experiencias laborales paginada */}
+      {currentItems.map((work, index) => {
+        const globalIndex = startIndex + index;
+        const hasError =
+          errors[`jobType-${globalIndex}`] ||
+          errors[`company-${globalIndex}`] ||
+          errors[`startDate-${globalIndex}`] ||
+          errors[`description-${globalIndex}`];
 
         return (
-          <div 
-            key={index} 
+          <div
+            key={globalIndex}
             className="rounded-md p-4 border space-y-3"
             style={{ borderColor: theme.palette.lightGray.hex }}
           >
@@ -149,17 +168,17 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                   type="text"
                   placeholder="Tipo de trabajo"
                   value={work.jobType}
-                  onChange={(e) => handleInputChange(index, 'jobType', e.target.value)}
+                  onChange={(e) => handleInputChange(globalIndex, "jobType", e.target.value)}
                   className="block w-full p-2 border rounded-md"
                   style={{
-                    borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
+                    borderColor: errors[`jobType-${globalIndex}`] ? theme.palette.error.hex : theme.palette.primary.hex,
                     color: theme.palette.text.hex,
                   }}
                   disabled={!isEditing}
                 />
-                {errors[`jobType-${index}`] && (
+                {errors[`jobType-${globalIndex}`] && (
                   <p className="text-xs" style={{ color: theme.palette.error.hex }}>
-                    {errors[`jobType-${index}`]}
+                    {errors[`jobType-${globalIndex}`]}
                   </p>
                 )}
               </div>
@@ -171,17 +190,17 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                 <input
                   type="date"
                   value={work.startDate}
-                  onChange={(e) => handleInputChange(index, 'startDate', e.target.value)}
+                  onChange={(e) => handleInputChange(globalIndex, "startDate", e.target.value)}
                   className="block w-full p-2 border rounded-md"
                   style={{
-                    borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
+                    borderColor: errors[`startDate-${globalIndex}`] ? theme.palette.error.hex : theme.palette.primary.hex,
                     color: theme.palette.text.hex,
                   }}
                   disabled={!isEditing}
                 />
-                {errors[`startDate-${index}`] && (
+                {errors[`startDate-${globalIndex}`] && (
                   <p className="text-xs" style={{ color: theme.palette.error.hex }}>
-                    {errors[`startDate-${index}`]}
+                    {errors[`startDate-${globalIndex}`]}
                   </p>
                 )}
               </div>
@@ -193,26 +212,21 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                 <input
                   type="date"
                   value={work.endDate || ""}
-                  onChange={(e) => handleInputChange(index, 'endDate', e.target.value)}
+                  onChange={(e) => handleInputChange(globalIndex, "endDate", e.target.value)}
                   className="block w-full p-2 border rounded-md"
                   style={{
-                    borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
+                    borderColor: theme.palette.primary.hex,
                     color: theme.palette.text.hex,
                   }}
                   disabled={!isEditing}
                 />
-                {errors[`endDate-${index}`] && (
-                  <p className="text-xs" style={{ color: theme.palette.error.hex }}>
-                    {errors[`endDate-${index}`]}
-                  </p>
-                )}
               </div>
 
               {isEditing && (
                 <div className="pt-6 mt-2">
                   <button
                     type="button"
-                    onClick={() => handleDelete(index)}
+                    onClick={() => handleDelete(globalIndex)}
                     className="text-white p-2 rounded-md transition duration-200"
                     style={{ backgroundColor: theme.palette.error.hex }}
                   >
@@ -225,36 +239,13 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
             <div className="flex items-start gap-3">
               <div className="w-1/3 space-y-1">
                 <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
-                  Responsabilidades
-                </label>
-                <input
-                  type="text"
-                  placeholder="Responsabilidades"
-                  value={work.responsibilities}
-                  onChange={(e) => handleInputChange(index, 'responsibilities', e.target.value)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
-                    color: theme.palette.text.hex,
-                  }}
-                  disabled={!isEditing}
-                />
-                {errors[`responsibilities-${index}`] && (
-                  <p className="text-xs" style={{ color: theme.palette.error.hex }}>
-                    {errors[`responsibilities-${index}`]}
-                  </p>
-                )}
-              </div>
-
-              <div className="w-2/3 space-y-1">
-                <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                   Compañía
                 </label>
                 <input
                   type="text"
                   placeholder="Compañía"
                   value={work.company}
-                  onChange={(e) => handleInputChange(index, 'company', e.target.value)}
+                  onChange={(e) => handleInputChange(globalIndex, 'company', e.target.value)}
                   className="block w-full p-2 border rounded-md"
                   style={{
                     borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
@@ -262,39 +253,69 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                   }}
                   disabled={!isEditing}
                 />
-                {errors[`company-${index}`] && (
+                {errors[`company-${globalIndex}`] && (
                   <p className="text-xs" style={{ color: theme.palette.error.hex }}>
-                    {errors[`company-${index}`]}
+                    {errors[`company-${globalIndex}`]}
+                  </p>
+                )}
+              </div>
+
+              <div className="w-2/3 space-y-1">
+                <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
+                  Descripción
+                </label>
+                <textarea
+                  placeholder="Descripción"
+                  value={`${work.description}`}
+                  onChange={(e) => handleInputChange(globalIndex, 'description', e.target.value)}
+                  className="block w-full p-2 border rounded-md"
+                  style={{
+                    borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
+                    color: theme.palette.text.hex,
+                    overflow: "hidden",
+                    resize: "none",
+                    height: "auto", 
+                  }}
+                  rows={3}
+                  onInput={(e) => {
+                    e.target.style.height = "auto";
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
+                  disabled={!isEditing}
+                />
+                {errors[`description-${globalIndex}`] && (
+                  <p className="text-xs" style={{ color: theme.palette.error.hex }}>
+                    {errors[`description-${globalIndex}`]}
                   </p>
                 )}
               </div>
             </div>
-
-            <div className="space-y-1">
-              <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
-                Descripción
-              </label>
-              <input
-                type="text"
-                placeholder="Descripción"
-                value={work.description}
-                onChange={(e) => handleInputChange(index, 'description', e.target.value)}
-                className="block w-full p-2 border rounded-md"
-                style={{
-                  borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
-                  color: theme.palette.text.hex,
-                }}
-                disabled={!isEditing}
-              />
-              {errors[`description-${index}`] && (
-                <p className="text-xs" style={{ color: theme.palette.error.hex }}>
-                  {errors[`description-${index}`]}
-                </p>
-              )}
-            </div>
           </div>
         );
       })}
+
+      {/* Paginación */}
+      {tempWorkExperience.length > itemsPerPage && (
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded ${currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"}`}
+          >
+            Anterior
+          </button>
+          <span className="text-sm">
+            Página {currentPage} de {totalPages}
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 rounded ${currentPage === totalPages ? "bg-gray-300" : "bg-blue-500 text-white"}`}
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
 
       {/* Botón para añadir nuevas experiencias laborales */}
       {isEditing && (

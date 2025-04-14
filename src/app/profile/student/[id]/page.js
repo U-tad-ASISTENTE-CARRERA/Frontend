@@ -243,9 +243,11 @@ const StudentProfile = () => {
 
   const handleDeleteCertifications = async (certObj) => {
     const certificationList = certObj.certifications.map(cert => ({
+      uuid: cert.uuid,
       name: cert.name,
       date: cert.date,
-      institution: cert.institution
+      institution: cert.institution,
+      _id: cert._id,
     }));
 
     try {
