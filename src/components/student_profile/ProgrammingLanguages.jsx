@@ -14,16 +14,28 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
+  const levelMap = {
+    low: op_level_skill[0],
+    medium: op_level_skill[1],
+    high: op_level_skill[2],
+  };
+
+  const reverseLevelMap = Object.fromEntries(
+    Object.entries(levelMap).map(([key, value]) => [value, key])
+  );
+
+  const convertLanguage = (level) => levelMap[level] || op_level_skill[0];
+
   useEffect(() => {
     const initializedSkills = skills.map((skill) => ({
       _id: skill._id || null,
       name: skill.name || "",
-      level: skill.level || "Bajo",
+      level: convertLanguage(skill.level),
     }));
     setTempSkills(initializedSkills);
 
     const initializedSearch = initializedSkills.reduce((acc, skill, index) => {
-      acc[index] = skill.name || "";
+      acc[index] = skill.name;
       return acc;
     }, {});
     setSkillSearch(initializedSearch);
@@ -46,7 +58,7 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
   }
 
   const addSkill = () => {
-    setTempSkills([...tempSkills, { _id: null, name: "", level: "Bajo" }]);
+    setTempSkills([...tempSkills, { _id: null, name: "", level: op_level_skill[0] }]);
   }
 
   const handleDeleteSkill = (index) => {
@@ -74,17 +86,25 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
 
   const handldeSave = async () => {
     if (!validateForm()) return;
+    console.log("Validación exitosa");
     try {
+      const formattedSkills = tempSkills.map((skill) => ({
+        ...skill,
+        level: reverseLevelMap[skill.level],
+      }));
+
       if (deletedSkills.length > 0) {
         await onDelete({ skills: deletedSkills });
         setDeletedSkills([]);
       }
-      if (tempSkills.length > 0) {
-        await onSave({ skills: tempSkills });
-        setSkills(tempSkills);
+      if (formattedSkills.length > 0) {
+        await onSave({ skills: formattedSkills });
+        setSkills(formattedSkills);
       }
+      console.log("Skills actualizadas:", formattedSkills);
       setIsEditing(false);
     } catch (error) {
+      console.log("Error al guardar skills:", error.message);
       console.error("Error al actualizar skills:", error.message);
     }
   }
@@ -99,7 +119,7 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
     const resetSkills = skills.map((skill) => ({
       _id: skill._id || null,
       name: skill.name || "",
-      level: skill.level || "Bajo",
+      level: convertLanguage(skill.level),
     }));
     setTempSkills(resetSkills);
 
@@ -254,8 +274,10 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
                     }}
                     disabled={!isEditing}
                   >
-                    {op_level_skill.map((op, i) => (
-                      <option key={i} value={op}>{op}</option>
+                    {op_level_skill.map((level, i) => (
+                      <option key={i} value={level}>
+                        {level}
+                      </option>
                     ))}
                   </select>
                 </div>

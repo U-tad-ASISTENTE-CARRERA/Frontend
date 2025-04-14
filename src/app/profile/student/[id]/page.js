@@ -80,7 +80,7 @@ const StudentProfile = () => {
         setYearsCompleted(data.metadata.yearsCompleted || "");
         setLanguages(data.metadata.languages || []);
         setSpecialization(data.metadata.specialization || "");
-        setSkills(data.metadata.skills || []);
+        setSkills(data.metadata.programming_languages || []);
         setCertifications(data.metadata.certifications || []);
         setWorkExperience(data.metadata.workExperience || []);
         setGender(data.metadata.gender || "");
