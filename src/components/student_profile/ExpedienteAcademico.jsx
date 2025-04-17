@@ -56,13 +56,15 @@ const ExpedienteAcademico = ({
 
   const handleGradeChange = (subjectName, value) => {
     let normalizedValue = value.replace(",", ".");
-    if (/^\d{1,2}(\.\d{0,2})?$/.test(normalizedValue)) {
+
+    if (normalizedValue === "" || /^\d{1,2}(\.\d{0,2})?$/.test(normalizedValue)) {
       setGrades((prev) => ({
         ...prev,
         [subjectName]: normalizedValue.replace(/^0+(\d)/, "$1"),
       }));
     }
   };
+
 
   const isFormValid = () => {
     const newErrors = {};
@@ -104,7 +106,11 @@ const ExpedienteAcademico = ({
   };
 
   const totalSubjects = subjectsByYear[activeYear].length;
-  const completed = subjectsByYear[activeYear].filter((subj) => grades[subj] !== "" && grades[subj] !== undefined).length;
+  const approved = subjectsByYear[activeYear].filter((subj) => {
+    const grade = parseFloat(grades[subj]);
+    return !isNaN(grade) && grade >= 5;
+  }).length;
+
   const failed = subjectsByYear[activeYear].filter((subj) => parseFloat(grades[subj]) < 5).length;
 
   return (
@@ -210,7 +216,7 @@ const ExpedienteAcademico = ({
           }}
         >
           <FaCheckCircle size={14} />
-          {completed}/{totalSubjects} completadas
+          {approved}/{totalSubjects} aprobadas
         </div>
 
         {/* Asignaturas suspensas */}
@@ -237,14 +243,27 @@ const ExpedienteAcademico = ({
             style={{ backgroundColor: index % 2 === 0 ? theme.palette.neutral.hex : "transparent" }}
           >
             <label className="text-sm font-medium w-3/5">{subjectName}</label>
-            <input
-              type="number"
-              value={grades[subjectName] || ""}
-              onChange={(e) => {handleGradeChange(subjectName, e.target.value)}}
-              className="block w-1/5 p-2 border rounded-md transition-all"
-              disabled={!isEditing}
-              style={{ borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex }}
-            />
+            {isEditing ? (
+              <input
+                type="number"
+                min="0"
+                max="10"
+                step="0.01"
+                value={grades[subjectName] || ""}
+                onChange={(e) => { handleGradeChange(subjectName, e.target.value) }}
+                className="block w-1/5 p-2 border rounded-md transition-all"
+                style={{ borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex }}
+              />
+            ) : (
+              <p
+                className="w-1/5 p-2 bg-transparent border border-transparent"
+                style={{ color: theme.palette.text.hex }}
+              >
+                {grades[subjectName] || "—"}
+              </p>
+            )}
+
+
             {isEditing && errors[subjectName] && <p className="text-red-500 text-xs">{errors[subjectName]}</p>}
           </div>
         ))}

@@ -412,19 +412,6 @@ const StudentProfile = () => {
             style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
           >
             {getWelcomeMessage()} {firstName || "Usuario"}
-
-            {/* * testin'!!! sistema de alertas del estudiante sashVqz
-            <AlertSystemRoadmap
-              academicRecord={academicRecord}
-              yearsCompleted={yearsCompleted}
-              firstName={firstName}
-              lastName={lastName}
-              languages={languages}
-              skills={skills}
-              certifications={certifications}
-              workExperience={workExperience}
-              gender={gender}
-            />  */}
           </h1>
 
           <div className="bg-white rounded-lg w-full min-w-full md:min-w-screen">

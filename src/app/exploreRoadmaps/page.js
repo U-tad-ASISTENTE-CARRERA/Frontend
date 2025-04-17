@@ -5,9 +5,7 @@ import { useRouter } from 'next/navigation';
 import { getAllRoadmaps } from '@/components/exploreRoadmaps/roadmapsData.js';
 import { theme } from '@/constants/theme';
 import dynamic from "next/dynamic";
-const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
-  ssr: false,
-});
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), { ssr: false });
 import { FaSearch, FaTimes } from 'react-icons/fa';
 
 export default function ExploreRoadmaps() {
@@ -33,10 +31,7 @@ export default function ExploreRoadmaps() {
   const filteredRoadmaps = useCallback(() => {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
     if (normalizedSearchTerm === '') return roadmaps;
-    
-    return roadmaps.filter(roadmap => {
-      return roadmap.name ? roadmap.name.toLowerCase().includes(normalizedSearchTerm) : false;
-    });
+    return roadmaps.filter(roadmap => roadmap.name ? roadmap.name.toLowerCase().includes(normalizedSearchTerm) : false);
   }, [roadmaps, searchTerm]);
 
   const handleRoadmapClick = useCallback((roadmapId) => {
@@ -46,7 +41,7 @@ export default function ExploreRoadmaps() {
   const filteredResults = filteredRoadmaps();
 
   if (loading) return <LoadingModal />;
-  
+
   return (
     <div 
       className="min-h-screen"
@@ -57,9 +52,9 @@ export default function ExploreRoadmaps() {
         backgroundAttachment: "fixed"
       }}
     >
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6 text-center text-blue-700 shadow-text">
-          Conoce Nuestras Especialidades
+      <div className="container mt-5 mb-10 mx-auto px-4 py-8">
+        <h1 style={{ color: theme.palette.primary.hex, fontFamily: 'Montserrat', fontWeight: theme.fontWeight.bold }} className="text-3xl text-center mb-10">
+          Conoce nuestras Especializaciones
         </h1>
 
         <div className="mb-8 max-w-xl mx-auto relative">
@@ -68,21 +63,26 @@ export default function ExploreRoadmaps() {
             placeholder="Buscar especialidad por nombre"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-3 pl-10 border rounded-full focus:outline-none focus:ring-2 transition-all duration-300"
-            style={{ borderColor: theme.palette.light.hex, color: theme.palette.text.hex, fontFamily: 'Montserrat', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', backgroundColor: 'rgba(255, 255, 255, 0.9)'}}
+            style={{ 
+              width: '100%',
+              padding: '12px 12px 12px 40px',
+              borderRadius: theme.buttonRadios.xl,
+              border: `1px solid ${theme.palette.light.hex}`,
+              color: theme.palette.text.hex,
+              fontFamily: 'Montserrat',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              backgroundColor: 'rgba(255, 255, 255, 0.9)'
+            }}
           />
           <FaSearch 
-            className="absolute left-4 top-1/2 transform -translate-y-1/2" 
-            style={{ color: theme.palette.gray.hex }} 
+            style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: theme.palette.gray.hex }}
           />
           {searchTerm && (
             <button 
               onClick={() => setSearchTerm('')}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2"
+              style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none' }}
             >
-              <FaTimes 
-                className="text-gray-400 hover:text-gray-600 transition-colors" 
-              />
+              <FaTimes style={{ color: theme.palette.gray.hex }} />
             </button>
           )}
         </div>
@@ -93,34 +93,39 @@ export default function ExploreRoadmaps() {
               <div
                 key={roadmap.id}
                 onClick={() => handleRoadmapClick(roadmap.id)}
-                className="bg-white bg-opacity-90 rounded-lg shadow hover:shadow-md overflow-hidden transition-all duration-200 cursor-pointer hover:bg-opacity-100"
-                style={{ fontFamily: 'Montserrat' }}
+                style={{
+                  backgroundColor: theme.palette.background.hex,
+                  borderRadius: theme.buttonRadios.l,
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.3s',
+                  cursor: 'pointer',
+                  fontFamily: 'Montserrat',
+                }}
+                className="hover:shadow-lg"
               >
                 <div className="p-4">
                   <div className="mb-3 flex items-center">
-                    <h2 className="font-semibold text-lg line-clamp-1" style={{ color: theme.palette.dark.hex }}>
+                    <h2 style={{ color: theme.palette.dark.hex, fontWeight: theme.fontWeight.semibold }} className="text-lg line-clamp-1">
                       {roadmap.name}
                     </h2>
                   </div>
-                  
-                  <p className="text-sm line-clamp-2 mb-3" style={{ color: theme.palette.text.hex }}>
+
+                  <p style={{ color: theme.palette.text.hex }} className="text-sm line-clamp-2 mb-3">
                     {roadmap.shortDescription || "Explora esta especialidad tecnológica"}
                   </p>
-                  
+
                   <div className="flex flex-wrap gap-1">
                     {roadmap.languages && roadmap.languages.slice(0, 3).map((lang, idx) => (
-                      <span 
+                      <span
                         key={idx}
-                        className="px-2 py-1 rounded-full text-xs"
-                        style={{ backgroundColor: `${theme.palette.primary.hex}15`, color: theme.palette.primary.hex }}
+                        style={{ backgroundColor: `${theme.palette.primary.hex}15`, color: theme.palette.primary.hex, padding: '4px 8px', borderRadius: theme.buttonRadios.m, fontSize: theme.fontSizes.s }}
                       >
                         {lang}
                       </span>
                     ))}
                     {roadmap.languages && roadmap.languages.length > 3 && (
-                      <span 
-                        className="px-2 py-1 rounded-full text-xs"
-                        style={{ backgroundColor: `${theme.palette.gray.hex}15`, color: theme.palette.gray.hex }}
+                      <span
+                        style={{ backgroundColor: `${theme.palette.gray.hex}15`, color: theme.palette.gray.hex, padding: '4px 8px', borderRadius: theme.buttonRadios.m, fontSize: theme.fontSizes.s }}
                       >
                         +{roadmap.languages.length - 3}
                       </span>
@@ -131,8 +136,8 @@ export default function ExploreRoadmaps() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
-            <p className="text-lg text-gray-600" style={{ fontFamily: 'Montserrat' }}>
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: theme.buttonRadios.l, boxShadow: '0 4px 8px rgba(0,0,0,0.2)', padding: '32px' }} className="text-center">
+            <p style={{ color: theme.palette.gray.hex, fontFamily: 'Montserrat', fontSize: theme.fontSizes.l }}>
               No se encontraron especialidades que coincidan con "{searchTerm}".
             </p>
           </div>

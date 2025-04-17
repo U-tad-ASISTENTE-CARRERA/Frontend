@@ -12,6 +12,7 @@ import CareerOpportunityComponent from "@/components/Roadmap/CareerOpportunityCo
 import { AlertSystemRoadmap } from "@/components/Roadmap/AlertSystemRoadmap";
 import { subjectsByYear } from "@/constants/subjectsByYear";
 import StudentHeaderCard from "@/components/Roadmap/StudentHeaderCard";
+import ExploreMoreRoadmapsCard from "@/components/Roadmap/ExploreMoreRoadmapsCard";
 
 const Home = () => {
   const params = useParams();
@@ -169,6 +170,10 @@ const Home = () => {
               progress={progress}
               setProgress={setProgress}
             />
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-md p-10">
+            <ExploreMoreRoadmapsCard />
           </div>
 
           {/* Oportunidades */}

@@ -205,7 +205,7 @@ const PersonalInfo = ({
               <input type="text" value={tempFirstName} onChange={(e) => setTempFirstName(e.target.value)} className="block w-full p-2 border rounded-md transition-all" style={{ borderColor: errors.firstName ? theme.palette.error.hex : theme.palette.primary.hex, color: theme.palette.text.hex }} />
             ) : (
               <p
-                className="w-full p-2 text-m bg-transparent border border-transparent rounded-md"
+                className="w-full p-2  bg-transparent border border-transparent"
                 style={{ color: theme.palette.text.hex }}
               >{tempFirstName || "—"}</p>
             )}

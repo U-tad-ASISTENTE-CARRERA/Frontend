@@ -234,7 +234,10 @@ const TeacherProfile = () => {
           <div className="bg-white w-full min-w-full md:win-w-screen rounded-lg">
             <div className="w-full max-w-8xl flex flex-col md:flex-row">
               <div className="w-full md:w-64 overflow-x-auto md:overflow-visible">
-                <SidebarNavigation activeSection={activeSection} setActiveSection={setActiveSection} />
+                <SidebarNavigation
+                  activeSection={activeSection}
+                  setActiveSection={setActiveSection}
+                />
               </div>
 
               <div className="flex-1 p-6">

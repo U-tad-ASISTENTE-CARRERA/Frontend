@@ -76,7 +76,7 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
         await onSave({
           workExperience: [...updated, ...created],
         });
-        
+
         setWorkExperience(tempWorkExperience);
       }
 
@@ -164,18 +164,28 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                 <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                   Tipo de trabajo
                 </label>
-                <input
-                  type="text"
-                  placeholder="Tipo de trabajo"
-                  value={work.jobType}
-                  onChange={(e) => handleInputChange(globalIndex, "jobType", e.target.value)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: errors[`jobType-${globalIndex}`] ? theme.palette.error.hex : theme.palette.primary.hex,
-                    color: theme.palette.text.hex,
-                  }}
-                  disabled={!isEditing}
-                />
+
+                {isEditing ? (
+                  <input
+                    type="text"
+                    placeholder="Tipo de trabajo"
+                    value={work.jobType}
+                    onChange={(e) => handleInputChange(globalIndex, "jobType", e.target.value)}
+                    className="block w-full p-2 border rounded-md"
+                    style={{
+                      borderColor: errors[`jobType-${globalIndex}`] ? theme.palette.error.hex : theme.palette.primary.hex,
+                      color: theme.palette.text.hex,
+                    }}
+                  />
+                ) : (
+                  <p
+                    className="w-full p-2 bg-transparent border border-transparent"
+                    style={{ color: theme.palette.text.hex }}
+                  >
+                    {work.jobType || "—"}
+                  </p>
+                )}
+
                 {errors[`jobType-${globalIndex}`] && (
                   <p className="text-xs" style={{ color: theme.palette.error.hex }}>
                     {errors[`jobType-${globalIndex}`]}
@@ -183,21 +193,34 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                 )}
               </div>
 
+
               <div className="w-1/3 space-y-1">
                 <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                   Fecha de inicio
                 </label>
-                <input
-                  type="date"
-                  value={work.startDate}
-                  onChange={(e) => handleInputChange(globalIndex, "startDate", e.target.value)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: errors[`startDate-${globalIndex}`] ? theme.palette.error.hex : theme.palette.primary.hex,
-                    color: theme.palette.text.hex,
-                  }}
-                  disabled={!isEditing}
-                />
+
+                {isEditing ? (
+                  <input
+                    type="date"
+                    value={work.startDate}
+                    onChange={(e) => handleInputChange(globalIndex, "startDate", e.target.value)}
+                    className="block w-full p-2 border rounded-md"
+                    style={{
+                      borderColor: errors[`startDate-${globalIndex}`] ? theme.palette.error.hex : theme.palette.primary.hex,
+                      color: theme.palette.text.hex,
+                    }}
+                  />
+                ) : (
+                  <p
+                    className="w-full p-2 bg-transparent border border-transparent"
+                    style={{ color: theme.palette.text.hex }}
+                  >
+                    {work.startDate
+                      ? new Date(work.startDate).toLocaleDateString("es-ES")
+                      : "—"}
+                  </p>
+                )}
+
                 {errors[`startDate-${globalIndex}`] && (
                   <p className="text-xs" style={{ color: theme.palette.error.hex }}>
                     {errors[`startDate-${globalIndex}`]}
@@ -205,22 +228,35 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                 )}
               </div>
 
+
               <div className="w-1/3 space-y-1">
                 <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                   Fecha de finalización
                 </label>
-                <input
-                  type="date"
-                  value={work.endDate || ""}
-                  onChange={(e) => handleInputChange(globalIndex, "endDate", e.target.value)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: theme.palette.primary.hex,
-                    color: theme.palette.text.hex,
-                  }}
-                  disabled={!isEditing}
-                />
+
+                {isEditing ? (
+                  <input
+                    type="date"
+                    value={work.endDate || ""}
+                    onChange={(e) => handleInputChange(globalIndex, "endDate", e.target.value)}
+                    className="block w-full p-2 border rounded-md"
+                    style={{
+                      borderColor: theme.palette.primary.hex,
+                      color: theme.palette.text.hex,
+                    }}
+                  />
+                ) : (
+                  <p
+                    className="w-full p-2 bg-transparent border border-transparent"
+                    style={{ color: theme.palette.text.hex }}
+                  >
+                    {work.endDate
+                      ? new Date(work.endDate).toLocaleDateString("es-ES")
+                      : "—"}
+                  </p>
+                )}
               </div>
+
 
               {isEditing && (
                 <div className="pt-6 mt-2">
@@ -237,22 +273,32 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
             </div>
 
             <div className="flex items-start gap-3">
+
+              {/* Campo Compañía */}
               <div className="w-1/3 space-y-1">
                 <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                   Compañía
                 </label>
-                <input
-                  type="text"
-                  placeholder="Compañía"
-                  value={work.company}
-                  onChange={(e) => handleInputChange(globalIndex, 'company', e.target.value)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
-                    color: theme.palette.text.hex,
-                  }}
-                  disabled={!isEditing}
-                />
+                {isEditing ? (
+                  <input
+                    type="text"
+                    placeholder="Compañía"
+                    value={work.company}
+                    onChange={(e) => handleInputChange(globalIndex, 'company', e.target.value)}
+                    className="block w-full p-2 border rounded-md"
+                    style={{
+                      borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
+                      color: theme.palette.text.hex,
+                    }}
+                  />
+                ) : (
+                  <p
+                    className="w-full p-2 bg-transparent border border-transparent"
+                    style={{ color: theme.palette.text.hex }}
+                  >
+                    {work.company || "—"}
+                  </p>
+                )}
                 {errors[`company-${globalIndex}`] && (
                   <p className="text-xs" style={{ color: theme.palette.error.hex }}>
                     {errors[`company-${globalIndex}`]}
@@ -260,36 +306,47 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                 )}
               </div>
 
+              {/* Campo Descripción */}
               <div className="w-2/3 space-y-1">
                 <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                   Descripción
                 </label>
-                <textarea
-                  placeholder="Descripción"
-                  value={`${work.description}`}
-                  onChange={(e) => handleInputChange(globalIndex, 'description', e.target.value)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
-                    color: theme.palette.text.hex,
-                    overflow: "hidden",
-                    resize: "none",
-                    height: "auto", 
-                  }}
-                  rows={3}
-                  onInput={(e) => {
-                    e.target.style.height = "auto";
-                    e.target.style.height = `${e.target.scrollHeight}px`;
-                  }}
-                  disabled={!isEditing}
-                />
+                {isEditing ? (
+                  <textarea
+                    placeholder="Descripción"
+                    value={work.description}
+                    onChange={(e) => handleInputChange(globalIndex, 'description', e.target.value)}
+                    className="block w-full p-2 border rounded-md"
+                    style={{
+                      borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
+                      color: theme.palette.text.hex,
+                      overflow: "hidden",
+                      resize: "none",
+                      height: "auto",
+                    }}
+                    rows={3}
+                    onInput={(e) => {
+                      e.target.style.height = "auto";
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                    }}
+                  />
+                ) : (
+                  <p
+                    className="w-full p-2 bg-transparent border border-transparent whitespace-pre-line"
+                    style={{ color: theme.palette.text.hex }}
+                  >
+                    {work.description || "—"}
+                  </p>
+                )}
                 {errors[`description-${globalIndex}`] && (
                   <p className="text-xs" style={{ color: theme.palette.error.hex }}>
                     {errors[`description-${globalIndex}`]}
                   </p>
                 )}
               </div>
+
             </div>
+
           </div>
         );
       })}

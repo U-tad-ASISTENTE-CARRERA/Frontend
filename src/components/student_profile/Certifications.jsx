@@ -91,7 +91,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
         await onSave({
           certifications: [...updated, ...created],
         });
-        
+
         setCertifications(tempCertifications);
       }
 
@@ -155,30 +155,40 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
         const actualIndex = (currentPage - 1) * itemsPerPage + index;
 
         return (
-          <div 
-            key={actualIndex} 
+          <div
+            key={actualIndex}
             className="rounded-md p-4 border space-y-3"
             style={{ borderColor: theme.palette.lightGray.hex }}
           >
             <div className="flex items-start gap-3">
+
+              {/* Campo Nombre */}
               <div className="w-1/3 space-y-1">
                 <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                   Nombre
                 </label>
-                <input
-                  type="text"
-                  placeholder="Nombre de la certificación"
-                  value={certification.name}
-                  onChange={(e) => handleNameChange(index, e)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: errors[`certification-${actualIndex}`]
-                      ? theme.palette.error.hex
-                      : theme.palette.primary.hex,
-                    color: theme.palette.text.hex,
-                  }}
-                  disabled={!isEditing}
-                />
+                {isEditing ? (
+                  <input
+                    type="text"
+                    placeholder="Nombre de la certificación"
+                    value={certification.name}
+                    onChange={(e) => handleNameChange(index, e)}
+                    className="block w-full p-2 border rounded-md"
+                    style={{
+                      borderColor: errors[`certification-${actualIndex}`]
+                        ? theme.palette.error.hex
+                        : theme.palette.primary.hex,
+                      color: theme.palette.text.hex,
+                    }}
+                  />
+                ) : (
+                  <p
+                    className="w-full p-2 bg-transparent border border-transparent"
+                    style={{ color: theme.palette.text.hex }}
+                  >
+                    {certification.name || "—"}
+                  </p>
+                )}
                 {errors[`certification-${actualIndex}`] && (
                   <p className="text-xs" style={{ color: theme.palette.error.hex }}>
                     {errors[`certification-${actualIndex}`]}
@@ -186,24 +196,33 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                 )}
               </div>
 
+              {/* Campo Institución */}
               <div className="w-1/3 space-y-1">
                 <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                   Institución
                 </label>
-                <input
-                  type="text"
-                  placeholder="Nombre de la institución"
-                  value={certification.institution}
-                  onChange={(e) => handleInstitutionChange(index, e)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: errors[`certification-institution-${actualIndex}`]
-                      ? theme.palette.error.hex
-                      : theme.palette.primary.hex,
-                    color: theme.palette.text.hex,
-                  }}
-                  disabled={!isEditing}
-                />
+                {isEditing ? (
+                  <input
+                    type="text"
+                    placeholder="Nombre de la institución"
+                    value={certification.institution}
+                    onChange={(e) => handleInstitutionChange(index, e)}
+                    className="block w-full p-2 border rounded-md"
+                    style={{
+                      borderColor: errors[`certification-institution-${actualIndex}`]
+                        ? theme.palette.error.hex
+                        : theme.palette.primary.hex,
+                      color: theme.palette.text.hex,
+                    }}
+                  />
+                ) : (
+                  <p
+                    className="w-full p-2 bg-transparent border border-transparent"
+                    style={{ color: theme.palette.text.hex }}
+                  >
+                    {certification.institution || "—"}
+                  </p>
+                )}
                 {errors[`certification-institution-${actualIndex}`] && (
                   <p className="text-xs" style={{ color: theme.palette.error.hex }}>
                     {errors[`certification-institution-${actualIndex}`]}
@@ -211,23 +230,34 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                 )}
               </div>
 
+              {/* Campo Fecha de obtención */}
               <div className="w-1/3 space-y-1">
                 <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                   Fecha de obtención
                 </label>
-                <input
-                  type="date"
-                  value={certification.date}
-                  onChange={(e) => handleDateChange(index, e)}
-                  className="block w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: errors[`certification-date-${actualIndex}`]
-                      ? theme.palette.error.hex
-                      : theme.palette.primary.hex,
-                    color: theme.palette.text.hex,
-                  }}
-                  disabled={!isEditing}
-                />
+                {isEditing ? (
+                  <input
+                    type="date"
+                    value={certification.date}
+                    onChange={(e) => handleDateChange(index, e)}
+                    className="block w-full p-2 border rounded-md"
+                    style={{
+                      borderColor: errors[`certification-date-${actualIndex}`]
+                        ? theme.palette.error.hex
+                        : theme.palette.primary.hex,
+                      color: theme.palette.text.hex,
+                    }}
+                  />
+                ) : (
+                  <p
+                    className="w-full p-2 bg-transparent border border-transparent"
+                    style={{ color: theme.palette.text.hex }}
+                  >
+                    {certification.date
+                      ? new Date(certification.date).toLocaleDateString("es-ES")
+                      : "—"}
+                  </p>
+                )}
                 {errors[`certification-date-${actualIndex}`] && (
                   <p className="text-xs" style={{ color: theme.palette.error.hex }}>
                     {errors[`certification-date-${actualIndex}`]}
@@ -235,6 +265,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                 )}
               </div>
 
+              {/* Botón borrar */}
               {isEditing && (
                 <div className="pt-6 mt-2">
                   <button
@@ -247,9 +278,11 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                   </button>
                 </div>
               )}
+
             </div>
           </div>
         );
+
       })}
 
       {/* Paginación */}

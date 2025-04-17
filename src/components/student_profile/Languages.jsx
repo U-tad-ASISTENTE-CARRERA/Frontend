@@ -167,8 +167,8 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
                       className="block w-full p-2 border rounded-md"
                       style={{
                         borderColor: hasError
-                        ? theme.palette.error.hex
-                        : theme.palette.primary.hex,
+                          ? theme.palette.error.hex
+                          : theme.palette.primary.hex,
                         color: theme.palette.text.hex,
                       }}
                     />
@@ -191,13 +191,12 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
                     )}
                   </div>
                 ) : (
-                  <input
-                    type="text"
-                    value={lang.language}
-                    disabled
-                    className="block w-full p-2 border rounded-md bg-gray-100"
+                  <p
+                    className="w-full p-2  bg-transparent border border-transparent"
                     style={{ color: theme.palette.text.hex }}
-                  />
+                  >
+                    {lang.language || "—"}
+                  </p>
                 )}
                 {hasError && (
                   <p className="text-xs" style={{ color: theme.palette.error.hex }}>
@@ -208,25 +207,40 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
 
               {/* Campo de nivel */}
               <div className="w-1/4 space-y-1">
-                <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
+                <label
+                  className="text-sm font-medium"
+                  style={{ color: theme.palette.text.hex }}
+                >
                   Nivel
                 </label>
-                <select
-                  name="level"
-                  value={lang.level}
-                  onChange={(event) => handleLevelChange(index, event)}
-                  className="w-full p-2 border rounded-md"
-                  style={{
-                    borderColor: isEditing ? theme.palette.primary.hex : theme.palette.lightGray.hex,
-                    color: theme.palette.text.hex,
-                  }}
-                  disabled={!isEditing}
-                >
-                  {op_level.map((op, i) => (
-                    <option key={i} value={op}>{op}</option>
-                  ))}
-                </select>
+
+                {isEditing ? (
+                  <select
+                    name="level"
+                    value={lang.level}
+                    onChange={(event) => handleLevelChange(index, event)}
+                    className="w-full p-2 border rounded-md"
+                    style={{
+                      borderColor: theme.palette.primary.hex,
+                      color: theme.palette.text.hex,
+                    }}
+                  >
+                    {op_level.map((op, i) => (
+                      <option key={i} value={op}>
+                        {op}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p
+                    className="w-full p-2 bg-transparent border border-transparent"
+                    style={{ color: theme.palette.text.hex }}
+                  >
+                    {lang.level || "—"}
+                  </p>
+                )}
               </div>
+
 
               {/* Botón de eliminar */}
               {isEditing && (

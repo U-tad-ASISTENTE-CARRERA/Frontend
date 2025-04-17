@@ -1,6 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import { theme } from "@/constants/theme";
+import { FaBars, FaTimes } from "react-icons/fa";
 
 const SidebarNavigation = ({ activeSection, setActiveSection }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const groupedSections = [
     {
       title: "Perfil personal",
@@ -20,32 +26,43 @@ const SidebarNavigation = ({ activeSection, setActiveSection }) => {
     },
     {
       title: "Apoyo académico",
-      items: [
-        { id: "showTutor", label: "Tutor" },
-      ],
+      items: [{ id: "showTutor", label: "Tutor" }],
     },
     {
       title: "Historial",
-      items: [
-        { id: "activityLog", label: "Registro de actividad" },
-      ],
+      items: [{ id: "activityLog", label: "Registro de actividad" }],
     },
   ];
 
   return (
-    <aside
-      className="flex md:flex-col flex-row w-full md:w-64 gap-6 overflow-x-auto md:overflow-visible whitespace-nowrap rounded-sm p-4"
-    >
-      <div className="hidden md:block mb-2">
+    <aside className="flex flex-col md:w-64 w-full rounded-sm p-4">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4 md:mb-2">
         <h2
           className="text-lg font-bold"
           style={{ color: theme.palette.text.hex }}
         >
           Panel de perfil
         </h2>
+
+        {/* Botón hamburguesa en móvil */}
+        <div className="md:hidden">
+          <button onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? (
+              <FaTimes size={24} style={{ color: theme.palette.text.hex }} />
+            ) : (
+              <FaBars size={24} style={{ color: theme.palette.text.hex }} />
+            )}
+          </button>
+        </div>
       </div>
 
-      <div className="flex md:flex-col flex-row gap-6 w-full">
+      {/* Menú animado */}
+      <div
+        className={`flex flex-col gap-6 w-full overflow-hidden transition-all duration-300 ease-in-out ${
+          menuOpen ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
+        } md:max-h-none md:opacity-100 md:flex`}
+      >
         {groupedSections.map(({ title, items }) => (
           <div key={title} className="flex flex-col gap-3 min-w-max">
             <div className="flex flex-col gap-1">
@@ -74,13 +91,17 @@ const SidebarNavigation = ({ activeSection, setActiveSection }) => {
                     activeSection === id
                       ? theme.palette.background.hex
                       : theme.palette.text.hex,
-                  fontWeight: activeSection === id
-                    ? theme.fontWeight.semibold
-                    : theme.fontWeight.regular,
+                  fontWeight:
+                    activeSection === id
+                      ? theme.fontWeight.semibold
+                      : theme.fontWeight.regular,
                   boxShadow:
                     activeSection === id ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
                 }}
-                onClick={() => setActiveSection(id)}
+                onClick={() => {
+                  setActiveSection(id);
+                  setMenuOpen(false); // cerrar el menú en móvil tras click
+                }}
               >
                 {label}
               </button>
