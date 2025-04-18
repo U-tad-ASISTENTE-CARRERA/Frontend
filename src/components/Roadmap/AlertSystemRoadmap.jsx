@@ -1,38 +1,38 @@
+"use client";
+
 import React from "react";
 import { useRouter } from "next/navigation";
 import { theme } from "@/constants/theme";
 import { MdUpdate } from "react-icons/md";
 
-export const AlertSystemRoadmap = ({ metadata }) => {
+export const AlertSystemRoadmap = ({ alerts }) => {
     const router = useRouter();
-
-    const currentTime = new Date();
     const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user")) : null;
 
-    const alerts = [];
-
-    // Check for stale update
-    const lastUpdate = metadata?.updatedAt ? new Date(metadata.updatedAt) : null;
-    const monthsSinceUpdate = lastUpdate
-        ? (currentTime.getFullYear() - lastUpdate.getFullYear()) * 12 + (currentTime.getMonth() - lastUpdate.getMonth())
-        : null;
-
-    const shouldShowUpdateAlert = monthsSinceUpdate !== null && monthsSinceUpdate >= 6;
-    if (shouldShowUpdateAlert) alerts.push({ keyword: "stale" });
-
-    if (alerts.length === 0) return null;
+    if (!alerts || alerts.length === 0) return null;
 
     const alert = alerts[0];
 
     const alertConfig = {
-        stale: {
-            title: "Expediente desactualizado",
-            message: `Tu expediente no se ha actualizado en más de ${monthsSinceUpdate} meses. Es recomendable revisarlo para asegurar su vigencia.`,
+        empty: {
+            title: "Expediente vacío",
+            message: "Aún no has cargado tu expediente académico. Para comenzar, debes completarlo.",
             icon: <MdUpdate size={36} color="#fff" />,
-            iconBg: theme.palette.secondary.hex,
+            iconBg: theme.palette.warning.hex,
             typeColor: theme.palette.text.hex,
             action: {
-                label: "Actualizar ahora",
+                label: "Ir al perfil",
+                path: `/profile/student/${user?.id}?section=AH`,
+            },
+        },
+        incomplete: {
+            title: "Expediente incompleto",
+            message: "Debes aprobar al menos el 80% de asignaturas de 1º y 2º curso (máximo 2 suspensas por año).",
+            icon: <MdUpdate size={36} color="#fff" />,
+            iconBg: theme.palette.primary.hex,
+            typeColor: theme.palette.text.hex,
+            action: {
+                label: "Ir al perfil",
                 path: `/profile/student/${user?.id}?section=AH`,
             },
         },
@@ -52,19 +52,31 @@ export const AlertSystemRoadmap = ({ metadata }) => {
 
             <div
                 className="w-full max-w-3xl rounded-xl py-10 px-8 shadow-md"
-                style={{ backgroundColor: `${current.iconBg}20`, borderLeft: `6px solid ${current.iconBg}` }}
+                style={{
+                    backgroundColor: `${current.iconBg}20`,
+                    borderLeft: `6px solid ${current.iconBg}`,
+                }}
             >
                 <div className="flex flex-col items-center gap-6 text-center">
                     <div className="flex items-center gap-4">
-                        <div className="rounded-full w-14 h-14 flex items-center justify-center" style={{ backgroundColor: current.iconBg }}>
+                        <div
+                            className="rounded-full w-14 h-14 flex items-center justify-center"
+                            style={{ backgroundColor: current.iconBg }}
+                        >
                             {current.icon}
                         </div>
-                        <h2 className="text-2xl font-semibold" style={{ color: current.typeColor, fontFamily: "Montserrat" }}>
+                        <h2
+                            className="text-2xl font-semibold"
+                            style={{ color: current.typeColor, fontFamily: "Montserrat" }}
+                        >
                             {current.title}
                         </h2>
                     </div>
 
-                    <p className="text-lg leading-relaxed" style={{ color: current.typeColor, fontFamily: "Montserrat" }}>
+                    <p
+                        className="text-lg leading-relaxed"
+                        style={{ color: current.typeColor, fontFamily: "Montserrat" }}
+                    >
                         {current.message}
                     </p>
 

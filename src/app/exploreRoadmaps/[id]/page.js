@@ -249,7 +249,7 @@ const RoadmapDetail = () => {
                 <div className="h-80 bg-gray-100 rounded-lg"></div>
               </div>
 
-              <div className="absolute inset-0 flex items-center justify-center z-10">
+              <div className="absolute inset-0 flex items-start justify-center z-10">
                 <div className="bg-white bg-opacity-95 p-8 rounded-xl shadow-lg text-center max-w-md">
                   <h3 className="text-xl font-bold mb-3" style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}>
                     Contenido Exclusivo
