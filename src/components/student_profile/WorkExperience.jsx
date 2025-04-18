@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { theme } from "@/constants/theme";
 import { FaTrash } from "react-icons/fa";
+import { v4 as uuidv4 } from "uuid";
 
 const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -19,7 +20,15 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
   const addWorkExperience = () => {
     setTempWorkExperience([
       ...tempWorkExperience,
-      { jobType: "", company: "", responsibilities: "", startDate: "", endDate: "", description: "" },
+      { 
+        _id: uuidv4(), 
+        jobType: "", 
+        company: "", 
+        responsibilities: "", 
+        startDate: "", 
+        endDate: "", 
+        description: "" 
+      },
     ]);
   };
 
@@ -27,10 +36,10 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
     let newErrors = {};
 
     tempWorkExperience.forEach((work, index) => {
-      if (!work.jobType) {
+      if (!work.jobType || !work.jobType.trim()) {
         newErrors[`jobType-${index}`] = "El tipo de trabajo no puede estar vacío.";
       }
-      if (!work.company) {
+      if (!work.company || !work.company.trim()) {
         newErrors[`company-${index}`] = "La compañía no puede estar vacía.";
       }
       if (!work.startDate || isNaN(new Date(work.startDate).getTime())) {
@@ -38,7 +47,7 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
       } else if (new Date(work.startDate) > new Date()) {
         newErrors[`startDate-${index}`] = "La fecha de inicio no puede ser posterior a la fecha actual.";
       }
-      if (!work.description) {
+      if (!work.description || !work.description.trim()) {
         newErrors[`description-${index}`] = "La descripción no puede estar vacía.";
       }
     });
@@ -50,7 +59,8 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
   const handleDelete = (index) => {
     const workToDelete = tempWorkExperience[index];
 
-    if (workExperience.some((work) => work.jobType === workToDelete.jobType)) {
+    // Si la experiencia laboral existe en el servidor (tiene _id), la añadimos a eliminar
+    if (workToDelete._id && workExperience.some((work) => work._id === workToDelete._id)) {
       setDeletedWorkExperience((prev) => [...prev, workToDelete]);
     }
 
@@ -61,28 +71,23 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
     if (!validateForm()) return;
 
     try {
+      // Si hay experiencias para eliminar
       if (deletedWorkExperience.length > 0) {
-        console.log("Eliminando experiencias laborales:", deletedWorkExperience);
         await onDelete({ workExperience: deletedWorkExperience });
         setDeletedWorkExperience([]);
       }
 
+      // Si hay experiencias para guardar/actualizar
       if (tempWorkExperience.length > 0) {
-        const existingIds = workExperience.map(w => w.jobType);
-
-        const updated = tempWorkExperience.filter(w => existingIds.includes(w.jobType));
-        const created = tempWorkExperience.filter(w => !existingIds.includes(w.jobType));
-
+        // Actualizar experiencias en la base de datos
         await onSave({
-          workExperience: [...updated, ...created],
+          workExperience: tempWorkExperience
         });
-
-        setWorkExperience(tempWorkExperience);
       }
 
       setIsEditing(false);
     } catch (error) {
-      console.error("Error al actualizar las experiencias laborales", error.message);
+      console.error("Error al actualizar las experiencias laborales", error);
     }
   };
 
@@ -140,7 +145,7 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
       </div>
 
       {/* Mensaje cuando no hay experiencias laborales */}
-      {tempWorkExperience.length === 0 && deletedWorkExperience.length === 0 && (
+      {tempWorkExperience.length === 0 && (
         <p className="text-gray-500 text-sm text-center">No hay experiencias laborales guardadas.</p>
       )}
 
@@ -155,7 +160,7 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
 
         return (
           <div
-            key={globalIndex}
+            key={work._id || `temp-${globalIndex}`}
             className="rounded-md p-4 border space-y-3"
             style={{ borderColor: theme.palette.lightGray.hex }}
           >
@@ -169,7 +174,7 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                   <input
                     type="text"
                     placeholder="Tipo de trabajo"
-                    value={work.jobType}
+                    value={work.jobType || ""}
                     onChange={(e) => handleInputChange(globalIndex, "jobType", e.target.value)}
                     className="block w-full p-2 border rounded-md"
                     style={{
@@ -202,7 +207,7 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                 {isEditing ? (
                   <input
                     type="date"
-                    value={work.startDate}
+                    value={work.startDate || ""}
                     onChange={(e) => handleInputChange(globalIndex, "startDate", e.target.value)}
                     className="block w-full p-2 border rounded-md"
                     style={{
@@ -283,11 +288,11 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                   <input
                     type="text"
                     placeholder="Compañía"
-                    value={work.company}
+                    value={work.company || ""}
                     onChange={(e) => handleInputChange(globalIndex, 'company', e.target.value)}
                     className="block w-full p-2 border rounded-md"
                     style={{
-                      borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
+                      borderColor: errors[`company-${globalIndex}`] ? theme.palette.error.hex : theme.palette.primary.hex,
                       color: theme.palette.text.hex,
                     }}
                   />
@@ -314,11 +319,11 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
                 {isEditing ? (
                   <textarea
                     placeholder="Descripción"
-                    value={work.description}
+                    value={work.description || ""}
                     onChange={(e) => handleInputChange(globalIndex, 'description', e.target.value)}
                     className="block w-full p-2 border rounded-md"
                     style={{
-                      borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
+                      borderColor: errors[`description-${globalIndex}`] ? theme.palette.error.hex : theme.palette.primary.hex,
                       color: theme.palette.text.hex,
                       overflow: "hidden",
                       resize: "none",
@@ -357,17 +362,23 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
           <button
             onClick={handlePreviousPage}
             disabled={currentPage === 1}
-            className={`px-4 py-2 rounded ${currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"}`}
+            className="px-4 py-2 text-white rounded-md transition duration-200"
+            style={{
+              backgroundColor: currentPage === 1 ? theme.palette.lightGray.hex : theme.palette.primary.hex,
+            }}
           >
             Anterior
           </button>
-          <span className="text-sm">
+          <span className="text-sm" style={{ color: theme.palette.text.hex }}>
             Página {currentPage} de {totalPages}
           </span>
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded ${currentPage === totalPages ? "bg-gray-300" : "bg-blue-500 text-white"}`}
+            className="px-4 py-2 text-white rounded-md transition duration-200"
+            style={{
+              backgroundColor: currentPage === totalPages ? theme.palette.lightGray.hex : theme.palette.primary.hex,
+            }}
           >
             Siguiente
           </button>

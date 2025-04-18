@@ -1,6 +1,9 @@
 
 export const op_skill = [
-    "Python",
+      "Python",
+
+      "HTML",
+      "CSS",
       "JavaScript",
       "Java",
       "C",
@@ -86,5 +89,12 @@ export const op_skill = [
       "VBScript",
       "X10",
       "XQuery",
-      "Zig"
+      "Zig",
+      "Assembly",
+      "Scratch",
+      "NoSQL",
+      "GraphQL",
+      "Django",
+      "Flask",
+      "SQL"
 ]

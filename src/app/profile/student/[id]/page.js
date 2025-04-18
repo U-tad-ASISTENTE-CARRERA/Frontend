@@ -42,14 +42,13 @@ const StudentProfile = () => {
   const [endDate, setEndDate] = useState("");
   const [degree, setDegree] = useState("");
   const [yearsCompleted, setYearsCompleted] = useState("");
-  const [skills, setSkills] = useState([{ language: "" }]);
+  const [skills, setSkills] = useState([]);
   const [certifications, setCertifications] = useState([]);
   const [workExperience, setWorkExperience] = useState([]);
   const [gender, setGender] = useState("");
   const [academicRecord, setAcademicRecord] = useState([]);
   const [deletionRequested, setDeletionRequested] = useState(false);
   const [updateHistory, setUpdateHistory] = useState([]);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,15 +84,12 @@ const StudentProfile = () => {
         setWorkExperience(data.metadata.workExperience || []);
         setGender(data.metadata.gender || "");
         setDeletionRequested(data.metadata?.deletionRequestStatus === "pending");
-        setUpdateHistory(data.metadata.updateHistory || []);
+        setUpdateHistory(data.updateHistory || []); 
 
         setEndDate(convertTimestampToDate(data.metadata.endDate));
         setBirthDate(convertTimestampToDate(data.metadata.birthDate));
 
-        if (data.metadata.AH?.subjects) {
-          setAcademicRecord(data.metadata.AH.subjects);
-        }
-
+        if (data.metadata.AH?.subjects) setAcademicRecord(data.metadata.AH.subjects);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -111,14 +107,9 @@ const StudentProfile = () => {
           },
         });
 
-        if (!response.ok) {
-          throw new Error("Error obteniendo expediente académico.");
-        }
-
+        if (!response.ok) throw new Error("Error obteniendo expediente académico.");
         const data = await response.json();
-        if (data.subjects) {
-          setAcademicRecord(data.subjects);
-        }
+        if (data.subjects) setAcademicRecord(data.subjects);
       } catch (error) {
         setError(error.message);
       }
@@ -142,7 +133,6 @@ const StudentProfile = () => {
   }, []);
 
 
-  // Función para actualizar la metadata en la BD con PATCH
   const handleUpdateMetadata = async (updates) => {
     try {
       const response = await fetch("http://localhost:3000/metadata", {
@@ -162,18 +152,57 @@ const StudentProfile = () => {
         };
         const data = await response.json();
         setError(errorMessages[data?.error] || "Error actualizando los metadatos.");
-        return;
+        return false;
       }
 
       const data = await response.json();
-      localStorage.setItem("metadata", JSON.stringify(data.updatedFields));
-
-      // Update the updateHistory state with the backend-provided history
-      if (data.updateHistory) {
-        setUpdateHistory(data.updateHistory);
+      
+      if (data.updatedFields) {
+        Object.entries(data.updatedFields).forEach(([key, value]) => {
+          if (key.startsWith("metadata.")) {
+            const fieldName = key.replace("metadata.", "");
+            
+            switch (fieldName) {
+              case "languages":
+                setLanguages(value || []);
+                break;
+              case "programming_languages":
+                setSkills(value || []);
+                break;
+              case "certifications":
+                setCertifications(value || []);
+                break;
+              case "workExperience":
+                setWorkExperience(value || []);
+                break;
+              case "firstName":
+                setFirstName(value || "");
+                break;
+              case "lastName":
+                setLastName(value || "");
+                break;
+              case "gender":
+                setGender(value || "");
+                break;
+              case "specialization":
+                setSpecialization(value || "");
+                break;
+              case "birthDate":
+                setBirthDate(convertTimestampToDate(value));
+                break;
+              case "endDate":
+                setEndDate(convertTimestampToDate(value));
+                break;
+            }
+          }
+        });
       }
+
+      if (data.updateHistory) setUpdateHistory(data.updateHistory);
+      return true;
     } catch (error) {
       setError("Error inesperado al actualizar los datos.");
+      return false;
     }
   };
 
@@ -202,17 +231,28 @@ const StudentProfile = () => {
       }
 
       const data = await response.json();
-      setLanguages(data.updatedFields["metadata.languages"] || []);
-      if (data.updateHistory) {
-        setUpdateHistory(data.updateHistory);
+      
+      // Actualiza el estado de languages con los datos que retorna el servidor
+      if (data.deletedFields && data.deletedFields.includes("metadata.languages")) {
+        setLanguages([]); // Si se eliminaron todos los idiomas
+      } else if (data.updatedFields && data.updatedFields["metadata.languages"]) {
+        setLanguages(data.updatedFields["metadata.languages"]);
       }
+      
+      if (data.updateHistory) setUpdateHistory(data.updateHistory);
+      return true;
     } catch (error) {
       console.error("Error al eliminar idioma:", error.message);
+      return false;
     }
   };
 
   const handleDeleteSkill = async (skillObj) => {
-    const skillList = skillObj.skills.map(sk => sk.skill);
+    const skillList = skillObj.skills.map(sk => ({
+      _id: sk._id,
+      name: sk.name,
+      level: sk.level
+    }));
 
     try {
       const response = await fetch("http://localhost:3000/metadata", {
@@ -222,7 +262,7 @@ const StudentProfile = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
-          skills: skillList.map(skill => ({ skill })),
+          programming_languages: skillList
         }),
       });
 
@@ -232,22 +272,27 @@ const StudentProfile = () => {
       }
 
       const data = await response.json();
-      setSkills(data.updatedFields["metadata.skills"] || []);
-      if (data.updateHistory) {
-        setUpdateHistory(data.updateHistory);
+      
+      if (data.deletedFields && data.deletedFields.includes("metadata.programming_languages")) {
+        setSkills([]); // Si se eliminaron todos los skills
+      } else if (data.updatedFields && data.updatedFields["metadata.programming_languages"]) {
+        setSkills(data.updatedFields["metadata.programming_languages"]);
       }
+      
+      if (data.updateHistory) setUpdateHistory(data.updateHistory);
+      return true;
     } catch (error) {
       console.log("Error al eliminar skill:", error.message);
+      return false;
     }
   };
 
   const handleDeleteCertifications = async (certObj) => {
     const certificationList = certObj.certifications.map(cert => ({
-      uuid: cert.uuid,
+      _id: cert._id, 
       name: cert.name,
       date: cert.date,
-      institution: cert.institution,
-      _id: cert._id,
+      institution: cert.institution
     }));
 
     try {
@@ -268,15 +313,74 @@ const StudentProfile = () => {
       }
 
       const data = await response.json();
-      setCertifications(data.updatedFields["metadata.certifications"] || []);
+      
+      // Actualiza el estado de certificaciones con los datos que retorna el servidor
+      if (data.deletedFields && data.deletedFields.includes("metadata.certifications")) {
+        setCertifications([]); // Si se eliminaron todas las certificaciones
+      } else if (data.updatedFields && data.updatedFields["metadata.certifications"]) {
+        setCertifications(data.updatedFields["metadata.certifications"]);
+      }
+      
+      // Actualiza el historial de cambios
       if (data.updateHistory) {
         setUpdateHistory(data.updateHistory);
       }
+      
+      return true;
     } catch (error) {
       console.log("Error al eliminar certificaciones:", error.message);
+      return false;
     }
   };
 
+  const handleDeleteWorkExperience = async (workExpObj) => {
+    const workExpList = workExpObj.workExperience.map(work => ({
+      _id: work._id, // Incluye el _id para identificación precisa
+      jobType: work.jobType,
+      startDate: work.startDate,
+      endDate: work.endDate,
+      company: work.company,
+      description: work.description,
+      responsibilities: work.responsibilities
+    }));
+
+    try {
+      const response = await fetch("http://localhost:3000/metadata", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          workExperience: workExpList,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.errors?.[0] || "Error eliminando experiencia laboral.");
+      }
+
+      const data = await response.json();
+      
+      // Actualiza el estado de workExperience con los datos que retorna el servidor
+      if (data.deletedFields && data.deletedFields.includes("metadata.workExperience")) {
+        setWorkExperience([]); // Si se eliminaron todas las experiencias
+      } else if (data.updatedFields && data.updatedFields["metadata.workExperience"]) {
+        setWorkExperience(data.updatedFields["metadata.workExperience"]);
+      }
+      
+      // Actualiza el historial de cambios
+      if (data.updateHistory) {
+        setUpdateHistory(data.updateHistory);
+      }
+      
+      return true;
+    } catch (error) {
+      console.log("Error al eliminar experiencia laboral:", error.message);
+      return false;
+    }
+  };
 
   const handleSaveGrades = async (updatedGrades) => {
     try {
@@ -294,10 +398,13 @@ const StudentProfile = () => {
         throw new Error(data.message || "Error actualizando expediente académico.");
       }
 
-      fetchAcademicRecord();
-
+      // Actualiza el expediente académico después de guardar
+      await fetchAcademicRecord();
+      
+      return true;
     } catch (error) {
       setError(error.message);
+      return false;
     }
   };
 
@@ -326,11 +433,11 @@ const StudentProfile = () => {
 
   // Función específica para actualizar los datos personales
   const handleSavePersonalInfo = (updatedData) => {
-    handleUpdateMetadata(updatedData);
+    return handleUpdateMetadata(updatedData);
   };
 
   const handleRequestDeletion = async (reason) => {
-    if (deletionRequested) return; // Protección en estado local
+    if (deletionRequested) return { success: false, message: "Ya existe una solicitud pendiente" }; // Protección en estado local
 
     try {
       const response = await fetch("http://localhost:3000/deletionRequest", {
@@ -360,7 +467,6 @@ const StudentProfile = () => {
       return { success: false, message: "Error de red o inesperado al solicitar la baja." };
     }
   };
-
 
   const handleCancelDeletion = async () => {
     try {
@@ -392,7 +498,6 @@ const StudentProfile = () => {
       return { success: false, message: "Error de red o inesperado al cancelar la solicitud." };
     }
   };
-
 
   // Mensaje de bienvenida según el género
   const getWelcomeMessage = () => {
@@ -477,7 +582,7 @@ const StudentProfile = () => {
                     workExperience={workExperience}
                     setWorkExperience={setWorkExperience}
                     onSave={handleSavePersonalInfo}
-                    onDelete={handleSavePersonalInfo}
+                    onDelete={handleDeleteWorkExperience}
                   />
                 }
                 {activeSection === "AH" && (

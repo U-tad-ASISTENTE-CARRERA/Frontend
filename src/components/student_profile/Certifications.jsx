@@ -33,7 +33,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
   const addCertification = () => {
     setTempCertifications([
       ...tempCertifications,
-      { uuid: uuidv4(), name: "", date: "", institution: "" },
+      { _id: uuidv4(), name: "", date: "", institution: "" },
     ]);
   };
 
@@ -41,12 +41,12 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
     let newErrors = {};
 
     tempCertifications.forEach((cert, index) => {
-      if (!cert.name.trim()) {
+      if (!cert.name || !cert.name.trim()) {
         newErrors[`certification-${index}`] = "El nombre no puede estar vacío.";
       } else if (!nameRegex(cert.name.trim())) {
         newErrors[`certification-${index}`] = "El nombre solo puede contener caracteres latinos.";
       }
-      if (!cert.institution.trim()) {
+      if (!cert.institution || !cert.institution.trim()) {
         newErrors[`certification-institution-${index}`] = "La institución no puede estar vacía.";
       }
       const currentDate = new Date();
@@ -65,8 +65,8 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
   const handleDelete = (index) => {
     const certificationToDelete = tempCertifications[index];
 
-    if (certifications.some((cert) => cert.name === certificationToDelete.name)) {
-      setDeletedCertifications((prev) => [...prev, certificationToDelete]);
+    if (certificationToDelete._id && certifications.some(cert => cert._id === certificationToDelete._id)) {
+      setDeletedCertifications(prev => [...prev, certificationToDelete]);
     }
 
     setTempCertifications(tempCertifications.filter((_, i) => i !== index));
@@ -77,27 +77,19 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
 
     try {
       if (deletedCertifications.length > 0) {
-        console.log("Eliminando certificaciones:", deletedCertifications);
         await onDelete({ certifications: deletedCertifications });
         setDeletedCertifications([]);
       }
 
       if (tempCertifications.length > 0) {
-        const existingIds = certifications.map(c => c.uuid);
-
-        const updated = tempCertifications.filter(c => existingIds.includes(c.uuid));
-        const created = tempCertifications.filter(c => !existingIds.includes(c.uuid));
-
         await onSave({
-          certifications: [...updated, ...created],
+          certifications: tempCertifications
         });
-
-        setCertifications(tempCertifications);
       }
 
       setIsEditing(false);
     } catch (error) {
-      console.error("Error al actualizar las certificaciones", error.message);
+      console.error("Error al actualizar las certificaciones", error);
     }
   };
 
@@ -146,7 +138,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
       </div>
 
       {/* Mensaje cuando no hay certificaciones */}
-      {tempCertifications.length === 0 && deletedCertifications.length === 0 && (
+      {tempCertifications.length === 0 && (
         <p className="text-gray-500 text-sm text-center">No hay certificaciones guardadas.</p>
       )}
 
@@ -156,7 +148,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
 
         return (
           <div
-            key={actualIndex}
+            key={certification._id || `temp-${actualIndex}`}
             className="rounded-md p-4 border space-y-3"
             style={{ borderColor: theme.palette.lightGray.hex }}
           >
@@ -171,8 +163,8 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                   <input
                     type="text"
                     placeholder="Nombre de la certificación"
-                    value={certification.name}
-                    onChange={(e) => handleNameChange(index, e)}
+                    value={certification.name || ""}
+                    onChange={(e) => handleNameChange(actualIndex, e)}
                     className="block w-full p-2 border rounded-md"
                     style={{
                       borderColor: errors[`certification-${actualIndex}`]
@@ -205,8 +197,8 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                   <input
                     type="text"
                     placeholder="Nombre de la institución"
-                    value={certification.institution}
-                    onChange={(e) => handleInstitutionChange(index, e)}
+                    value={certification.institution || ""}
+                    onChange={(e) => handleInstitutionChange(actualIndex, e)}
                     className="block w-full p-2 border rounded-md"
                     style={{
                       borderColor: errors[`certification-institution-${actualIndex}`]
@@ -238,8 +230,8 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                 {isEditing ? (
                   <input
                     type="date"
-                    value={certification.date}
-                    onChange={(e) => handleDateChange(index, e)}
+                    value={certification.date || ""}
+                    onChange={(e) => handleDateChange(actualIndex, e)}
                     className="block w-full p-2 border rounded-md"
                     style={{
                       borderColor: errors[`certification-date-${actualIndex}`]
@@ -270,7 +262,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
                 <div className="pt-6 mt-2">
                   <button
                     type="button"
-                    onClick={() => handleDelete(index)}
+                    onClick={() => handleDelete(actualIndex)}
                     className="text-white p-2 rounded-md transition duration-200"
                     style={{ backgroundColor: theme.palette.error.hex }}
                   >
@@ -282,7 +274,6 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
             </div>
           </div>
         );
-
       })}
 
       {/* Paginación */}
