@@ -1,17 +1,21 @@
+"use client";
+
 import React from "react";
-import Lottie from "lottie-react";
+import dynamic from "next/dynamic";
 import animationData from "../lotties/404.json";
 import { theme } from "@/constants/theme";
 import "@fontsource/montserrat";
 import { FaArrowLeft } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
+// Cargar lottie-react solo en cliente
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+
 const Custom404 = () => {
   const router = useRouter();
 
   return (
     <div className="w-full flex flex-col justify-start items-center min-h-screen">
-      {/* Añadido pt-16 para dejar espacio para el Navbar */}
       <div className="flex flex-col items-center justify-center">
         <Lottie
           animationData={animationData}
@@ -22,8 +26,7 @@ const Custom404 = () => {
             opacity: 0.8,
             borderRadius: theme.buttonRadios.l,
           }}
-          loop={true}
-          speed={2}
+          loop
         />
         <h1
           style={{
@@ -34,12 +37,10 @@ const Custom404 = () => {
             marginBottom: "25px",
           }}
         >
-          Ups! No encontramos esa página
+          ¡Ups! No encontramos esa página
         </h1>
         <button
-          onClick={() => {
-            router.back();
-          }}
+          onClick={() => router.back()}
           className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 transition"
         >
           <FaArrowLeft />
