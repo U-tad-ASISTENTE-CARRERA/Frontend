@@ -262,13 +262,6 @@ const RegisterForm = () => {
           )}
 
           {success && (
-
-            // <p
-            //   className="text-sm text-center"
-            //   style={{ color: theme.palette.success.hex }}
-            // >
-            //   Registro exitoso.
-            // </p>
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               <LoadingModal />
             </div>
