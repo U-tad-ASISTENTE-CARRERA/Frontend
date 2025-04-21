@@ -3,9 +3,15 @@ export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
 
 export const nameRegex = (name) => {
-  const namePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+$/;
-  return namePattern.test(name);
+  const namePattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+  return namePattern.test(name.trim());
 };
+
+export const certificationRegex = (certification) => {
+  const certificationPattern = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$/;
+  return certificationPattern.test(certification.trim());
+};
+
 
 export const dateRegex = (dateString) => {
   const datePattern = /^\d{4}-\d{2}-\d{2}$/;

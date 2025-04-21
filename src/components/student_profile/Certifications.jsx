@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { theme } from "@/constants/theme";
-import { nameRegex } from "@/utils/ValidatorRegex";
+import { certificationRegex, nameRegex } from "@/utils/ValidatorRegex";
 import { FaTrash } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
 
@@ -43,7 +43,7 @@ const Certifications = ({ certifications, setCertifications, onSave, onDelete })
     tempCertifications.forEach((cert, index) => {
       if (!cert.name || !cert.name.trim()) {
         newErrors[`certification-${index}`] = "El nombre no puede estar vacío.";
-      } else if (!nameRegex(cert.name.trim())) {
+      } else if (!certificationRegex(cert.name.trim())) {
         newErrors[`certification-${index}`] = "El nombre solo puede contener caracteres latinos.";
       }
       if (!cert.institution || !cert.institution.trim()) {
