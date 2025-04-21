@@ -12,10 +12,17 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
   const [languageSearch, setLanguageSearch] = useState({});
   const [dropdownOpen, setDropdownOpen] = useState({});
   
-  // Actualiza tempLanguages cuando languages cambia (por ejemplo, después de guardar)
   useEffect(() => {
     setTempLanguages([...languages]);
   }, [languages]);
+
+  useEffect(() => {
+    const initialSearchState = {};
+    tempLanguages.forEach((lang, idx) => {
+      initialSearchState[idx] = lang.language;
+    });
+    setLanguageSearch(initialSearchState);
+  }, [isEditing]);
 
   const handleLanguageChange = (index, value) => {
     const updated = [...tempLanguages];
@@ -30,10 +37,12 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
   };
 
   const addLanguage = () => {
+    const newIndex = tempLanguages.length;
     setTempLanguages([
       ...tempLanguages,
       { _id: null, language: "", level: "A1" },
     ]);
+    setLanguageSearch(prev => ({...prev, [newIndex]: ""}));
   };
 
   const markLanguageForDeletion = (index) => {
@@ -42,6 +51,21 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
       setDeletedLanguages((prev) => [...prev, languageToDelete]);
     }
     setTempLanguages(tempLanguages.filter((_, i) => i !== index));
+    
+    const updatedSearch = {...languageSearch};
+    delete updatedSearch[index];
+    
+    const newSearchState = {};
+    Object.keys(updatedSearch).forEach(key => {
+      const keyNum = parseInt(key);
+      if (keyNum > index) {
+        newSearchState[keyNum - 1] = updatedSearch[key];
+      } else {
+        newSearchState[keyNum] = updatedSearch[key];
+      }
+    });
+    
+    setLanguageSearch(newSearchState);
   };
 
   const validateForm = () => {
@@ -70,7 +94,6 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
     if (!validateForm()) return;
     
     try {
-      // Primero manejar eliminaciones si hay idiomas marcados para eliminar
       if (deletedLanguages.length > 0) {
         const deleteSuccess = await onDelete({
           languages: deletedLanguages.map(({ _id, language, level }) => ({
@@ -87,7 +110,6 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
         setDeletedLanguages([]);
       }
       
-      // Luego actualizar/añadir idiomas
       if (tempLanguages.length > 0) {
         const updatedLanguages = tempLanguages.map(({ _id, language, level }) => ({
           _id,
@@ -105,7 +127,6 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
       setIsEditing(false);
     } catch (error) {
       console.error("Error al actualizar idiomas:", error.message);
-      // Podrías añadir una notificación de error aquí
     }
   };
 
@@ -167,7 +188,6 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
               }}
             >
               <div className="flex items-start gap-3">
-                {/* Campo de idioma */}
                 <div className="w-3/4 relative space-y-1">
                   <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                     Idioma
@@ -178,10 +198,13 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
                       <input
                         type="text"
                         placeholder="Buscar idioma..."
-                        value={languageSearch[index] || lang.language}
+                        value={languageSearch[index] !== undefined ? languageSearch[index] : ""}
                         onChange={(e) => {
                           const value = e.target.value;
                           setLanguageSearch({ ...languageSearch, [index]: value });
+                          if (availableLanguages.includes(value)) {
+                            handleLanguageChange(index, value);
+                          }
                           setDropdownOpen({ ...dropdownOpen, [index]: true });
                         }}
                         onFocus={() => setDropdownOpen({ ...dropdownOpen, [index]: true })}
@@ -229,7 +252,6 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
                   )}
                 </div>
 
-                {/* Campo de nivel */}
                 <div className="w-1/4 space-y-1 relative">
                   <label
                     className="text-sm font-medium"
@@ -279,7 +301,6 @@ const Languages = ({ languages, setLanguages, onSave, onDelete }) => {
                   )}
                 </div>
 
-                {/* Botón de eliminar */}
                 {isEditing && (
                   <div className="pt-6 mt-2">
                     <button
