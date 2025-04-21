@@ -6,7 +6,10 @@ import SearchForm from "./CareerOpportunity/SearchForm";
 import OfferTabs from "./CareerOpportunity/OfferTabs";
 import RecentOffers from "./CareerOpportunity/RecentOffers";
 import FavoriteOffers from "./CareerOpportunity/FavoriteOffers";
-import LoadingModal from "../LoadingModal";
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import { useJobOffers } from "./CareerOpportunity/useJobOffers";
 
 const CareerOpportunityComponent = () => {

@@ -58,7 +58,7 @@ const StudentInitForm = () => {
       } catch (error) {
         setError(error.message);
       } finally {
-        setTimeout(() => setLoading(false), 3000);
+        setLoading(false)
       }
     };
 
@@ -165,11 +165,11 @@ const StudentInitForm = () => {
 
   return (
     <div
-      className="flex flex-col items-center min-h-screen"
+      className="flex flex-col items-center justify-center mt-20"
     >
       {/* Título */}
       <h1
-        className="text-2xl font-bold text-center pt-20"
+        className="text-2xl font-bold text-center"
         style={{ color: theme.palette.primary.hex }}
       >
         ¡Queremos saber más de ti!

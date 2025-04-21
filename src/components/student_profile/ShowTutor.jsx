@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { FaUserPlus, FaTrash, FaFileAlt } from "react-icons/fa";
 import ConfirmPopup from "../ConfirmPopUp";
-import LoadingModal from "../LoadingModal";
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import { theme } from "@/constants/theme";
 import { teacherSpecializations } from "@/constants/teacherSpecializations";
 import SendReportButton from "../notifications/SendReportButton";

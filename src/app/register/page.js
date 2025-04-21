@@ -91,6 +91,7 @@ const RegisterForm = () => {
   
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      isLoading(true);
   
       const userRole =
         data.user.role || JSON.parse(localStorage.getItem("user"))?.role;

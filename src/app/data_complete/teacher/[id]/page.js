@@ -153,9 +153,7 @@ const TeacherInitForm = () => {
       } else {
         localStorage.setItem("metadata", JSON.stringify(data.updatedFields));
         setSuccess(true);
-        setTimeout(() => {
-          router.push(`/profile/teacher/${params.id}`);
-        }, 1500);
+        router.push(`/profile/teacher/${params.id}`);
       }
     } catch (error) {
       setSubmitting(false);
@@ -169,9 +167,9 @@ const TeacherInitForm = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center mt-20">
         <h1
-          className="text-xl font-bold text-center pt-20"
+          className="text-xl font-bold text-center"
           style={{ color: theme.palette.primary.hex, fontFamily: "Montserrat" }}
         >
           ¡Queremos saber más de ti!

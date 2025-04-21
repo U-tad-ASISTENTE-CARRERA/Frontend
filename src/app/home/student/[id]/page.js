@@ -79,7 +79,7 @@ const Home = () => {
 
   useEffect(() => {
     if (metadata && roadmap) {
-      setTimeout(() => setIsLoading(false), 2000);
+      setIsLoading(false)
     }
   }, [metadata, roadmap]);
 

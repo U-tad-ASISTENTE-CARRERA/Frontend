@@ -5,7 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import { theme } from "@constants/theme";
 import "@fontsource/montserrat";
 import ErrorPopUp from "@components/ErrorPopUp";
-import LoadingModal from "@components/LoadingModal";
+import dynamic from "next/dynamic";
+const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
+  ssr: false,
+});
 import RoadmapTest from "@/components/Roadmap/RoadmapGuide/RoadmapTest";
 
 const RoadmapGuide = () => {
