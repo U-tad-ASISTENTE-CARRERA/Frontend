@@ -17,7 +17,6 @@ const TeacherInitForm = () => {
   const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState("");
   const [specialization, setSpecialization] = useState("");
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [redirecting, setRedirecting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -86,30 +85,30 @@ const TeacherInitForm = () => {
     validateField(field, value);
   };
 
-  const isFormValid = () => {
-    return (
-      Object.values(errors).every((error) => !error) &&
-      firstName &&
-      lastName &&
-      gender
-    );
-  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!isFormValid()) {
-      setErrors({
-        firstName:
-          !firstName?.trim() && !nameRegex(firstName)
-            ? "El nombre es obligatorio."
-            : undefined,
-        lastName:
-          !lastName.trim() && !nameRegex(lastName)
-            ? "El apellido es obligatorio."
-            : undefined,
-        gender: !gender ? "El género es obligatorio." : undefined,
-      });
+    const newErrors = {
+      firstName: !firstName?.trim()
+        ? "El nombre es obligatorio."
+        : !nameRegex(firstName)
+          ? "Solo se permiten caracteres latinos en el nombre."
+          : undefined,
+
+      lastName: !lastName.trim()
+        ? "El apellido es obligatorio."
+        : !nameRegex(lastName)
+          ? "Solo se permiten caracteres latinos en el apellido."
+          : undefined,
+
+      gender: !gender ? "El género es obligatorio." : undefined,
+
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((error) => error !== undefined)) {
       return;
     }
 
@@ -151,9 +150,15 @@ const TeacherInitForm = () => {
         });
         return;
       } else {
-        localStorage.setItem("metadata", JSON.stringify(data.updatedFields));
-        setSuccess(true);
+        setLoading(true);
+
+        const oldMetadata = JSON.parse(localStorage.getItem("metadata")) || {};
+        const updatedMetadata = { ...oldMetadata, ...data.updatedFields };
+        localStorage.setItem("metadata", JSON.stringify(updatedMetadata));
+
+
         router.push(`/profile/teacher/${params.id}`);
+
       }
     } catch (error) {
       setSubmitting(false);

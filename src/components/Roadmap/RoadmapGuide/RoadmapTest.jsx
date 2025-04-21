@@ -89,21 +89,32 @@ const RoadmapTest = ({
 
   return (
     <div
-      className="flex flex-col items-center justify-start min-h-screen"
+      className="flex flex-col items-center justify-start mt-20"
       style={{
         fontFamily: "Montserrat",
       }}
     >
+
       <h1
-        className="text-3xl m-20 font-bold text-center"
+        className="text-3xl font-bold text-center"
         style={{
           color: theme.palette.primary.hex,
           fontFamily: "Montserrat",
         }}
       >
-        Test para ruta de aprendizaje
+        Descubre tu roadmap ideal
       </h1>
-      <div className="w-full max-w-4xl p-8 bg-white rounded-lg shadow-lg mb-20">
+
+      <p
+      className="mt-2"
+        style={{
+          color: theme.palette.text.hex
+        }}
+      >
+        Completa el test para definir el roadmap que mejor se adapta a ti
+      </p>
+
+      <div className="w-full max-w-4xl p-8 bg-white rounded-lg shadow-lg mt-12">
 
         {currentQuestion < testQuestions.length && (
           <div

@@ -18,7 +18,7 @@ export const AlertSystemRoadmap = ({ alerts }) => {
             title: "Expediente vacío",
             message: "Aún no has cargado tu expediente académico. Para comenzar, debes completarlo.",
             icon: <MdUpdate size={36} color="#fff" />,
-            iconBg: theme.palette.warning.hex,
+            iconBg: theme.palette.primary.hex,
             typeColor: theme.palette.text.hex,
             action: {
                 label: "Ir al perfil",
@@ -29,7 +29,7 @@ export const AlertSystemRoadmap = ({ alerts }) => {
             title: "Expediente incompleto",
             message: "Debes aprobar al menos el 80% de asignaturas de 1º y 2º curso (máximo 2 suspensas por año).",
             icon: <MdUpdate size={36} color="#fff" />,
-            iconBg: theme.palette.primary.hex,
+            iconBg: theme.palette.warning.hex,
             typeColor: theme.palette.text.hex,
             action: {
                 label: "Ir al perfil",

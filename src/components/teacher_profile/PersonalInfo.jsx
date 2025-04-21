@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { theme } from '@/constants/theme';
-
+import { teacherSpecializations } from '@/constants/teacherSpecializations';
 import { nameRegex } from "@/utils/ValidatorRegex";
 
 const PersonalInfo = ({
@@ -266,8 +266,11 @@ const PersonalInfo = ({
                             }}
                         >
                             <option value="">Selecciona tu especialización</option>
-                            <option value="math">Base de datos</option>
-                            <option value="">Frontend</option>
+                            {teacherSpecializations.map((spec) => (
+                                <option key={spec} value={spec}>
+                                    {spec}
+                                </option>
+                            ))}
                         </select>
                         {isEditing && errors.specialization && <p className="text-red-500 text-xs mt-1">{errors.specialization}</p>}
                     </div>

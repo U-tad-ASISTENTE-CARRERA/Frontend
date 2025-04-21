@@ -10,7 +10,6 @@ const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
   ssr: false,
 });
 import { nameRegex, dateRegex } from "@/utils/ValidatorRegex";
-import ErrorPopUp from "@/components/ErrorPopUp";
 import { FaLongArrowAltRight } from "react-icons/fa";
 
 const StudentInitForm = () => {
@@ -151,18 +150,6 @@ const StudentInitForm = () => {
     return <LoadingModal />;
   }
 
-  // if (metadataError) {
-  //   return (
-  //     <ErrorPopUp
-  //       message={"No tienes acceso a esta página"}
-  //       path={`/profile/${JSON.parse(localStorage.getItem("user")).role == "STUDENT"
-  //         ? "student"
-  //         : "teacher"
-  //         }/${id}`}
-  //     />
-  //   );
-  // }
-
   return (
     <div
       className="flex flex-col items-center justify-center mt-20"
@@ -176,112 +163,141 @@ const StudentInitForm = () => {
       </h1>
 
       {/* Formulario */}
-      <div className="w-50% max-w-4xl bg-white p-16 mt-12 shadow-md flex justify-center" style={{borderRadius: theme.buttonRadios.xl}}>
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col"
-        >
-          {/* Sección Información Personal */}
-          <div className="space-y-4">
-            <h2
-              className="text-lg font-semibold"
-              style={{ color: theme.palette.text.hex }}
-            >
-              Información personal
-            </h2>
+      <div
+        className="w-full max-w-4xl bg-white p-12 mt-12 shadow-md flex justify-center"
+        style={{ borderRadius: theme.buttonRadios.xl }}
+      >
+        <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-8">
 
-            <input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="Nombre"
-              className="block w-full p-2 border rounded-md"
-              style={{
-                borderColor: theme.palette.light.hex,
-                color: theme.palette.text.hex,
-              }}
-            />
-            {errors.firstName && (
-              <p className="text-red-500 text-sm">{errors.firstName}</p>
-            )}
+          {/* Información Personal y Académica */}
+          <div className="flex flex-col md:flex-row gap-8">
 
-            <input
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="Apellido"
-              className="block w-full p-2 border rounded-md"
-              style={{
-                borderColor: theme.palette.light.hex,
-                color: theme.palette.text.hex,
-              }}
-            />
-            {errors.lastName && (
-              <p className="text-red-500 text-sm">{errors.lastName}</p>
-            )}
+            {/* Información Personal */}
+            <div className="flex flex-col flex-1 space-y-4">
+              <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>
+                Información personal
+              </h2>
 
-            <select
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              className="block w-full p-2 border rounded-md"
-              style={{
-                borderColor: theme.palette.light.hex,
-                color: theme.palette.text.hex,
-              }}
-            >
-              <option value="" disabled>
-                Género
-              </option>
-              <option value="male">Masculino</option>
-              <option value="female">Femenino</option>
-              <option value="prefer not to say">Prefiero no decirlo</option>
-            </select>
-            {errors.gender && (
-              <p className="text-red-500 text-sm">{errors.gender}</p>
-            )}
+              {/* Nombre */}
+              <div>
+                <label className="text-sm flex items-center gap-1">
+                  Nombre <p className="text-xs mt-1" style={{ color: theme.palette.error.hex }}>*</p>
+                </label>
+                <input
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="Nombre"
+                  className="block w-full p-2 border rounded-md"
+                  style={{
+                    borderColor: theme.palette.light.hex,
+                    color: theme.palette.text.hex,
+                  }}
+                />
+                {errors.firstName && (
+                  <p className="text-red-500 text-sm">{errors.firstName}</p>
+                )}
+              </div>
 
-            <label className="block text-sm font-medium text-gray-700">
-              Grado
-            </label>
-            <select
-              disabled
-              required
-              value={"INSO_DATA"}
-              onChange={() => { }}
-              className="block w-full p-2 border rounded-md"
-              style={{
-                borderColor: theme.palette.light.hex,
-                color: theme.palette.text.hex,
-              }}
-            >
-              <option value="" disabled>
-                Grado
-              </option>
-              <option value="INSO+DATA">INSO-DATA</option>
-            </select>
+              {/* Apellidos */}
+              <div>
+                <label className="text-sm flex items-center gap-1">
+                  Apellidos <p className="text-xs mt-1" style={{ color: theme.palette.error.hex }}>*</p>
+                </label>
+                <input
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Apellidos"
+                  className="block w-full p-2 border rounded-md"
+                  style={{
+                    borderColor: theme.palette.light.hex,
+                    color: theme.palette.text.hex,
+                  }}
+                />
+                {errors.lastName && (
+                  <p className="text-red-500 text-sm">{errors.lastName}</p>
+                )}
+              </div>
 
-            <label className="block text-sm font-medium text-gray-700">
-              Fecha de graduación
-            </label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              min="today"
-              className="block w-full p-2 border rounded-md"
-              style={{
-                borderColor: theme.palette.light.hex,
-                color: theme.palette.text.hex,
-              }}
-            />
-            {errors.endDate && (
-              <p className="text-red-500 text-sm">{errors.endDate}</p>
-            )}
+              {/* Género */}
+              <div>
+                <label className="text-sm flex items-center gap-1">
+                  Género <p className="text-xs mt-1" style={{ color: theme.palette.error.hex }}>*</p>
+                </label>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  className="block w-full p-2 border rounded-md"
+                  style={{
+                    borderColor: theme.palette.light.hex,
+                    color: theme.palette.text.hex,
+                  }}
+                >
+                  <option value="" disabled>Género</option>
+                  <option value="male">Masculino</option>
+                  <option value="female">Femenino</option>
+                  <option value="prefer not to say">Prefiero no decirlo</option>
+                </select>
+                {errors.gender && (
+                  <p className="text-red-500 text-sm">{errors.gender}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Información Académica */}
+            <div className="flex flex-col flex-1 space-y-4">
+              <h2 className="text-lg font-semibold" style={{ color: theme.palette.text.hex }}>
+                Información académica
+              </h2>
+
+              {/* Grado */}
+              <div>
+                <label className="text-sm flex items-center gap-1">
+                  Grado <p className="text-xs mt-1" style={{ color: theme.palette.error.hex }}>*</p>
+                </label>
+                <select
+                  disabled
+                  required
+                  value={"INSO_DATA"}
+                  onChange={() => { }}
+                  className="block w-full p-2 border rounded-md"
+                  style={{
+                    borderColor: theme.palette.light.hex,
+                    color: theme.palette.text.hex,
+                  }}
+                >
+                  <option value="" disabled>Grado</option>
+                  <option value="INSO+DATA">INSO-DATA</option>
+                </select>
+              </div>
+
+              {/* Fecha de Graduación */}
+              <div>
+                <label className="text-sm flex items-center gap-1">
+                  Fecha de graduación <p className="text-xs mt-1" style={{ color: theme.palette.error.hex }}>*</p>
+                </label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  min="today"
+                  className="block w-full p-2 border rounded-md"
+                  style={{
+                    borderColor: theme.palette.light.hex,
+                    color: theme.palette.text.hex,
+                  }}
+                />
+                {errors.endDate && (
+                  <p className="text-red-500 text-sm">{errors.endDate}</p>
+                )}
+              </div>
+            </div>
+
           </div>
 
-
           {/* Botón de enviar */}
-          <div className="col-span-1 md:col-span-2 flex flex-col justify-left space-y-4 mt-5">
+          <div className="flex flex-col items-center mt-6 space-y-4">
             <button
               type="submit"
               className="flex items-center justify-center w-64 px-6 py-3 text-white rounded-md transition duration-200"
@@ -292,17 +308,18 @@ const StudentInitForm = () => {
               }}
               disabled={submitting}
             >
-              Comenzar test
-              <FaLongArrowAltRight className="ml-4" />
+              Enviar y comenzar test
             </button>
 
             {/* Mensajes de error y éxito */}
             {error && (
-              <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+              <p className="text-red-500 text-sm text-center">{error}</p>
             )}
           </div>
+
         </form>
       </div>
+
     </div>
   );
 };
