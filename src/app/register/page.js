@@ -24,7 +24,6 @@ const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Comprobaciones de la contraseña
   const hasMinLength = password.length >= 8;
   const hasUppercase = /[A-Z]/.test(password);
   const hasSpecialChar = /[!@#$%^&*]/.test(password);
@@ -41,31 +40,27 @@ const RegisterForm = () => {
   const validateForm = async (e) => {
     e.preventDefault();
     setError("");
-
-    // Validar que todos los campos estén completados
+  
     if (!email.trim() || !password.trim() || !seedWord.trim()) {
       setError("Todos los campos deben estar completados.");
-      setIsLoading(false);
       return;
     }
-
+  
     if (
       !emailRegex.test(email) ||
       (!email.endsWith("live.u-tad.com") && !email.endsWith("u-tad.com"))
     ) {
       setError("El correo debe terminar en live.u-tad.com o u-tad.com");
-      setIsLoading(false);
       return;
     }
-
+  
     if (!passwordRegex.test(password)) {
       setError("La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial.");
-      setIsLoading(false);
       return;
     }
-
+  
     setIsLoading(true);
-
+  
     try {
       const response = await fetch("http://localhost:3000/register", {
         method: "POST",
@@ -74,45 +69,42 @@ const RegisterForm = () => {
         },
         body: JSON.stringify({ email, password, seedWord }),
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         const errorMessages = {
           USER_ALREADY_EXISTS: "Ya existe un usuario registrado con ese correo",
           INVALID_EMAIL: "El correo debe terminar en live.u-tad.com o u-tad.com",
           INTERNAL_SERVER_ERROR: "Servidor en mantenimiento",
         };
-
+  
         setSuccess(false);
         setError(errorMessages[data?.error] || "Error en el registro");
+        setIsLoading(false);
         return;
       }
-
+  
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-
-      setIsLoading(true)
-
+      
+      setSuccess(true);
+      
       const userRole =
         data.user.role || JSON.parse(localStorage.getItem("user"))?.role;
-
+  
       if (userRole === "STUDENT") {
         router.push(`/data_complete/student/${data.user.id}`);
       } else if (userRole === "TEACHER") {
         router.push(`/data_complete/teacher/${data.user.id}`);
       }
-
-      setSuccess(true);
-
     } catch (error) {
       console.error("Error en la conexión con el backend:", error);
       setError("Ocurrió un error inesperado. Inténtalo de nuevo.");
-    } finally {
       setIsLoading(false);
     }
   };
-
+  
 
   if (tokenError) {
     return <ErrorPopUp message={"No tienes acceso a esta página"} path="" />;
@@ -262,22 +254,27 @@ const RegisterForm = () => {
           )}
 
           {success && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
-              <LoadingModal />
-            </div>
+            <p
+              className="text-sm text-center"
+              style={{ color: theme.palette.success.hex }}
+            >
+              Registro exitoso.
+            </p>
           )}
 
 
           <button
             type="submit"
             className="w-full px-4 py-2 text-white rounded-md transition duration-200"
+            disabled={isLoading}
             style={{
               backgroundColor: theme.palette.primary.hex,
               borderRadius: theme.buttonRadios.m,
               fontWeight: theme.fontWeight.bold,
+              opacity: isLoading ? 0.7 : 1
             }}
           >
-            Regístrate
+            {isLoading ? "Procesando..." : "Regístrate"}
           </button>
         </form>
 
