@@ -84,8 +84,11 @@ const StudentHeaderCard = ({ metadata }) => {
           <div className="flex gap-4 mt-3 flex-wrap">
             <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-blue-50 text-blue-800 font-medium text-sm">
               <MdSchool size={18} />
-              {Array.isArray(metadata.yearsCompleted)
+                {/* {Array.isArray(metadata.yearsCompleted)
                 ? `${Math.max(...metadata.yearsCompleted) + 1}º${metadata.degree?.startsWith("INSO") ? " INSO" : ""}`
+                : "1º"}  */}
+                {Array.isArray(metadata.yearsCompleted)
+                ? `${Math.max(...metadata.yearsCompleted)}º${metadata.degree?.startsWith("INSO") ? " INSO" : ""}`
                 : "1º"}
             </div>
             <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-green-50 text-green-800 font-medium text-sm">

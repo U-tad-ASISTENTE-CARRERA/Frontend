@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { theme } from "@constants/theme";
@@ -18,48 +17,53 @@ const RoadmapGuide = () => {
   const router = useRouter();
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
+  const [hasAcademicRecord, setHasAcademicRecord] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("user") && localStorage.getItem("token")) {
-      if (JSON.parse(localStorage.getItem("user")).role === "TEACHER") {
-        return (
-          <ErrorPopUp
-            message={"No tienes acceso a esta página."}
-            path={`/home/student/${params.id}`}
-          />
-        );
-      } else {
-        setLoading(false);
+    const checkUserAndAcademicRecord = async () => {
+      if (localStorage.getItem("user") && localStorage.getItem("token")) {
+        if (JSON.parse(localStorage.getItem("user")).role === "TEACHER") {
+          return; 
+        } else {
+          try {
+            const response = await fetch("http://localhost:3000/AH", {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data.subjects && Array.isArray(data.subjects) && data.subjects.length > 0) {
+                setHasAcademicRecord(true);
+              } else {
+                setError("Necesitas completar tu expediente académico antes de generar un roadmap.");
+              }
+            } else {
+              setError("No se pudo verificar el expediente académico. Por favor, completa tu expediente académico primero.");
+            }
+          } catch (error) {
+            console.error("Error checking academic record:", error);
+            setError("Ocurrió un error al verificar tu expediente académico.");
+          }
+          
+          setLoading(false);
+        }
       }
-    } else {
-      return (
-        <ErrorPopUp
-          message={"Debes iniciar sesión para ver esta página."}
-          path={`/login`}
-        />
-      );
-    }
+    };
+    
+    checkUserAndAcademicRecord();
   }, []);
 
-  const generateRoadmap = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/userRoadmap", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleSubmit = async (specialization) => {
-    setLoading(true); // muestra el modal de carga
-  
+    if (!hasAcademicRecord) {
+      setError("Necesitas completar tu expediente académico antes de generar un roadmap.");
+      return;
+    }
+    
+    setLoading(true);
     try {
       const response = await fetch("http://localhost:3000/metadata", {
         method: "PATCH",
@@ -69,9 +73,8 @@ const RoadmapGuide = () => {
         },
         body: JSON.stringify({ specialization }),
       });
-  
+      
       const data = await response.json();
-  
       if (!response.ok) {
         const errorMessages = {
           NO_VALID_FIELDS_TO_UPDATE: "Algún dato introducido no es válido",
@@ -82,31 +85,67 @@ const RoadmapGuide = () => {
         setLoading(false);
         return;
       }
-  
-      await generateRoadmap(); // espera a que termine antes de continuar
+
       router.push(`/home/student/${params.id}`);
     } catch (err) {
       console.error(err);
       setError("Ha ocurrido un error inesperado");
       setLoading(false);
     }
-  };  
+  };
 
   if (loading) {
     return <LoadingModal message="Cargando..." />;
   }
 
+  if (JSON.parse(localStorage.getItem("user"))?.role === "TEACHER") {
+    return (
+      <ErrorPopUp
+        message={"No tienes acceso a esta página."}
+        path={`/home/student/${params.id}`}
+      />
+    );
+  }
+
+  if (!localStorage.getItem("user") || !localStorage.getItem("token")) {
+    return (
+      <ErrorPopUp
+        message={"Debes iniciar sesión para ver esta página."}
+        path={`/login`}
+      />
+    );
+  }
+
   return (
     <div>
-      <RoadmapTest onSubmit={handleSubmit} />
-
+      {!hasAcademicRecord ? (
+        <div className="flex flex-col items-center justify-center min-h-screen p-6">
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+            <h2 className="text-2xl font-bold mb-4" style={{ color: theme.palette.primary.hex }}>
+              Expediente académico requerido
+            </h2>
+            <p className="mb-6 text-gray-700">
+              Para generar un roadmap personalizado, primero debes completar tu expediente académico.
+            </p>
+            <button
+              onClick={() => router.push(`/profile/student/${params.id}`)}
+              className="px-6 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition"
+            >
+              Ir a mi perfil
+            </button>
+          </div>
+        </div>
+      ) : (
+        <RoadmapTest onSubmit={handleSubmit} />
+      )}
+      
       {error && (
         <p
           style={{
             color: theme.palette.error.hex,
             fontFamily: "Montserrat, sans-serif",
           }}
-          className="text-sm text-center"
+          className="text-sm text-center mt-4"
         >
           {error}
         </p>

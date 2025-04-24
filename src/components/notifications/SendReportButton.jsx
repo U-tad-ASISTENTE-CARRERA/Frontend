@@ -4,10 +4,11 @@ import { useSummary } from "./useSummary";
 import { useNotifications } from "./useNotifications";
 import { exportToPDF } from "./exportSummary";
 import dynamic from "next/dynamic";
+import { FaFileAlt, FaPaperPlane, FaTimes } from "react-icons/fa";
+
 const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
   ssr: false,
 });
-import { FaFileAlt } from "react-icons/fa";
 
 const SendReportButton = ({ tutorId, tutorName, baseUrl = "http://localhost:3000" }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -89,101 +90,132 @@ const SendReportButton = ({ tutorId, tutorName, baseUrl = "http://localhost:3000
   return (
     <>
       <button
-        className="flex items-center gap-2 px-3 py-1 rounded-full hover:opacity-80 transition"
+        className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
         onClick={openModal}
         title="Enviar informe"
-        style={{ backgroundColor: `${theme.palette.primary.hex}20`, color: theme.palette.primary.hex }}
+        style={{ 
+          backgroundColor: theme.palette.primary.hex,
+          color: 'white' 
+        }}
       >
         <FaFileAlt className="text-sm" />
-        <span className="text-sm">Enviar informe</span>
+        <span>Enviar informe</span>
       </button>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold" style={{ color: theme.palette.primary.hex }}>
-                Enviar Informe a {tutorName}
-              </h2>
-              <button
-                onClick={closeModal}
-                className="p-1 rounded-full hover:bg-gray-100"
-                aria-label="Cerrar"
-              >
-                X
-              </button>
-            </div>
-            
-            {loading ? (
-              <div className="py-8 flex flex-col items-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 mb-4" style={{ borderColor: theme.palette.primary.hex }}></div>
-                <p className="text-gray-600">
-                  {loading ? "Generando y enviando informe..." : "Procesando..."}
-                </p>
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all duration-300 scale-100">
+            <div className="relative p-6">
+              {/* Header */}
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold" style={{ color: theme.palette.primary.hex }}>
+                  Enviar Informe a {tutorName}
+                </h2>
+                <button
+                  onClick={closeModal}
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                  aria-label="Cerrar"
+                >
+                  <FaTimes style={{ color: theme.palette.gray.hex }} />
+                </button>
               </div>
-            ) : error ? (
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
-                <div className="flex">
-                  <div className="ml-3">
-                    <p className="text-sm text-red-700">
-                      {error}
-                    </p>
+              
+              {/* Content */}
+              {loading ? (
+                <div className="py-10 flex flex-col items-center">
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 mb-4" 
+                    style={{ borderTopColor: theme.palette.primary.hex }}></div>
+                  <p className="text-gray-600 font-medium mt-4">
+                    Generando y enviando informe...
+                  </p>
+                </div>
+              ) : error ? (
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-md">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 text-red-500 mr-3">
+                      <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-red-800">
+                        {error}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : showMsg ? (
-              <div className={`bg-${showMsg.type === 'success' ? 'green' : 'red'}-50 border-l-4 border-${showMsg.type === 'success' ? 'green' : 'red'}-500 p-4 mb-4`}>
-                <div className="flex">
-                  <div className="ml-3">
-                    <p className={`text-sm text-${showMsg.type === 'success' ? 'green' : 'red'}-700`}>
-                      {showMsg.text}
-                    </p>
+              ) : showMsg ? (
+                <div className={`${
+                  showMsg.type === 'success' 
+                    ? 'bg-green-50 border-green-500 text-green-800' 
+                    : 'bg-red-50 border-red-500 text-red-800'
+                } border-l-4 p-4 mb-6 rounded-r-md`}>
+                  <div className="flex items-center">
+                    <div className={`flex-shrink-0 ${
+                      showMsg.type === 'success' ? 'text-green-500' : 'text-red-500'
+                    } mr-3`}>
+                      {showMsg.type === 'success' ? (
+                        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      ) : (
+                        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">
+                        {showMsg.text}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <>
-                <div className="mb-4">
-                  <label 
-                    htmlFor="tutor-message" 
-                    className="block text-sm font-medium mb-2"
-                    style={{ color: theme.palette.text.hex }}
-                  >
-                    Mensaje para {tutorName} (opcional)
-                  </label>
-                  <textarea
-                    id="tutor-message"
-                    rows="4"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder={`Escribe un mensaje para ${tutorName}`}
-                    className="w-full p-2 border rounded-md"
-                    style={{ 
-                      borderColor: theme.palette.lightGray.hex,
-                      color: theme.palette.text.hex 
-                    }}
-                  />
-                </div>
-                
-                <div className="flex justify-end gap-3">
-                  <button
-                    onClick={closeModal}
-                    className="px-4 py-2 border rounded-md"
-                    style={{ borderColor: theme.palette.lightGray.hex }}
-                  >
-                    Cancelar
-                  </button>
+              ) : (
+                <>
+                  <div className="mb-6">
+                    <textarea
+                      id="tutor-message"
+                      rows="5"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder={`Escribe un mensaje para ${tutorName}...`}
+                      className="w-full p-3 border rounded-lg focus:ring-2 focus:outline-none transition-all duration-200 resize-none"
+                      style={{ 
+                        borderColor: theme.palette.lightGray.hex,
+                        color: theme.palette.text.hex,
+                        focusRing: theme.palette.primary.hex 
+                      }}
+                    />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Este mensaje será enviado junto con tu informe (es opcional)
+                    </p>
+                  </div>
                   
-                  <button
-                    onClick={handleSendReport}
-                    className="px-4 py-2 text-white rounded-md flex items-center gap-2"
-                    style={{ backgroundColor: theme.palette.primary.hex }}
-                  >
-                    <span>Enviar Informe</span>
-                  </button>
-                </div>
-              </>
-            )}
+                  <div className="flex justify-end gap-3 mt-6">
+                    <button
+                      onClick={closeModal}
+                      className="px-4 py-2 border rounded-md font-medium text-sm transition-colors duration-200 hover:bg-gray-50"
+                      style={{ 
+                        borderColor: theme.palette.lightGray.hex,
+                        color: theme.palette.darkGray.hex
+                      }}
+                    >
+                      Cancelar
+                    </button>
+                    
+                    <button
+                      onClick={handleSendReport}
+                      className="px-6 py-2 text-white rounded-md font-medium text-sm shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2"
+                      style={{ backgroundColor: theme.palette.primary.hex }}
+                    >
+                      <FaPaperPlane size={14} />
+                      <span>Enviar Informe</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

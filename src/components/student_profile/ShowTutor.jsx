@@ -133,7 +133,6 @@ const ShowTutor = () => {
   return (
     <div className="flex flex-col w-full mx-auto">
       <div className="relative p-6 bg-white rounded-lg">
-
         <h2 className="text-lg font-semibold mb-5">Tutor asignado</h2>
 
         {/* Mensaje de aviso */}
@@ -193,7 +192,6 @@ const ShowTutor = () => {
                     <FaTrash className="text-sm" />
                     <span className="text-sm">Quitar tutor</span>
                   </button>
-
                   <SendReportButton
                     tutorId={tutor.id}
                     tutorName={`${tutor.metadata?.firstName || ""} ${tutor.metadata?.lastName || ""}`}
@@ -234,7 +232,7 @@ const ShowTutor = () => {
                 <select
                   value={selectedSpecialization}
                   onChange={(e) => setSelectedSpecialization(e.target.value)}
-                  className="w-full p-2 border rounded-md text-sm focus:outline-none"
+                  className="w-full p-2 border rounded-md text-sm focus:outline-none appearance-none bg-white"
                   style={{ borderColor: theme.palette.primary.hex }}
                 >
                   <option value="">Todas las especializaciones</option>
@@ -244,7 +242,6 @@ const ShowTutor = () => {
                 </select>
               </div>
             </div>
-
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">

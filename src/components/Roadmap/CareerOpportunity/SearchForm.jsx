@@ -52,7 +52,7 @@ const SearchForm = ({
           <div>
             <label
               htmlFor="keywords"
-              className="block text-sm font-medium mb-1 flex items-center"
+              className="block text-sm font-medium mb-1 items-center"
               style={{ color: theme.palette.text.hex }}
             >
               <i className="bi bi-tags-fill mr-2"></i>
@@ -77,7 +77,7 @@ const SearchForm = ({
           <div>
             <label
               htmlFor="location"
-              className="block text-sm font-medium mb-1 flex items-center"
+              className="block text-sm font-medium mb-1 items-center"
               style={{ color: theme.palette.text.hex }}
             >
               <i className="bi bi-geo-alt-fill mr-2"></i>
@@ -103,7 +103,7 @@ const SearchForm = ({
           <div className="relative">
             <label
               htmlFor="jobType"
-              className="block text-sm font-medium mb-1 flex items-center"
+              className="block text-sm font-medium mb-1 items-center"
               style={{ color: theme.palette.text.hex }}
             >
               <i className="bi bi-briefcase-fill mr-2"></i>
@@ -156,7 +156,7 @@ const SearchForm = ({
           <div className="relative">
             <label
               htmlFor="datePosted"
-              className="block text-sm font-medium mb-1 flex items-center"
+              className="block text-sm font-medium mb-1 items-center"
               style={{ color: theme.palette.text.hex }}
             >
               <i className="bi bi-calendar3 mr-2"></i>
@@ -197,7 +197,7 @@ const SearchForm = ({
           <div className="relative">
             <label
               htmlFor="remote"
-              className="block text-sm font-medium mb-1 flex items-center"
+              className="block text-sm font-medium mb-1 items-center"
               style={{ color: theme.palette.text.hex }}
             >
               <i className="bi bi-laptop mr-2"></i>

@@ -21,6 +21,7 @@ const Home = () => {
   const [metadata, setMetadata] = useState(null);
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [alerts, setAlerts] = useState([]);
 
   const fetchMetadataAndRoadmap = async () => {
     try {
@@ -35,21 +36,68 @@ const Home = () => {
       const metadataData = await metadataRes.json();
       localStorage.setItem("metadata", JSON.stringify(metadataData.metadata));
       setMetadata(metadataData.metadata);
+      
+      const academicAlerts = generateAlerts(metadataData.metadata);
+      setAlerts(academicAlerts);
+      
+      const hasEmptyAlert = academicAlerts.some(alert => alert.keyword === "empty");
+      
+      if (!hasEmptyAlert) {
+        try {
+          const roadmapRes = await fetch("http://localhost:3000/userRoadmap", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+    
+          if (roadmapRes.ok) {
+            const roadmapData = await roadmapRes.json();
+            setRoadmap(roadmapData.roadmap);
+            setProgress(calculateProgress(roadmapData.roadmap));
+          } else {
+            await generateRoadmap();
+          }
+        } catch (error) {
+          console.error("Error fetching roadmap:", error);
+        }
+      }
+      
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching metadata:", error);
+      setIsLoading(false);
+    }
+  };
 
-      const roadmapRes = await fetch("http://localhost:3000/userRoadmap", {
-        method: "GET",
+  const generateRoadmap = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/userRoadmap", {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
-      const roadmapData = await roadmapRes.json();
-      setRoadmap(roadmapData.roadmap);
-      setProgress(calculateProgress(roadmapData.roadmap));
-
+      
+      if (response.ok) {
+        const roadmapRes = await fetch("http://localhost:3000/userRoadmap", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        
+        if (roadmapRes.ok) {
+          const freshRoadmapData = await roadmapRes.json();
+          setRoadmap(freshRoadmapData.roadmap);
+          setProgress(calculateProgress(freshRoadmapData.roadmap));
+        }
+      }
     } catch (error) {
-      console.error("Error fetching metadata or roadmap:", error);
+      console.error("Error generating roadmap:", error);
     }
   };
 
@@ -77,13 +125,7 @@ const Home = () => {
     fetchMetadataAndRoadmap();
   }, []);
 
-  useEffect(() => {
-    if (metadata && roadmap) {
-      setIsLoading(false)
-    }
-  }, [metadata, roadmap]);
-
-  const generateAlerts = () => {
+  const generateAlerts = (metadata) => {
     if (!metadata) return [];
 
     const alerts = [];
@@ -127,7 +169,7 @@ const Home = () => {
         type: "warning",
         keyword: "incomplete",
         action: {
-          label: "Ir al perfil",
+          label: "Revisar expediente",
           path: `/profile/student/${params.id}`,
         },
       });
@@ -136,11 +178,11 @@ const Home = () => {
     return alerts;
   };
 
-  if (isLoading || !metadata || !roadmap) return <LoadingModal />;
+  if (isLoading) return <LoadingModal />;
 
-  const alerts = generateAlerts();
+  const hasEmptyAlert = alerts.some(alert => alert.keyword === "empty");
 
-  if (alerts.length > 0) {
+  if (hasEmptyAlert) {
     return (
       <div className="p-10 space-y-6">
         <AlertSystemRoadmap alerts={alerts} />
@@ -158,19 +200,21 @@ const Home = () => {
           />
 
           {/* Mensaje recordatorio de actualizar perfil */}
-          <AlertSystemRoadmap
-            metadata={metadata}
-          />
+          {alerts.length > 0 && (
+            <AlertSystemRoadmap alerts={alerts} />
+          )}
 
           {/* Roadmap */}
-          <div className="bg-white rounded-2xl shadow-md p-10">
-            <Roadmap
-              roadmap={roadmap}
-              metadata={metadata}
-              progress={progress}
-              setProgress={setProgress}
-            />
-          </div>
+          {roadmap && (
+            <div className="bg-white rounded-2xl shadow-md p-10">
+              <Roadmap
+                roadmap={roadmap}
+                metadata={metadata}
+                progress={progress}
+                setProgress={setProgress}
+              />
+            </div>
+          )}
 
           <div className="bg-white rounded-2xl shadow-md p-10">
             <ExploreMoreRoadmapsCard />
