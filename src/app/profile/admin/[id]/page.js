@@ -56,7 +56,7 @@ const AdminProfile = () => {
           return <ErrorPopUp message="No tienes acceso a esta página." path={`/home/${user.role.toLowerCase()}/${id}`} />;
         }
         
-        const response = await fetch("http://localhost:3000/", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

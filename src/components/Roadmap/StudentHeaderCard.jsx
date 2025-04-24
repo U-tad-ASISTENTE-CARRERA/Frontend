@@ -13,7 +13,7 @@ const StudentHeaderCard = ({ metadata }) => {
         const teacherId = metadata?.teacherList?.[0];
         if (!teacherId) return;
 
-        const response = await fetch(`http://localhost:3000/student/teacher`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/student/teacher`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

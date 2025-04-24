@@ -28,7 +28,7 @@ const ShowTutor = () => {
   const fetchAssignedTutors = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/student/teacher", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/student/teacher`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -48,7 +48,7 @@ const ShowTutor = () => {
 
   const fetchAvailableTutors = async (assignedIds) => {
     try {
-      const response = await fetch(`http://localhost:3000/teacher`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/teacher`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -90,7 +90,7 @@ const ShowTutor = () => {
 
   const handleSelect = async (tutorId) => {
     try {
-      const response = await fetch("http://localhost:3000/student/teacher", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/student/teacher`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -114,7 +114,7 @@ const ShowTutor = () => {
   const handleRemoveTutor = async () => {
     setShowConfirmPopup(false);
     try {
-      const response = await fetch("http://localhost:3000/student/teacher", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/student/teacher`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

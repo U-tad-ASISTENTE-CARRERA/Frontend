@@ -25,7 +25,7 @@ const AlertSystem = ({
     useEffect(() => {
         const fetchLastUpdateDate = async () => {
             try {
-                const response = await fetch("http://localhost:3000/metadata", {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

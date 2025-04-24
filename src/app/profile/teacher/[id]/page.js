@@ -73,7 +73,7 @@ const TeacherProfile = () => {
   const fetchData = async () => {
     if (!token || !id) return;
     try {
-      const response = await fetch("http://localhost:3000/metadata", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +109,7 @@ const TeacherProfile = () => {
     if (!token || !id) return;
     try {
       const response = await fetch(
-        "http://localhost:3000/student/teacher/getAllStudents",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/student/teacher/getAllStudents`,
         {
           method: "GET",
           headers: {
@@ -142,7 +142,7 @@ const TeacherProfile = () => {
     if (deletionRequested) return; // Protección en estado local
 
     try {
-      const response = await fetch("http://localhost:3000/deletionRequest", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/deletionRequest`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -173,7 +173,7 @@ const TeacherProfile = () => {
 
   const handleCancelDeletion = async () => {
     try {
-      const response = await fetch("http://localhost:3000/deletionRequest", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/deletionRequest`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

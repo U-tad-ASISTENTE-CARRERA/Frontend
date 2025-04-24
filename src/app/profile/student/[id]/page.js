@@ -54,7 +54,7 @@ const StudentProfile = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:3000/metadata", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -99,7 +99,7 @@ const StudentProfile = () => {
 
     const fetchAcademicRecord = async () => {
       try {
-        const response = await fetch("http://localhost:3000/AH", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/AH`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -135,7 +135,7 @@ const StudentProfile = () => {
 
   const handleUpdateMetadata = async (updates) => {
     try {
-      const response = await fetch("http://localhost:3000/metadata", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -214,7 +214,7 @@ const StudentProfile = () => {
     }));
 
     try {
-      const response = await fetch("http://localhost:3000/metadata", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -255,7 +255,7 @@ const StudentProfile = () => {
     }));
 
     try {
-      const response = await fetch("http://localhost:3000/metadata", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -296,7 +296,7 @@ const StudentProfile = () => {
     }));
 
     try {
-      const response = await fetch("http://localhost:3000/metadata", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -345,7 +345,7 @@ const StudentProfile = () => {
     }));
 
     try {
-      const response = await fetch("http://localhost:3000/metadata", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -384,7 +384,7 @@ const StudentProfile = () => {
 
   const handleSaveGrades = async (updatedGrades) => {
     try {
-      const response = await fetch("http://localhost:3000/AH", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/AH`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -410,7 +410,7 @@ const StudentProfile = () => {
 
   const fetchAcademicRecord = async () => {
     try {
-      const response = await fetch("http://localhost:3000/AH", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/AH`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -440,7 +440,7 @@ const StudentProfile = () => {
     if (deletionRequested) return { success: false, message: "Ya existe una solicitud pendiente" }; // Protección en estado local
 
     try {
-      const response = await fetch("http://localhost:3000/deletionRequest", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/deletionRequest`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -470,7 +470,7 @@ const StudentProfile = () => {
 
   const handleCancelDeletion = async () => {
     try {
-      const response = await fetch("http://localhost:3000/deletionRequest", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/deletionRequest`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

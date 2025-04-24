@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 
 class OffersSyncService {
     constructor() {
-        this.baseUrl = 'http://localhost:3000';
+        this.baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}`;
         this.userId = this.getUserIdFromCookie();
     }
 

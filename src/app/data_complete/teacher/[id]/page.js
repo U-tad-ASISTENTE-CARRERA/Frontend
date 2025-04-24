@@ -30,7 +30,7 @@ const TeacherInitForm = () => {
 
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/metadata", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -125,7 +125,7 @@ const TeacherInitForm = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/metadata", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

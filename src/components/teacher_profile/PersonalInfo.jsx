@@ -82,7 +82,7 @@ const PersonalInfo = ({
         }
 
         try {
-            const response = await fetch("http://localhost:3000/metadata", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",

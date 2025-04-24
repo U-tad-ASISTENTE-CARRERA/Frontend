@@ -7,7 +7,7 @@ import Resource from "@/components/Roadmap/Resource";
 
 const Task = ({ taskName, taskData, sectionName, updateProgress }) => {
   const handleMarkAsDone = async () => {
-    const response = await fetch("http://localhost:3000/userRoadmap", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/userRoadmap`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

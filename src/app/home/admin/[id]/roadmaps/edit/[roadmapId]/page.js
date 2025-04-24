@@ -22,7 +22,7 @@ const RoadmapViewer = () => {
   useEffect(() => {
     const fetchRoadmap = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/roadmaps/${roadmapId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/roadmaps/${roadmapId}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

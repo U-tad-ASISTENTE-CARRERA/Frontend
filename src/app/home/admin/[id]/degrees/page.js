@@ -26,7 +26,7 @@ const DegreeList = () => {
   useEffect(() => {
     const fetchDegrees = async () => {
       try {
-        const response = await fetch("http://localhost:3000/degrees", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/degrees`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -56,7 +56,7 @@ const DegreeList = () => {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3000/degrees/${encodeURIComponent(degreeName)}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/degrees/${encodeURIComponent(degreeName)}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -90,7 +90,7 @@ const DegreeList = () => {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:3000/degrees", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/degrees`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export const useNotifications = ({ baseUrl = 'http://localhost:3000', token, role }) => {
+export const useNotifications = ({ baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}`, token, role }) => {
     const [notifications, setNotifications] = useState([]);
     const [pagination, setPagination] = useState({
         total: 0,

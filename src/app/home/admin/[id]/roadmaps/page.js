@@ -25,7 +25,7 @@ const RoadmapList = () => {
   useEffect(() => {
     const fetchRoadmaps = async () => {
       try {
-        const response = await fetch("http://localhost:3000/roadmaps", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/roadmaps`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -56,7 +56,7 @@ const RoadmapList = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/roadmaps/${encodeURIComponent(roadmapName)}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/roadmaps/${encodeURIComponent(roadmapName)}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +92,7 @@ const RoadmapList = () => {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:3000/roadmaps", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/roadmaps`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

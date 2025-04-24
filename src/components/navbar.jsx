@@ -36,7 +36,7 @@ export default function Navbar() {
     if (!token) return;
 
     try {
-      const res = await fetch("http://localhost:3000/", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -103,7 +103,7 @@ export default function Navbar() {
   }, []);
 
   const handleTypeUserProfile = async () => {
-    const res = await fetch("http://localhost:3000/", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -116,7 +116,7 @@ export default function Navbar() {
 
   const handleTypeUserHome = async () => {
     if (!localStorage.getItem("token")) return router.push("/");
-    const res = await fetch("http://localhost:3000/", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,

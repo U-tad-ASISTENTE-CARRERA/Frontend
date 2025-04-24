@@ -10,7 +10,7 @@ const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
   ssr: false,
 });
 
-const SendReportButton = ({ tutorId, tutorName, baseUrl = "http://localhost:3000" }) => {
+const SendReportButton = ({ tutorId, tutorName, baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}` }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [showMsg, setShowMsg] = useState(null);

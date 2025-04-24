@@ -55,7 +55,7 @@ const TeacherHomePage = () => {
     
     const fetchTeacherData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/metadata", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -73,7 +73,7 @@ const TeacherHomePage = () => {
     
     const fetchStudents = async () => {
       try {
-        const response = await fetch("http://localhost:3000/student/teacher/getAllStudents", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/student/teacher/getAllStudents`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -112,11 +112,11 @@ const TeacherHomePage = () => {
       const params = new URLSearchParams();
       if (activeTab === "unread") params.append("onlyUnread", "true");
       
-      let url = "http://localhost:3000/student/teacher/notification";
+      let url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/student/teacher/notification`;
       
       if (selectedStudent) {
         params.append("studentId", selectedStudent.id);
-        url = "http://localhost:3000/student/teacher/notification/byStudent";
+        url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/student/teacher/notification/byStudent`;
       }
       
       if (params.toString()) url = `${url}?${params.toString()}`;
@@ -158,7 +158,7 @@ const TeacherHomePage = () => {
   
   const updateNotificationStatus = async (notificationId, read) => {
     try {
-      const response = await fetch("http://localhost:3000/student/teacher/notification", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/student/teacher/notification`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -192,7 +192,7 @@ const TeacherHomePage = () => {
   
   const handleMarkAllAsRead = async () => {
     try {
-      const response = await fetch("http://localhost:3000/student/teacher/notification/read-all", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/student/teacher/notification/read-all`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`
@@ -223,7 +223,7 @@ const TeacherHomePage = () => {
   
   const handleDeleteNotification = async (notificationId) => {
     try {
-      const response = await fetch(`http://localhost:3000/student/teacher/notification/${notificationId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/student/teacher/notification/${notificationId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`
@@ -266,7 +266,7 @@ const TeacherHomePage = () => {
     setSummary(null);
     
     try {
-      const response = await fetch(`http://localhost:3000/summary/${studentId}/latest`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/summary/${studentId}/latest`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

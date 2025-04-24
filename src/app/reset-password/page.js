@@ -51,7 +51,7 @@ const Reset = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/updatePassword", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/updatePassword`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

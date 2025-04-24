@@ -49,7 +49,7 @@ const AdminDashboard = () => {
           }
 
           // Fetch user data from backend
-          const userResponse = await fetch("http://localhost:3000/", {
+          const userResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -87,7 +87,7 @@ const AdminDashboard = () => {
 
   const fetchAllStats = async () => {
     try {
-      const usersResponse = await fetch("http://localhost:3000/admin", {
+      const usersResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -111,7 +111,7 @@ const AdminDashboard = () => {
       const studentsByDegree = processStudentsByDegree(students);
       const specializations = processSpecializations(teachers);
 
-      const roadmapsResponse = await fetch("http://localhost:3000/roadmaps", {
+      const roadmapsResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/roadmaps`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
 
       const roadmapsData = await roadmapsResponse.json();
 
-      const degreesResponse = await fetch("http://localhost:3000/degrees", {
+      const degreesResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/degrees`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

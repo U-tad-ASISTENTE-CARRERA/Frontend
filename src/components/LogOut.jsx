@@ -11,7 +11,7 @@ const LogOut = ({ onClose }) => {
   const handleLogOut = async () => {
     setError("");
     try {
-      const response = await fetch("http://localhost:3000/logout", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

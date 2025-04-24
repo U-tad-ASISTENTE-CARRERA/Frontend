@@ -12,6 +12,7 @@
     "@fontsource/montserrat": "^5.1.1",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
+    "env": "^0.0.2",
     "frontend": "file:",
     "js-cookie": "^3.0.5",
     "jspdf": "^3.0.1",

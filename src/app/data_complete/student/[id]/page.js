@@ -30,7 +30,7 @@ const StudentInitForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/metadata", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -112,7 +112,7 @@ const StudentInitForm = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/metadata", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

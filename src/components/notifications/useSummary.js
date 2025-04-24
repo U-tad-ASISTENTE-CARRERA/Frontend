@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export const useSummary = ({ baseUrl = 'http://localhost:3000', token, role }) => {
+export const useSummary = ({ baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}`, token, role }) => {
     const [latestSummary, setLatestSummary] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);

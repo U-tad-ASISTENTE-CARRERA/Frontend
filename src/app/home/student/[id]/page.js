@@ -25,7 +25,7 @@ const Home = () => {
 
   const fetchMetadataAndRoadmap = async () => {
     try {
-      const metadataRes = await fetch("http://localhost:3000/metadata", {
+      const metadataRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -44,7 +44,7 @@ const Home = () => {
       
       if (!hasEmptyAlert) {
         try {
-          const roadmapRes = await fetch("http://localhost:3000/userRoadmap", {
+          const roadmapRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/userRoadmap`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -73,7 +73,7 @@ const Home = () => {
 
   const generateRoadmap = async () => {
     try {
-      const response = await fetch("http://localhost:3000/userRoadmap", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/userRoadmap`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +82,7 @@ const Home = () => {
       });
       
       if (response.ok) {
-        const roadmapRes = await fetch("http://localhost:3000/userRoadmap", {
+        const roadmapRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/userRoadmap`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

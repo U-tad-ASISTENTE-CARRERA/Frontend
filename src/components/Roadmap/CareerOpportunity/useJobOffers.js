@@ -94,7 +94,7 @@ export const useJobOffers = () => {
             const token = localStorage.getItem("token");
             if (!token) return currentFavorites;
             
-            const response = await fetch("http://localhost:3000/metadata", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -133,7 +133,7 @@ export const useJobOffers = () => {
             localStorage.setItem(favoritesKey, JSON.stringify(mergedOffers));
             
             if (JSON.stringify(backendOffers) !== JSON.stringify(mergedOffers)) {
-                await fetch("http://localhost:3000/metadata", {
+                await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json",
@@ -173,7 +173,7 @@ export const useJobOffers = () => {
                     return;
                 }
                 
-                const response = await fetch("http://localhost:3000/metadata", {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -372,7 +372,7 @@ export const useJobOffers = () => {
             if (token) {
                 try {
                     console.log("Syncing favorites with backend");
-                    const response = await fetch("http://localhost:3000/metadata", {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
                         method: "PATCH",
                         headers: {
                             "Content-Type": "application/json",
@@ -421,7 +421,7 @@ export const useJobOffers = () => {
             if (token) {
                 try {
                     console.log("Deleting offer from backend");
-                    const response = await fetch("http://localhost:3000/metadata", {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
                         method: "DELETE",
                         headers: {
                             "Content-Type": "application/json",
@@ -470,7 +470,7 @@ export const useJobOffers = () => {
             if (token && currentFavorites.length > 0) {
                 try {
                     console.log("Deleting all offers from backend");
-                    const response = await fetch("http://localhost:3000/metadata", {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
                         method: "DELETE",
                         headers: {
                             "Content-Type": "application/json",

@@ -29,7 +29,7 @@ const UserList = () => {
           throw new Error("No se encontró el token de autenticación");
         }
   
-        const response = await fetch("http://localhost:3000/admin", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -74,7 +74,7 @@ const UserList = () => {
       }
 
       setLoading(true);
-      const response = await fetch(`http://localhost:3000/admin/${userId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${userId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

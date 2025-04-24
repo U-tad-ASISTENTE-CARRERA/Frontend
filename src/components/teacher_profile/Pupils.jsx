@@ -27,7 +27,7 @@ const Pupils = ({ students, setStudents, token, setToken }) => {
 
   const fetchStudentSummaries = async (studentId) => {
     try {
-      const response = await fetch(`http://localhost:3000/summary/${studentId}/all`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/summary/${studentId}/all`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -63,7 +63,7 @@ const Pupils = ({ students, setStudents, token, setToken }) => {
 
       // Fetch latest summary
       const response = await fetch(
-        `http://localhost:3000/summary/${studentId}/latest`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/summary/${studentId}/latest`,
         {
           method: "GET",
           headers: {
