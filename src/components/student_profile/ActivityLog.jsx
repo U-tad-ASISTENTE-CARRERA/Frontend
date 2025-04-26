@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 const ActivityLog = ({ updateHistory }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3; 
+  const itemsPerPage = 2; 
 
   if (!updateHistory || updateHistory.length === 0) {
     return (
@@ -17,7 +17,7 @@ const ActivityLog = ({ updateHistory }) => {
 
   const totalPages = Math.ceil(updateHistory.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = updateHistory.slice(startIndex, startIndex + itemsPerPage);
+  const currentItems = updateHistory.slice().reverse().slice(startIndex, startIndex + itemsPerPage);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {

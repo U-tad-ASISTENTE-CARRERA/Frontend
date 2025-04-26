@@ -86,6 +86,8 @@ const StudentProfile = () => {
         setDeletionRequested(data.metadata?.deletionRequestStatus === "pending");
         setUpdateHistory(data.updateHistory || []); 
 
+        console.log("Data", data.updateHistory)
+
         setEndDate(convertTimestampToDate(data.metadata.endDate));
         setBirthDate(convertTimestampToDate(data.metadata.birthDate));
 
@@ -94,6 +96,27 @@ const StudentProfile = () => {
         setError(error.message);
       } finally {
         setLoading(false);
+      }
+    };
+
+    const fetchUpdateHistory = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/updateHistory`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+      });
+
+        if (!response.ok) throw new Error("Error obteniendo el historial de cambios.");
+        const data = await response.json();
+
+        console.log("Historial de cambios:", data.updateHistory);
+
+        if (data.updateHistory) setUpdateHistory(data.updateHistory);
+      } catch (error) {
+        setError(error.message);
       }
     };
 
@@ -130,6 +153,7 @@ const StudentProfile = () => {
 
     fetchData();
     fetchAcademicRecord();
+    fetchUpdateHistory(); 
   }, []);
 
 
