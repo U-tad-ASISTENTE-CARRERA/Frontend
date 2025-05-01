@@ -35,7 +35,7 @@ const StudentProfile = () => {
   });
 
   const [languages, setLanguages] = useState([]);
-  const [specialization, setSpecialization] = useState("");
+  // const [specialization, setSpecialization] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("");
@@ -51,93 +51,6 @@ const StudentProfile = () => {
   const [updateHistory, setUpdateHistory] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Error obteniendo los metadatos");
-        }
-
-        const data = await response.json();
-
-        if (!data.metadata) {
-          router.push(`/data_complete/student/${id}`);
-          return;
-        }
-
-        setFirstName(data.metadata.firstName || "");
-        setLastName(data.metadata.lastName || "");
-        setDegree(data.metadata.degree || "");
-        setYearsCompleted(data.metadata.yearsCompleted || "");
-        setLanguages(data.metadata.languages || []);
-        setSpecialization(data.metadata.specialization || "");
-        setSkills(data.metadata.programming_languages || []);
-        setCertifications(data.metadata.certifications || []);
-        setWorkExperience(data.metadata.workExperience || []);
-        setGender(data.metadata.gender || "");
-        setDeletionRequested(data.metadata?.deletionRequestStatus === "pending");
-        setUpdateHistory(data.updateHistory || []); 
-
-        console.log("Data", data.updateHistory)
-
-        setEndDate(convertTimestampToDate(data.metadata.endDate));
-        setBirthDate(convertTimestampToDate(data.metadata.birthDate));
-
-        if (data.metadata.AH?.subjects) setAcademicRecord(data.metadata.AH.subjects);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchUpdateHistory = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/updateHistory`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-      });
-
-        if (!response.ok) throw new Error("Error obteniendo el historial de cambios.");
-        const data = await response.json();
-
-        console.log("Historial de cambios:", data.updateHistory);
-
-        if (data.updateHistory) setUpdateHistory(data.updateHistory);
-      } catch (error) {
-        setError(error.message);
-      }
-    };
-
-    const fetchAcademicRecord = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/AH`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        if (!response.ok) throw new Error("Error obteniendo expediente académico.");
-        const data = await response.json();
-        if (data.subjects) setAcademicRecord(data.subjects);
-      } catch (error) {
-        setError(error.message);
-      }
-    };
-
     const user = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("token");
 
@@ -151,13 +64,114 @@ const StudentProfile = () => {
       return;
     }
 
-    fetchData();
-    fetchAcademicRecord();
-    fetchUpdateHistory(); 
+    fetchStudentMetadata(token, id);
+    fetchAcademicRecord(token);
+    fetchUpdateHistory(token);
   }, []);
 
+  
+  useEffect(() => {
+    if (activeSection === "activityLog") {
+      const token = localStorage.getItem("token");
+      if (token) fetchUpdateHistory(token);
+    }
+  }, [activeSection]);
+  
 
-  const handleUpdateMetadata = async (updates) => {
+
+  // FETCHING DATA
+
+  const fetchStudentMetadata = async (token, id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Error obteniendo los metadatos");
+
+      const data = await response.json();
+
+      if (!data.metadata) {
+        router.push(`/data_complete/student/${id}`);
+        return;
+      }
+
+      setFirstName(data.metadata.firstName || "");
+      setLastName(data.metadata.lastName || "");
+      setDegree(data.metadata.degree || "");
+      setYearsCompleted(data.metadata.yearsCompleted || "");
+      setLanguages(data.metadata.languages || []);
+      // setSpecialization(data.metadata.specialization || "");
+      setSkills(data.metadata.programming_languages || []);
+      setCertifications(data.metadata.certifications || []);
+      setWorkExperience(data.metadata.workExperience || []);
+      setGender(data.metadata.gender || "");
+      setDeletionRequested(data.metadata?.deletionRequestStatus === "pending");
+      setUpdateHistory(data.updateHistory || []);
+      setEndDate(convertTimestampToDate(data.metadata.endDate));
+      setBirthDate(convertTimestampToDate(data.metadata.birthDate));
+
+      if (data.metadata.AH?.subjects) {
+        setAcademicRecord(data.metadata.AH.subjects);
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUpdateHistory = async (token) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/updateHistory`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Error obteniendo el historial de cambios.");
+      const data = await response.json();
+      if (data.updateHistory) setUpdateHistory(data.updateHistory);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const fetchAcademicRecord = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/AH`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error obteniendo expediente académico.");
+      }
+
+      const data = await response.json();
+      if (data.subjects) {
+        setAcademicRecord(data.subjects);
+      }
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  
+
+  // HANDLES
+
+  const handleSavePersonalInfo = async (updates) => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata`, {
         method: "PATCH",
@@ -180,12 +194,12 @@ const StudentProfile = () => {
       }
 
       const data = await response.json();
-      
+
       if (data.updatedFields) {
         Object.entries(data.updatedFields).forEach(([key, value]) => {
           if (key.startsWith("metadata.")) {
             const fieldName = key.replace("metadata.", "");
-            
+
             switch (fieldName) {
               case "languages":
                 setLanguages(value || []);
@@ -208,9 +222,9 @@ const StudentProfile = () => {
               case "gender":
                 setGender(value || "");
                 break;
-              case "specialization":
-                setSpecialization(value || "");
-                break;
+              // case "specialization":
+              //   setSpecialization(value || "");
+              //   break;
               case "birthDate":
                 setBirthDate(convertTimestampToDate(value));
                 break;
@@ -255,14 +269,14 @@ const StudentProfile = () => {
       }
 
       const data = await response.json();
-      
+
       // Actualiza el estado de languages con los datos que retorna el servidor
       if (data.deletedFields && data.deletedFields.includes("metadata.languages")) {
         setLanguages([]); // Si se eliminaron todos los idiomas
       } else if (data.updatedFields && data.updatedFields["metadata.languages"]) {
         setLanguages(data.updatedFields["metadata.languages"]);
       }
-      
+
       if (data.updateHistory) setUpdateHistory(data.updateHistory);
       return true;
     } catch (error) {
@@ -296,13 +310,13 @@ const StudentProfile = () => {
       }
 
       const data = await response.json();
-      
+
       if (data.deletedFields && data.deletedFields.includes("metadata.programming_languages")) {
         setSkills([]); // Si se eliminaron todos los skills
       } else if (data.updatedFields && data.updatedFields["metadata.programming_languages"]) {
         setSkills(data.updatedFields["metadata.programming_languages"]);
       }
-      
+
       if (data.updateHistory) setUpdateHistory(data.updateHistory);
       return true;
     } catch (error) {
@@ -313,7 +327,7 @@ const StudentProfile = () => {
 
   const handleDeleteCertifications = async (certObj) => {
     const certificationList = certObj.certifications.map(cert => ({
-      _id: cert._id, 
+      _id: cert._id,
       name: cert.name,
       date: cert.date,
       institution: cert.institution
@@ -337,19 +351,19 @@ const StudentProfile = () => {
       }
 
       const data = await response.json();
-      
+
       // Actualiza el estado de certificaciones con los datos que retorna el servidor
       if (data.deletedFields && data.deletedFields.includes("metadata.certifications")) {
         setCertifications([]); // Si se eliminaron todas las certificaciones
       } else if (data.updatedFields && data.updatedFields["metadata.certifications"]) {
         setCertifications(data.updatedFields["metadata.certifications"]);
       }
-      
+
       // Actualiza el historial de cambios
       if (data.updateHistory) {
         setUpdateHistory(data.updateHistory);
       }
-      
+
       return true;
     } catch (error) {
       console.log("Error al eliminar certificaciones:", error.message);
@@ -386,19 +400,19 @@ const StudentProfile = () => {
       }
 
       const data = await response.json();
-      
+
       // Actualiza el estado de workExperience con los datos que retorna el servidor
       if (data.deletedFields && data.deletedFields.includes("metadata.workExperience")) {
         setWorkExperience([]); // Si se eliminaron todas las experiencias
       } else if (data.updatedFields && data.updatedFields["metadata.workExperience"]) {
         setWorkExperience(data.updatedFields["metadata.workExperience"]);
       }
-      
+
       // Actualiza el historial de cambios
       if (data.updateHistory) {
         setUpdateHistory(data.updateHistory);
       }
-      
+
       return true;
     } catch (error) {
       console.log("Error al eliminar experiencia laboral:", error.message);
@@ -424,40 +438,12 @@ const StudentProfile = () => {
 
       // Actualiza el expediente académico después de guardar
       await fetchAcademicRecord();
-      
+
       return true;
     } catch (error) {
       setError(error.message);
       return false;
     }
-  };
-
-  const fetchAcademicRecord = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/AH`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Error obteniendo expediente académico.");
-      }
-
-      const data = await response.json();
-      if (data.subjects) {
-        setAcademicRecord(data.subjects);
-      }
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  // Función específica para actualizar los datos personales
-  const handleSavePersonalInfo = (updatedData) => {
-    return handleUpdateMetadata(updatedData);
   };
 
   const handleRequestDeletion = async (reason) => {
@@ -632,8 +618,6 @@ const StudentProfile = () => {
               </div>
             </div>
           </div>
-
-
         </div>
       )}
     </>
