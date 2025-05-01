@@ -122,13 +122,7 @@ const WorkExperience = ({ workExperience, setWorkExperience, onSave, onDelete })
           Experiencia laboral
         </h2>
 
-        <div
-          className="flex gap-2"
-          style={{
-            justifyContent: "flex-start",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="flex gap-2">
           {isEditing && (
             <button
               type="button"

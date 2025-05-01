@@ -180,13 +180,7 @@ const PersonalInfo = ({
 
         <h2 className="text-lg font-semibold">Información principal</h2>
         
-        <div
-          className="flex gap-2"
-          style={{
-            justifyContent: "flex-start",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="flex gap-2">
           {isEditing && (
             <button
               type="button"
