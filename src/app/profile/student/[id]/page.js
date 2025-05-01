@@ -9,6 +9,7 @@ const LoadingModal = dynamic(() => import("@/components/LoadingModal"), {
   ssr: false,
 });
 import SidebarNavigation from "@/components/student_profile/SidebarNavigation";
+import DashboardStudent from "@/components/student_profile/DashboardStudent";
 import PersonalInfo from "@/components/student_profile/PersonalInfo";
 import Languages from "@/components/student_profile/Languages";
 import ProgrammingLanguages from "@/components/student_profile/ProgrammingLanguages";
@@ -51,6 +52,7 @@ const StudentProfile = () => {
   const [academicRecord, setAcademicRecord] = useState([]);
   const [deletionRequested, setDeletionRequested] = useState(false);
   const [updateHistory, setUpdateHistory] = useState([]);
+  const [roadmap, setRoadmap] = useState([]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -117,6 +119,7 @@ const StudentProfile = () => {
       setUpdateHistory(data.updateHistory || []);
       setEndDate(convertTimestampToDate(data.metadata.endDate));
       setBirthDate(convertTimestampToDate(data.metadata.birthDate));
+      setRoadmap(data.metadata.roadmap || {});
 
       if (data.metadata.AH?.subjects) {
         setAcademicRecord(data.metadata.AH.subjects);
@@ -542,8 +545,23 @@ const StudentProfile = () => {
                 />
               </div>
 
-              {/* Secciones con actualización a la BD */}
+              {/* Secciones */}
               <div className="flex-1 p-6">
+
+                {activeSection === "dashboard" && (
+                  <DashboardStudent
+                    firstName={firstName}
+                    lastName={lastName}
+                    degree={degree}
+                    yearsCompleted={yearsCompleted}
+                    endDate={endDate}
+                    academicRecord={academicRecord}
+                    skills={skills}
+                    roadmap={roadmap}
+                  />
+                )}
+
+
                 {activeSection === "personal" && (
                   <PersonalInfo
                     firstName={firstName}
@@ -563,8 +581,8 @@ const StudentProfile = () => {
                     handleRequestDeletion={handleRequestDeletion}
                     handleCancelDeletion={handleCancelDeletion}
                   />
-
                 )}
+
                 {activeSection === "languages" && (
                   <Languages
                     languages={languages}
@@ -573,6 +591,7 @@ const StudentProfile = () => {
                     onDelete={handleDeleteLanguage}
                   />
                 )}
+
                 {activeSection === "programming" && (
                   <ProgrammingLanguages
                     skills={skills}
@@ -581,6 +600,7 @@ const StudentProfile = () => {
                     onDelete={handleDeleteSkill}
                   />
                 )}
+
                 {activeSection === "certifications" &&
                   <Certifications
                     certifications={certifications}
@@ -589,6 +609,7 @@ const StudentProfile = () => {
                     onDelete={handleDeleteCertifications}
                   />
                 }
+
                 {activeSection === "employee" &&
                   <WorkExperience
                     workExperience={workExperience}
@@ -597,6 +618,7 @@ const StudentProfile = () => {
                     onDelete={handleDeleteWorkExperience}
                   />
                 }
+
                 {activeSection === "AH" && (
                   <ExpedienteAcademico
                     academicRecord={academicRecord}
