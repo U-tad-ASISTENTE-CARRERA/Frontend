@@ -2,6 +2,7 @@
 
 import React from "react";
 import { theme } from "@/constants/theme";
+import DeleteRoadmapButton from "./DeleteRoadmapButton";
 
 const StudentSummaryCard = ({
   firstName,
@@ -195,7 +196,6 @@ const StudentSummaryCard = ({
         </div>
       </div>
 
-      {/* Roadmap Banner */}
       <div
         style={{
           marginTop: "1rem",
@@ -209,26 +209,31 @@ const StudentSummaryCard = ({
           alignItems: "center",
         }}
       >
-        <p style={{ color: theme.palette.text.hex, fontSize: theme.fontSizes.l }}>
+        <p style={{ color: theme.palette.text.hex, fontSize: theme.fontSizes.l, margin: 0 }}>
           Roadmap elegido:{" "}
           <strong style={{ color: theme.palette.primary.hex }}>
             {roadmap?.name || "No disponible"}
           </strong>
         </p>
-        <button
-          onClick={goToRoadmap}
-          style={{
-            backgroundColor: theme.palette.primary.hex,
-            color: theme.palette.background.hex,
-            padding: "0.5rem 1.25rem",
-            borderRadius: theme.buttonRadios.m,
-            fontSize: theme.fontSizes.m,
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Ver el Roadmap
-        </button>
+        
+        <div style={{ display: "flex", gap: "0.75rem" }}>
+          <button
+            onClick={goToRoadmap}
+            style={{
+              backgroundColor: theme.palette.primary.hex,
+              color: theme.palette.background.hex,
+              padding: "0.5rem 1.25rem",
+              borderRadius: theme.buttonRadios.m,
+              fontSize: theme.fontSizes.m,
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Ver el Roadmap
+          </button>
+          
+          <DeleteRoadmapButton />
+        </div>
       </div>
     </div>
   );
