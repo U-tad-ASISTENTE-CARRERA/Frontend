@@ -548,7 +548,7 @@ const StudentProfile = () => {
               {/* Secciones */}
               <div className="flex-1 p-6">
 
-                {activeSection === "dashboard" && (
+                {/* {activeSection === "dashboard" && (
                   <DashboardStudent
                     firstName={firstName}
                     lastName={lastName}
@@ -559,7 +559,7 @@ const StudentProfile = () => {
                     skills={skills}
                     roadmap={roadmap}
                   />
-                )}
+                )} */}
 
 
                 {activeSection === "personal" && (
@@ -580,6 +580,9 @@ const StudentProfile = () => {
                     deletionRequested={deletionRequested}
                     handleRequestDeletion={handleRequestDeletion}
                     handleCancelDeletion={handleCancelDeletion}
+                    roadmap={roadmap}
+                    academicRecord={academicRecord}
+                    skills={skills}
                   />
                 )}
 
