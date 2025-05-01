@@ -24,7 +24,9 @@ const StudentProfile = () => {
   const searchParams = useSearchParams();
   const sectionParam = searchParams.get("section");
 
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id;
+
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -69,14 +71,14 @@ const StudentProfile = () => {
     fetchUpdateHistory(token);
   }, []);
 
-  
+
   useEffect(() => {
     if (activeSection === "activityLog") {
       const token = localStorage.getItem("token");
       if (token) fetchUpdateHistory(token);
     }
   }, [activeSection]);
-  
+
 
 
   // FETCHING DATA
@@ -167,7 +169,7 @@ const StudentProfile = () => {
     }
   };
 
-  
+
 
   // HANDLES
 

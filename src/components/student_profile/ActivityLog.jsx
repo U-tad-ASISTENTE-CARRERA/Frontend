@@ -7,14 +7,24 @@ const ActivityLog = ({ updateHistory }) => {
 
   if (!updateHistory || updateHistory.length === 0) {
     return (
-      <div
-        className="p-4 rounded"
-        style={{ backgroundColor: `${theme.palette.warning.hex}20`, border: `1px solid ${theme.palette.warning.hex}` }}
-      >
-        <p style={{ color: theme.palette.warning.hex }}>No hay historial de actividad disponible para este usuario.</p>
-        <p className="text-sm mt-2" style={{ color: `${theme.palette.warning.hex}CC` }}>
-          El historial de actividad se registra cuando se realizan cambios en el perfil del usuario.
-        </p>
+      <div className="space-y-4 p-4 bg-white rounded-lg">
+
+        <h2
+          className="text-lg font-semibold"
+          style={{ color: theme.palette.text.hex }}>
+          Registro de actividad
+        </h2>
+
+        <div
+          className="p-4 rounded"
+          style={{ backgroundColor: `${theme.palette.warning.hex}20`, border: `1px solid ${theme.palette.warning.hex}` }}
+        >
+          <p style={{ color: theme.palette.deepOrange.hex }}>No hay historial de actividad disponible para este usuario.</p>
+          <p className="text-sm mt-2" style={{ color: `${theme.palette.complementary.hex}CC` }}>
+            El historial de actividad se registra cuando se realizan cambios en el perfil del usuario.
+          </p>
+        </div>
+        
       </div>
     );
   }
