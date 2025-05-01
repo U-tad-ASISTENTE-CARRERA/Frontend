@@ -176,9 +176,17 @@ const PersonalInfo = ({
       />
 
       {/* Cabecera y botones */}
-      <div className="flex justify-between items-center mt-20 mb-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mt-10 mb-6">
+
         <h2 className="text-lg font-semibold">Información principal</h2>
-        <div className="flex gap-2">
+        
+        <div
+          className="flex gap-2"
+          style={{
+            justifyContent: "flex-start",
+            flexWrap: "wrap",
+          }}
+        >
           {isEditing && (
             <button
               type="button"
