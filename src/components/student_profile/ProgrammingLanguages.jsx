@@ -260,8 +260,8 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
               style={{ borderColor: theme.palette.lightGray.hex }}
             >
 
-              <div className="flex items-start gap-3">
-                <div className="w-3/4 relative space-y-1">
+              <div className="flex flex-col md:flex-row items-start gap-3 w-full">
+                <div className="w-full md:w-3/4 relative space-y-1">
                   <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                     Lenguaje de programación
                   </label>
@@ -282,9 +282,7 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
                         onBlur={() => setTimeout(() => setDropdownOpen((prev) => ({ ...prev, [globalIndex]: false })), 150)}
                         className="block w-full p-2 border rounded-md"
                         style={{
-                          borderColor: hasError
-                            ? theme.palette.error.hex
-                            : theme.palette.primary.hex,
+                          borderColor: hasError ? theme.palette.error.hex : theme.palette.primary.hex,
                           color: theme.palette.text.hex,
                         }}
                       />
@@ -311,7 +309,7 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
                       type="text"
                       value={sk.name}
                       disabled
-                      className="block w-full p-2 rounded-md" // quite border
+                      className="block w-full p-2 rounded-md"
                       style={{ color: theme.palette.text.hex }}
                     />
                   )}
@@ -322,7 +320,7 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
                   )}
                 </div>
 
-                <div className="w-1/4 relative space-y-1">
+                <div className="w-full md:w-1/4 relative space-y-1">
                   <label className="text-sm font-medium" style={{ color: theme.palette.text.hex }}>
                     Nivel
                   </label>
@@ -365,14 +363,14 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
                       type="text"
                       value={sk.level}
                       disabled
-                      className="block w-full p-2 rounded-md" // quite border
+                      className="block w-full p-2 rounded-md"
                       style={{ color: theme.palette.text.hex }}
                     />
                   )}
                 </div>
 
                 {isEditing && (
-                  <div className="pt-6 mt-2">
+                  <div className="pt-2 md:pt-6 mt-2 self-start">
                     <button
                       type="button"
                       onClick={() => handleDeleteSkill(globalIndex)}
@@ -385,6 +383,7 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
                   </div>
                 )}
               </div>
+
             </div>
           )
         })}
