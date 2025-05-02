@@ -36,7 +36,7 @@ const DeleteRoadmapButton = () => {
       setErrorMsg("Debes seleccionar una especialización");
       return;
     }
-    
+
     setIsDeleting(true);
     setErrorMsg(null);
 
@@ -83,7 +83,7 @@ const DeleteRoadmapButton = () => {
         }
         throw new Error(errorMessage);
       }
-      
+
       try {
         const storedMetadata = JSON.parse(localStorage.getItem("metadata") || "{}");
         if (storedMetadata) {
@@ -114,15 +114,14 @@ const DeleteRoadmapButton = () => {
         style={{
           backgroundColor: theme.palette.error.hex,
           color: theme.palette.background.hex,
-          fontFamily: "Montserrat, sans-serif",
-          fontWeight: theme.fontWeight.semibold,
+          padding: "0.5rem 1.25rem",
+          borderRadius: theme.buttonRadios.m,
           fontSize: theme.fontSizes.m,
           border: "none",
-          borderRadius: "4px",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+          cursor: "pointer",
         }}
       >
-        <span>Eliminar Roadmap</span>
+        <span>Cambiar Roadmap</span>
       </button>
 
       {isModalOpen && (
@@ -139,7 +138,7 @@ const DeleteRoadmapButton = () => {
                 className="text-xl font-semibold"
                 style={{ color: theme.palette.dark.hex }}
               >
-                Eliminar Roadmap
+                Cambiar Roadmap
               </h2>
               <button
                 onClick={closeModal}
@@ -157,7 +156,7 @@ const DeleteRoadmapButton = () => {
                 <i className="bi bi-exclamation-triangle-fill"></i>
               </div>
               <p className="text-gray-700 text-sm">
-                Para eliminar tu roadmap, debes seleccionar una nueva especialización.
+                Selecciona una nueva especialización y se eliminará el roadmap actual. Asegúrate de que deseas continuar con esta acción.
               </p>
             </div>
 
@@ -200,7 +199,7 @@ const DeleteRoadmapButton = () => {
               >
                 Cancelar
               </button>
-              
+
               <button
                 onClick={handleChangeSpecializationAndDelete}
                 className="px-6 py-2 text-white transition-colors hover:opacity-90 flex items-center gap-2"

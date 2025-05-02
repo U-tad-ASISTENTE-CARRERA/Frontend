@@ -5,10 +5,49 @@ const ActivityLog = ({ updateHistory }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 2;
 
+  const renderValue = (value) => {
+    if (value === null || value === undefined) return "No disponible";
+
+    if (Array.isArray(value) && value.every(v => typeof v === "object" && v !== null)) {
+      const keys = Object.keys(value[0]).filter(k => k !== "_id");
+
+      return (
+        <table className="text-xs w-full border-collapse">
+          <thead>
+            <tr>
+              {keys.map((key) => (
+                <th key={key} className="text-left px-2 py-1 font-semibold border-b" style={{ color: theme.palette.text.hex }}>
+                  {key}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {value.map((item, i) => (
+              <tr key={i} className="border-b last:border-0">
+                {keys.map((key) => (
+                  <td key={key} className="px-2 py-1">{item[key]}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+    }
+
+    if (typeof value === "object") {
+      const { _id, ...rest } = value;
+      return Object.entries(rest)
+        .map(([key, val]) => `${key}: ${val}`)
+        .join(" | ");
+    }
+
+    return value.toString();
+  };
+
   if (!updateHistory || updateHistory.length === 0) {
     return (
       <div className="space-y-4 p-4 bg-white rounded-lg">
-
         <h2
           className="text-lg font-semibold"
           style={{ color: theme.palette.text.hex }}>
@@ -24,7 +63,6 @@ const ActivityLog = ({ updateHistory }) => {
             El historial de actividad se registra cuando se realizan cambios en el perfil del usuario.
           </p>
         </div>
-        
       </div>
     );
   }
@@ -47,7 +85,6 @@ const ActivityLog = ({ updateHistory }) => {
 
   return (
     <div className="space-y-4 p-4 bg-white rounded-lg">
-
       <h2
         className="text-lg font-semibold"
         style={{ color: theme.palette.text.hex }}>
@@ -107,34 +144,20 @@ const ActivityLog = ({ updateHistory }) => {
                     style={{ borderColor: theme.palette.lightGray.hex }}
                   >
                     <div className="font-semibold mb-2 capitalize" style={{ color: theme.palette.primary.hex }}>
-                      {change.field}
+                      {change.field.replace(/_/g, " ")}
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <div className="text-xs mb-1" style={{ color: theme.palette.error.hex }}>Valor anterior:</div>
-                        <pre
-                          className="p-2 rounded text-xs overflow-auto max-h-40"
-                          style={{ backgroundColor: `${theme.palette.error.hex}10` }}
-                        >
-                          {change.oldValue !== undefined && change.oldValue !== null
-                            ? typeof change.oldValue === "object"
-                              ? JSON.stringify(change.oldValue, null, 2)
-                              : change.oldValue.toString()
-                            : "No disponible"}
-                        </pre>
+                        <div className="p-2 rounded text-xs overflow-auto max-h-40" style={{ backgroundColor: `${theme.palette.error.hex}10` }}>
+                          {renderValue(change.oldValue)}
+                        </div>
                       </div>
                       <div>
                         <div className="text-xs mb-1" style={{ color: theme.palette.success.hex }}>Nuevo valor:</div>
-                        <pre
-                          className="p-2 rounded text-xs overflow-auto max-h-40"
-                          style={{ backgroundColor: `${theme.palette.success.hex}10` }}
-                        >
-                          {change.newValue !== undefined && change.newValue !== null
-                            ? typeof change.newValue === "object"
-                              ? JSON.stringify(change.newValue, null, 2)
-                              : change.newValue.toString()
-                            : "No disponible"}
-                        </pre>
+                        <div className="p-2 rounded text-xs overflow-auto max-h-40" style={{ backgroundColor: `${theme.palette.success.hex}10` }}>
+                          {renderValue(change.newValue)}
+                        </div>
                       </div>
                     </div>
                   </div>

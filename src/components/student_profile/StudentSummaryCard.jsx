@@ -90,7 +90,7 @@ const StudentSummaryCard = ({
             />
           </div>
           <span style={{ color: theme.palette.gray.hex }}>
-            Graduación prevista: {endDate}
+            Graduación prevista: {new Date(endDate).toLocaleDateString("es-ES")}
           </span>
         </div>
       </div>
@@ -123,8 +123,8 @@ const StudentSummaryCard = ({
                 const translatedLevel = isHigh
                   ? "Alto"
                   : skill.level === "medium"
-                  ? "Medio"
-                  : skill.level;
+                    ? "Medio"
+                    : skill.level;
 
                 return (
                   <li
@@ -215,10 +215,12 @@ const StudentSummaryCard = ({
             {roadmap?.name || "No disponible"}
           </strong>
         </p>
-        
+
         <div style={{ display: "flex", gap: "0.75rem" }}>
+
           <button
             onClick={goToRoadmap}
+            className="transition-all hover:opacity-90"
             style={{
               backgroundColor: theme.palette.primary.hex,
               color: theme.palette.background.hex,
@@ -231,8 +233,9 @@ const StudentSummaryCard = ({
           >
             Ver el Roadmap
           </button>
-          
+
           <DeleteRoadmapButton />
+          
         </div>
       </div>
     </div>

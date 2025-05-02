@@ -175,11 +175,17 @@ const PersonalInfo = ({
         skills={skills}
       />
 
+      <hr
+        className="my-6 border-t mt-10 mb-10"
+        style={{ borderColor: theme.palette.lightGray.hex }}
+      />
+
+
       {/* Cabecera y botones */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mt-10 mb-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-6">
 
         <h2 className="text-lg font-semibold">Información principal</h2>
-        
+
         <div className="flex gap-2">
           {isEditing && (
             <button
