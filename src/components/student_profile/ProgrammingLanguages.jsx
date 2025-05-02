@@ -74,13 +74,52 @@ const ProgrammingLanguages = ({ skills, setSkills, onSave, onDelete }) => {
   }
 
   const handleDeleteSkill = (index) => {
-    console.log("Deleting skill at index:", index);
+    const updatedSkills = tempSkills.filter((_, i) => i !== index);
     const skillToDelete = tempSkills[index];
-    if (skillToDelete._id && Array.isArray(skills) && skills.some((sk) => sk._id === skillToDelete._id)) {
+  
+    if (
+      skillToDelete?._id &&
+      Array.isArray(skills) &&
+      skills.some((sk) => sk._id === skillToDelete._id)
+    ) {
       setDeletedSkills((prev) => [...prev, skillToDelete]);
     }
-    setTempSkills(tempSkills.filter((_, i) => i !== index));
-  }
+  
+    // Actualiza los estados derivados
+    setTempSkills(updatedSkills);
+  
+    // Reindexar `skillSearch`
+    const updatedSearch = updatedSkills.reduce((acc, sk, i) => {
+      acc[i] = sk.name;
+      return acc;
+    }, {});
+    setSkillSearch(updatedSearch);
+  
+    // Reindexar `dropdownOpen`
+    const updatedDropdown = updatedSkills.reduce((acc, _, i) => {
+      acc[i] = false;
+      acc[`level-${i}`] = false;
+      return acc;
+    }, {});
+    setDropdownOpen(updatedDropdown);
+  
+    // Reindexar errores
+    const updatedErrors = {};
+    Object.entries(e).forEach(([key, msg]) => {
+      const match = key.match(/^skill-(\d+)$/);
+      if (match) {
+        const oldIndex = parseInt(match[1]);
+        if (oldIndex < index) {
+          updatedErrors[`skill-${oldIndex}`] = msg;
+        } else if (oldIndex > index) {
+          updatedErrors[`skill-${oldIndex - 1}`] = msg;
+        }
+        // Si es igual a `index`, se omite (el skill fue borrado)
+      }
+    });
+    setE(updatedErrors);
+  };
+  
 
   const validateForm = () => {
     console.log("Validating form");
