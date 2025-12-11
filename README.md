@@ -1,57 +1,131 @@
 # Asistente de Carrera Profesional - Frontend
 
-Este repositorio contiene el frontend de la aplicación **Asistente de Carrera Profesional**, desarrollado en **Next.js con React** para la asignatura **Proyectos III**.
+This repository contains the frontend of the **Asistente de Carrera Profesional**, a tool designed to support students in planning their professional path by analyzing their academic progress and generating a personalized career roadmap.
 
-> ❗❗ **IMPORTANTE:**  
-> Asegúrate de probar siempre con la rama `main`, ya que contiene la última versión mostrada al cliente.
+The project was developed under the internal name **GPS Académico** as part of the Proyectos III course at U-tad university, following a Scrum-based workflow with periodic client meetings and team coordination through Jira.
+
+> [!IMPORTANT]
+> The branch used for **production** and for deployment on Vercel is `main`
 
 
-## ⚠️ REQUISITOS PREVIOS
+## Prerequisites
 
-Antes de ejecutar este frontend, **asegúrate de que el backend esté en funcionamiento**.
+> [!IMPORTANT]
+> The backend must be running before starting the frontend
 
-- **Repositorio del backend**: [github.com/U-tad-ASISTENTE-CARRERA/Backend](https://github.com/U-tad-ASISTENTE-CARRERA/Backend)  
-- **Instrucciones para ejecutar el backend**: Consulta el README del backend.
+Backend repository:
+[https://github.com/U-tad-ASISTENTE-CARRERA/Backend](https://github.com/U-tad-ASISTENTE-CARRERA/Backend)
 
----
 
-## Puesta en marcha
+## Getting started
 
-Sigue estos pasos para ejecutar el frontend en tu entorno local:
+### 1. Clone the repository
 
-### 1. Clonar el repositorio
 ```bash
 git clone https://github.com/U-tad-ASISTENTE-CARRERA/Frontend.git
 cd Frontend
 ```
 
-### 2. Instalar dependencias
+### 2. Install dependencies
+
 ```bash
 npm install
-# o
+# or
 yarn install
 ```
 
-### 3. Iniciar el servidor de desarrollo
+### 3. Start the development server
+
 ```bash
 npm run dev
-# o
+# or
 yarn dev
 ```
 
-La aplicación estará disponible en **[http://localhost:3001](http://localhost:3001)**.
+The application will be available at:
+[http://localhost:3001](http://localhost:3001)
 
----
 
-## Usuarios de prueba
+## User Roles and Interfaces
 
-Para facilitar el acceso durante el desarrollo, puedes utilizar estos usuarios de prueba:
+GPS Académico platform includes three user roles: student, professor, and administrator, each with its own interface adapted to its purpose.
 
-| Rol      | Correo         | Contraseña  |
-|----------|---------------|------------|
-| Admin    | admin@u-tad.com | SecurePass@123   |
-| Estudiante  | alina@live.u-tad.com | Alina!@#    |
-| Profesor  | profesor1@u-tad.com | #!Hola_9    |
+> [!NOTE]
+> * Students log in using `@live.u-tad.com` email addresses
+> * Professors log in using `@u-tad.com` addresses
+> * The administrator also uses an `@u-tad.com` address
 
-Si necesitas más credenciales, revisa el backend o la [base de datos en Firebase](https://console.firebase.google.com/u/2/project/asistente-carrera/firestore/databases/-default-/data/~2Fdegrees~2FINSO_DATA?hl=es-419).
+### Student
 
+This is the main interface of the system, currently focused on 3rd- and 4th-year Software Engineering students who are close to starting internships or entering the job market.
+
+Features include:
+
+* **Career roadmap**, defined based on the student’s desired career path and enriched with degree content and additional training added by the student
+* Academic, language and work experience records
+* Generation of a report that consolidates all this information
+
+The platform is designed to expand to additional degrees in the future.
+
+### Professor
+
+This interface supports professors who have been selected as tutors by students.
+
+Features include:
+
+* Access to reports submitted by each student, containing their academic progress and professional roadmap
+* A list of assigned students
+
+### Administrator
+
+The administrator has access to internal tools for platform maintenance, not visible to students or professors.
+
+
+## Branch Workflow and Deployment
+
+The project uses two main branches:
+
+### `salis`
+
+Development branch.
+All active development takes place here.
+
+### `main`
+
+Production branch.
+This branch receives stable changes from `salis` and is used for deployment.
+
+Branch synchronization is handled through GitHub Actions.
+
+
+### Deployment via Mirror Repository
+
+To enable deployment on Vercel:
+
+1. The `main` branch is automatically copied to a personal mirror repository through GitHub Actions.
+2. Vercel pulls and deploys the frontend from that personal repository.
+
+This approach was necessary because, during the development period, Vercel’s Hobby plan did not allow deploying directly from organization repositories. Using a personal mirror repository made deployment possible without requiring a Pro plan.
+
+
+## Technologies used
+
+### Frontend
+
+* Next.js
+* React
+* TypeScript
+* Tailwind CSS
+
+### Backend *(separate repository)*
+
+* Node.js
+
+### Database
+
+* Firebase Firestore
+
+### Automation & Deployment
+
+* GitHub Actions
+* Vercel
