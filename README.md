@@ -114,7 +114,7 @@ This approach was necessary because, during the development period, Vercel’s H
 
 * Next.js
 * React
-* TypeScript
+* JavaScript
 * Tailwind CSS
 
 ### Backend *(separate repository)*

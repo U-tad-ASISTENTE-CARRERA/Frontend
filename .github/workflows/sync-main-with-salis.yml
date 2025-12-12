@@ -3,31 +3,30 @@ name: Sincronizar rama main con salis
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   sync-branches:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          repository: U-tad-ASISTENTE-CARRERA/Frontend
           fetch-depth: 0
-          token: ${{ secrets.PAT_GITHUB }}
-          
+
       - name: Configurar Git
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
-          
+
       - name: Obtener último commit de la rama salis
         run: |
           git fetch origin salis
           LATEST_COMMIT=$(git rev-parse origin/salis)
           echo "LATEST_COMMIT=$LATEST_COMMIT" >> $GITHUB_ENV
-          echo "Último commit de la rama salis: $LATEST_COMMIT"
-          
+
       - name: Actualizar la rama main
         run: |
-          git checkout -b temp_main $LATEST_COMMIT
-          git push origin temp_main:main --force
-          echo "Rama main actualizada con éxito a partir de la rama salis"
+          git checkout -B main $LATEST_COMMIT
+          git push origin main --force
